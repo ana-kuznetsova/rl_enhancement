@@ -1,3 +1,7 @@
+import librosa
+import os
+import numpy as np
+
 def read(path, sr):
     file, sr = librosa.core.load(path, sr, mono=True)
     return file[:-1]
