@@ -58,7 +58,7 @@ def weights(m):
 
 
 
-def train_dnn(num_epochs, chunk_size, model_path, csv_path):
+def train_dnn(num_epochs, model_path, csv_path,  chunk_size=4620):
     model = DNN()
     model.apply(weights)
     criterion = nn.MSELoss()
