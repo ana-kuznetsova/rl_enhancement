@@ -7,9 +7,39 @@ from utils import read
 from utils import write_npy
 from utils import collect_paths
 
+def generate_noisy(speech, noise, desired_snr):    
+    #calculate energies
+    E_speech = np.sum(np.power(speech, 2))
+    E_noise = np.sum(np.power(noise, 2))
+    
+    #calculate b coeff
+    b = np.sqrt((E_speech/(np.power(10, (desired_snr/10))))/E_noise)    
+    return speech + b*noise
+
+
+def create_noisy_data(data_paths, out_path, noise_path, 
+                      target_SNR, win_len, hop_size, fs):
+    noise = read(noise_path, fs)
+
+    for path in tqdm_notebook(data_paths):
+        speech = read(path, fs)
+        noise = pad_noise(speech, noise)
+        blend = generate_noisy(speech, noise, target_SNR)
+        stft = STFT(blend, win_len, hop_size)
+        fname = path.split('/')[-2]+ '_' + path.split('/')[-1].split('.')[0] + '.npy'
+        np.save(out_path+fname, stft)
+
 
 def STFT(x, win_len, hop_size, win_type='hann'):
     return librosa.core.stft(x, win_len, hop_size, win_len, win_type)
+
+
+def mel_spec(stft, win_len, hop_size, fs):
+    mel_spec = librosa.feature.melspectrogram(sr=fs, S=stft,
+                                              n_fft=win_len,
+                                              hop_length=hop_size,
+                                              n_mels=64)
+    return mel_spec
 
 def calc_SNR(speech, noise):        
     E_speech = np.power(speech, 2)
@@ -89,3 +119,43 @@ def calc_masks(speech_paths, noise_path, fs, win_len, hop_size,
         elif mask_type=='Wiener':
             wiener = Wiener(stft_clean, stft_noise)
             write_npy(mask_dir, fname, wiener)
+
+
+def get_X_batch(stft, P):
+    windows = []
+    for col in range(-P, stft.shape[1]-P):
+        win = np.zeros((stft.shape[0], (2*P)+1))
+        if col < 0:
+            win[:,-col:] = stft[:,:P+1+(P+col)]    
+        
+        if col >= 0 and col < stft.shape[1] - 2*P:
+            win = stft[:, col:col+2*P+1]
+        
+        if col >= stft.shape[1] - 2*P:
+            temp = stft[:,col:]
+            win[:,:temp.shape[1]] = stft[:,col:]
+        windows.append(win.flatten('F'))
+        
+    return np.asarray(windows)
+
+
+def make_batch(csv_path, ind, P, maxlen, win_len, hop_size, fs):
+    X = []
+    y = []
+    df = pd.read_csv(csv_path)
+    chunk_x = df.iloc[ind[0]:ind[1]]['train_path'].values
+    chunk_y = df.iloc[ind[0]:ind[1]]['irm_path'].values
+
+    for i, path in enumerate(tqdm_notebook(chunk_x)):
+        arr = np.load(path)
+        arr = get_X_batch(arr, P)
+        arr = np.abs(mel_spec(arr, win_len, hop_size, fs))
+        X.extend(arr)
+  
+        arr = np.load(chunk_y[i])
+        arr = pad(arr, maxlen)
+        arr = np.abs(mel_spec(arr, win_len, hop_size, fs))
+        y.extend(arr)
+    X = np.asarray(X)
+    y = np.asarray(y)
+    return X, y 
