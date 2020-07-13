@@ -22,6 +22,8 @@ if __name__ == '__main__':
     parser.add_argument('--chunk_size', type=str, help='Number of training examples to load from disk')
     parser.add_argument('--model_path', type=str, help='Dir to save best model', required=True)
     parser.add_argument('--csv_path', type=str, help='Csv file with X and y mapping', required=True)
+    parser.add_argument('--loss_path', type=str, help='Dir to save losses', required=True)
+    parser.add_argument('--pretrained', type=str, help='True or false, load weights from pretrained model')
 
 
     args = parser.parse_args()

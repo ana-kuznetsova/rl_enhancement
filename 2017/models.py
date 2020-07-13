@@ -6,6 +6,7 @@ from torch.autograd import Variable
 import torch.optim as optim
 import torch.utils.data as data
 import copy
+import json
 
 
 class trainDataLoader(data.Dataset):
@@ -58,7 +59,8 @@ def weights(m):
 
 
 
-def train_dnn(num_epochs, model_path, csv_path,  chunk_size=4620):
+def train_dnn(num_epochs, model_path, csv_path, 
+              loss_path, chunk_size=4620, from_pretrained=False):
     model = DNN()
     model.apply(weights)
     criterion = nn.MSELoss()
@@ -74,29 +76,35 @@ def train_dnn(num_epochs, model_path, csv_path,  chunk_size=4620):
     best_model = copy.deepcopy(model.state_dict())
     best_loss = 9999
 
+    losses = []
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
         loss = 0.0 
         num_chunk = 4620//chunk_size
         for chunk in range(num_chunk):
-        chunk_loss = 0
-        start = chunk*chunk_size
-        end = min(start+chunk_size, 4620)
-        print(start, end)
-        X_chunk, y_chunk = make_batch(csv_path, [start, end], 5, MAXLEN, WIN_LEN, HOP_SIZE, FS)
-        trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 64)
-        for step, (audio, target) in enumerate(trainData): 
-            audio = audio.to(device)
-            target = target.to(device)
-            model.train()
-            output = model(audio)
-            newLoss = criterion(output,target)
-            chunk_loss += newLoss.data
-            optimizer.zero_grad()
-            newLoss.backward()
-            optimizer.step()
-        print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
-        loss += chunk_loss
+            chunk_loss = 0
+            start = chunk*chunk_size
+            end = min(start+chunk_size, 4620)
+            print(start, end)
+            X_chunk, y_chunk = make_batch(csv_path, [start, end], 5, MAXLEN, WIN_LEN, HOP_SIZE, FS)
+            trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 64)
+            for step, (audio, target) in enumerate(trainData): 
+                audio = audio.to(device)
+                target = target.to(device)
+                model.train()
+                output = model(audio)
+                newLoss = criterion(output,target)
+                chunk_loss += newLoss.data
+                optimizer.zero_grad()
+                newLoss.backward()
+                optimizer.step()
+            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
+            loss += chunk_loss
+        losses.append(loss/num_epochs)
         print('Epoch:{:2},Loss:{:>.5f}'.format(epoch,loss/num_epochs))
+    ##Save model, save losses
+
+    with open(loss_path+'losses.json', 'w') as f:
+        json.dump(data, f)
     torch.save(best_model, model_path)
