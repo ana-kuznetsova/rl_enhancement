@@ -110,10 +110,16 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
     best_loss = 9999
 
     losses = []
+    #Change if not enough memory
+    X_chunk, y_chunk = make_batch(x_path, y_path, [0, chunk_size], 5, maxlen, win_len, hop_size, fs)
+
+    trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 64)
+
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
         loss = 0.0 
+        '''
         num_chunk = 4620//chunk_size
         for chunk in range(num_chunk):
             chunk_loss = 0
@@ -122,25 +128,26 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
             print(start, end)
             X_chunk, y_chunk = make_batch(x_path, y_path, [start, end], 5, maxlen, win_len, hop_size, fs)
             trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 64)
-            for step, (audio, target) in enumerate(trainData): 
-                audio = audio.to(device)
-                target = target.to(device)
-                model.train()
-                output = model(audio)
-                newLoss = criterion(output,target)
-                chunk_loss += newLoss.data
-                optimizer.zero_grad()
-                newLoss.backward()
-                optimizer.step()
-            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
-            loss += chunk_loss
+        '''
+        for step, (audio, target) in enumerate(trainData): 
+            audio = audio.to(device)
+            target = target.to(device)
+            model.train()
+            output = model(audio)
+            newLoss = criterion(output,target)
+            loss += newLoss.data
+            optimizer.zero_grad()
+            newLoss.backward()
+            optimizer.step()
+            #print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
+            #loss += chunk_loss
         losses.append(loss/num_epochs)
         print('Epoch:{:2},Loss:{:>.5f}'.format(epoch,loss/num_epochs))
     ##Save model, save losses
 
     pickle.dump(losses, open( loss_path+"losses.p", "wb" ) )
 
-    torch.save(best_model, model_path)
+    torch.save(best_model, model_path+'dnn_map_best.pth')
 
 
 
