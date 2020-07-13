@@ -11,6 +11,7 @@ def main(args):
     print('Start DNN mapping...')
     train_dnn(args.num_epochs,
               args.model_path,
+              args.loss_path,
               args.x_path,
               args.y_path,
               args.chunk_size)
