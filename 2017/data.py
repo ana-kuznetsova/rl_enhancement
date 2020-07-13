@@ -145,7 +145,7 @@ def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, fs):
     chunk_x = os.listdir(x_path)[ind[0]:ind[1]]
     chunk_y = os.listdir(y_path)
 
-    for path in tqdm_notebook(chunk_x):
+    for path in tqdm(chunk_x):
         arr = np.load(x_path+path)
         arr = get_X_batch(arr, P)
         arr = np.abs(mel_spec(arr, win_len, hop_size, fs))
