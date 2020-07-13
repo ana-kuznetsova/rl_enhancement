@@ -1,7 +1,6 @@
 import librosa
 import os
 import numpy as np
-import pandas as pd
 
 def read(path, fs):
     file_, fs = librosa.core.load(path, fs, mono=True)
