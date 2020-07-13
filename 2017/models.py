@@ -52,6 +52,36 @@ class DNN(nn.Module):
         x = self.drop(x)
         x = self.fc3(x)
         return x
+
+
+class DNN_pretrain(nn.Module):
+    def __init__(self, layer):
+        super().__init__()
+        
+        if layer==1:
+            self.fc1 = nn.Linear(2827, 128)
+            self.fc2 = nn.Linear(128, 1339)
+        elif layer==2:
+            self.fc1 = nn.Linear(2827, 128)
+            self.fc2 = nn.Linear(128, 128)
+            self.fc3 = nn.Linear(128, 1339)
+        self.drop = nn.Dropout(0.025)
+
+        
+    def forward(self, x, layer):
+        if layer==1:
+            x = Func.sigmoid(self.fc1(x))
+            x = self.drop(x)
+            x = Func.sigmoid(self.fc2(x))
+            return x
+        elif layer==2:
+            x = Func.sigmoid(self.fc1(x))
+            x = self.drop(x)
+            x = Func.sigmoid(self.fc2(x))
+            x = self.drop(x)
+            x = self.drop(x)
+            x = self.fc3(x)
+            return x
         
 
 def weights(m):
@@ -111,3 +141,15 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
     with open(loss_path+'losses.json', 'w') as f:
         json.dump(data, f)
     torch.save(best_model, model_path)
+
+
+
+def pretrain(num_epochs, model_path, x_path, y_path, weights_path,
+              loss_path, maxlen=1339, win_len=512, hop_size=256, fs=44000,
+              chunk_size=4620):
+    
+    min_delta = 0.05
+
+    #Pretrain first layer
+
+    pass

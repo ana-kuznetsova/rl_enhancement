@@ -5,6 +5,7 @@ from tqdm import tqdm
 import argparse
 
 from models import train_dnn
+from models import pretrain
 
 
 def main(args):
