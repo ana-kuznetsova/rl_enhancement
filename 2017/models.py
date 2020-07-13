@@ -6,7 +6,7 @@ from torch.autograd import Variable
 import torch.optim as optim
 import torch.utils.data as data
 import copy
-import json
+import pickle
 
 from data import make_batch
 
@@ -138,8 +138,8 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
         print('Epoch:{:2},Loss:{:>.5f}'.format(epoch,loss/num_epochs))
     ##Save model, save losses
 
-    with open(loss_path+'losses.json', 'w') as f:
-        json.dump(data, f)
+    pickle.dump(losses, open( loss_path+"losses.p", "wb" ) )
+
     torch.save(best_model, model_path)
 
 
