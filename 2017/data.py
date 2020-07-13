@@ -139,20 +139,20 @@ def get_X_batch(stft, P):
     return np.asarray(windows)
 
 
-def make_batch(csv_path, ind, P, maxlen, win_len, hop_size, fs):
+def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, fs):
     X = []
     y = []
-    df = pd.read_csv(csv_path)
-    chunk_x = df.iloc[ind[0]:ind[1]]['train_path'].values
-    chunk_y = df.iloc[ind[0]:ind[1]]['irm_path'].values
+    chunk_x = os.listdir(x_path)[ind[0]:ind[1]]
+    chunk_y = os.listdir(y_path)
 
-    for i, path in enumerate(tqdm_notebook(chunk_x)):
-        arr = np.load(path)
+    for path in tqdm_notebook(chunk_x):
+        arr = np.load(x_path+path)
         arr = get_X_batch(arr, P)
         arr = np.abs(mel_spec(arr, win_len, hop_size, fs))
         X.extend(arr)
-  
-        arr = np.load(chunk_y[i])
+    
+        y_ind = chunk_y.index(path)
+        arr = np.load(y_path+chunk_y[y_ind])
         arr = pad(arr, maxlen)
         arr = np.abs(mel_spec(arr, win_len, hop_size, fs))
         y.extend(arr)

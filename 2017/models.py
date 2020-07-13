@@ -8,6 +8,8 @@ import torch.utils.data as data
 import copy
 import json
 
+from data import make_batch
+
 
 class trainDataLoader(data.Dataset):
     def __init__(self, X_chunk, y_chunk):
@@ -59,8 +61,9 @@ def weights(m):
 
 
 
-def train_dnn(num_epochs, model_path, csv_path, 
-              loss_path, chunk_size=4620, from_pretrained=False):
+def train_dnn(num_epochs, model_path, x_path, y_path, 
+              loss_path, maxlen=1339, win_len=512, hop_size=256, fs=44000,
+              chunk_size=4620, from_pretrained=False):
     model = DNN()
     model.apply(weights)
     criterion = nn.MSELoss()
@@ -87,7 +90,7 @@ def train_dnn(num_epochs, model_path, csv_path,
             start = chunk*chunk_size
             end = min(start+chunk_size, 4620)
             print(start, end)
-            X_chunk, y_chunk = make_batch(csv_path, [start, end], 5, MAXLEN, WIN_LEN, HOP_SIZE, FS)
+            X_chunk, y_chunk = make_batch(x_path, y_path, [start, end], 5, maxlen, win_len, hop_size, fs)
             trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 64)
             for step, (audio, target) in enumerate(trainData): 
                 audio = audio.to(device)
