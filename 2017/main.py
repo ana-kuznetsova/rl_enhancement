@@ -13,8 +13,7 @@ def main(args):
               args.model_path,
               args.x_path,
               args.y_path,
-              args.loss_path,
-              args.chunk_size)
+              args.loss_path)
 
 
 
