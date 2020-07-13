@@ -6,6 +6,7 @@ import numpy as np
 from utils import read
 from utils import write_npy
 from utils import collect_paths
+from utils import pad
 
 def generate_noisy(speech, noise, desired_snr):    
     #calculate energies
