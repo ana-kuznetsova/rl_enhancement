@@ -31,7 +31,7 @@ class testDataLoader(data.Dataset):
         self.test_files = os.listdir(path)
     def __getitem__(self, index):
         xFile = self.path + self.test_files[index]
-        X = np.load(xFile)
+        X = np.abs(np.load(xFile))
         return torch.from_numpy(X).t()
     def __len__(self):
         #Number of files
