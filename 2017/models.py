@@ -168,7 +168,7 @@ def inference(test_data_path, clean_test_path, out_test, model_path, maxlen=1399
 
 
     for step, audio in enumerate(testData):
-        print('Step:', step)
+       # print('Step:', step)
 
         name = names[step].split('.')[0]
         name = name+'.wav' 
