@@ -119,16 +119,6 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
         loss = 0.0 
-        '''
-        num_chunk = 4620//chunk_size
-        for chunk in range(num_chunk):
-            chunk_loss = 0
-            start = chunk*chunk_size
-            end = min(start+chunk_size, 4620)
-            print(start, end)
-            X_chunk, y_chunk = make_batch(x_path, y_path, [start, end], 5, maxlen, win_len, hop_size, fs)
-            trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 64)
-        '''
         for step, (audio, target) in enumerate(trainData): 
             audio = audio.to(device)
             target = target.to(device)
@@ -160,3 +150,24 @@ def pretrain(num_epochs, model_path, x_path, y_path, weights_path,
     #Pretrain first layer
 
     pass
+
+
+def inference(test_data_path, out_test,
+             win_len, hop_size, fs):
+    model = DNN()
+    model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
+    testData = data.DataLoader(testDataLoader())
+
+    names = testData.test_files
+
+    for step, audio in enumerate(testData):
+        print(step)
+    
+
+    name = names[step].split('.')[0]
+    name = name+'.wav'    
+    model.eval()
+    output = model(audio)
+    output = librosa.istft(np.transpose(output[0].cpu().data.numpy().squeeze()), hop_length=hop_size,
+                            win_length=win_len) 
+    librosa.output.write_wav(out_test+name, output, fs) 
