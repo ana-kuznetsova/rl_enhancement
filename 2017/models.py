@@ -153,7 +153,7 @@ def pretrain(num_epochs, model_path, x_path, y_path, weights_path,
 
 
 def inference(test_data_path, out_test,
-             win_len, hop_size, fs):
+             win_len=512, hop_size=256, fs=44000):
     model = DNN()
     model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
     testData = data.DataLoader(testDataLoader())
