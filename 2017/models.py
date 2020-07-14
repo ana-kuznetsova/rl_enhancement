@@ -161,7 +161,7 @@ def inference(test_data_path, clean_test_path, out_test, model_path,
     model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
     testData = data.DataLoader(testDataLoader(test_data_path))
 
-    names = testData.test_files
+    names = testDataLoader(test_data_path).test_files
 
     for step, audio in enumerate(testData):
         print(step)
