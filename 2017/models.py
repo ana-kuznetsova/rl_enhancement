@@ -171,9 +171,11 @@ def inference(test_data_path, clean_test_path, out_test, model_path,
         name = names[step].split('.')[0]
         name = name+'.wav' 
         with torch.no_grad():
-            output = np.exp(model(audio))
-            output = librosa.istft(np.transpose(output[0].cpu().data.numpy().squeeze()), hop_length=hop_size,
-                            win_length=win_len) 
-            librosa.output.write_wav(out_test+name, output, fs) 
+            output = model(audio)
+            output = np.transpose(output[0].cpu().data.numpy().squeeze()
+            print(output, output.shape)
+        #output = librosa.istft(np.transpose(output[0].cpu().data.numpy().squeeze()), hop_length=hop_size,
+        #                    win_length=win_len) 
+        #    librosa.output.write_wav(out_test+name, output, fs) 
 
     #eval_pesq(out_test, clean_test_path, out_test)
