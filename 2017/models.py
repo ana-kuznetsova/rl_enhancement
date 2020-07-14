@@ -172,7 +172,7 @@ def inference(test_data_path, clean_test_path, out_test, model_path,
         name = name+'.wav' 
         with torch.no_grad():
             output = model(audio)
-            output = np.transpose(output[0].cpu().data.numpy().squeeze()
+            output = np.transpose(output[0].cpu().data.numpy().squeeze())
             print(output, output.shape)
         #output = librosa.istft(np.transpose(output[0].cpu().data.numpy().squeeze()), hop_length=hop_size,
         #                    win_length=win_len) 
