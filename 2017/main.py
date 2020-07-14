@@ -18,7 +18,7 @@ def main(args):
                 args.loss_path)
     elif args.mode=='test':
         print('Staring inference on test data...')
-        inference(args.test_path, args.clean_test_path, args.test_out)
+        inference(args.test_path, args.clean_test_path, args.test_out, args.model_path)
 
 
 
