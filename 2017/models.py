@@ -169,7 +169,7 @@ def inference(test_data_path, clean_test_path, out_test,
     name = names[step].split('.')[0]
     name = name+'.wav'    
     model.eval()
-    output = model(audio)
+    output = np.exp(model(audio))
     output = librosa.istft(np.transpose(output[0].cpu().data.numpy().squeeze()), hop_length=hop_size,
                             win_length=win_len) 
     librosa.output.write_wav(out_test+name, output, fs) 
