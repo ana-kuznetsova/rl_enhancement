@@ -30,7 +30,7 @@ class testDataLoader(data.Dataset):
     def __init__(self, X_chunk):
         self.x = X_chunk
     def __getitem__(self, index):
-        return torch.from_numpy(self.x[index]).float(), torch.from_numpy(self.y[index]).float()
+        return torch.from_numpy(self.x[index]).float()
     def __len__(self):
         #Number of files
         return self.x.shape[0]
