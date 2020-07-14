@@ -11,6 +11,7 @@ import pandas as pd
 import os
 
 from data import make_batch
+from data import make_batch_test
 from metrics import eval_pesq
 
 
@@ -26,16 +27,14 @@ class trainDataLoader(data.Dataset):
 
 
 class testDataLoader(data.Dataset):
-    def __init__(self, path):
-        self.path = path 
-        self.test_files = os.listdir(path)
+    def __init__(self, X_chunk):
+        self.x = X_chunk
     def __getitem__(self, index):
-        xFile = self.path + self.test_files[index]
-        X = np.abs(np.load(xFile))
-        return torch.from_numpy(X).t()
+        return torch.from_numpy(self.x[index]).float(), torch.from_numpy(self.y[index]).float()
     def __len__(self):
         #Number of files
-        return len(self.test_files)
+        return self.x.shape[0]
+
 
 
 class DNN(nn.Module):
@@ -54,8 +53,7 @@ class DNN(nn.Module):
         x = Func.sigmoid(self.fc2(x))
         x = self.drop(x)
         x = self.fc3(x)
-        return x
-
+        return x        
 
 class DNN_pretrain(nn.Module):
     def __init__(self, layer):
@@ -159,20 +157,23 @@ def inference(test_data_path, clean_test_path, out_test, model_path,
              win_len=512, hop_size=256, fs=44000):
     model = DNN()
     model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
-    testData = data.DataLoader(testDataLoader(test_data_path))
 
-    names = testDataLoader(test_data_path).test_files
+    chunk_size = len(os.listdir(test_data_path))
+    print('Chunk size:', chunk_size)
+    X_chunk = make_batch_test(x_path, [0, chunk_size], 5, maxlen, win_len, hop_size, fs)
+
+    testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 64)
+
 
     for step, audio in enumerate(testData):
-        print(step)
-    
+        print('Step:', step)
 
-    name = names[step].split('.')[0]
-    name = name+'.wav'    
-    model.eval()
-    output = np.exp(model(audio))
-    output = librosa.istft(np.transpose(output[0].cpu().data.numpy().squeeze()), hop_length=hop_size,
+        name = names[step].split('.')[0]
+        name = name+'.wav' 
+        with torch.no_grad():
+            output = np.exp(model(audio))
+            output = librosa.istft(np.transpose(output[0].cpu().data.numpy().squeeze()), hop_length=hop_size,
                             win_length=win_len) 
-    librosa.output.write_wav(out_test+name, output, fs) 
+            librosa.output.write_wav(out_test+name, output, fs) 
 
-    eval_pesq(out_test, clean_test_path, out_test)
+    #eval_pesq(out_test, clean_test_path, out_test)

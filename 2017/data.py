@@ -160,3 +160,15 @@ def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, fs):
     X = np.asarray(X)
     y = np.asarray(y)
     return X, y 
+
+
+def make_batch_test(x_path, ind, P, maxlen=1339, win_len=512, hop_size=256, fs=44000):
+    X = []
+    chunk_x = os.listdir(x_path)[ind[0]:ind[1]]
+    for path in tqdm(chunk_x):
+        arr = np.load(x_path+path)
+        arr = get_X_batch(arr, P)
+        arr = np.abs(mel_spec(arr, win_len, hop_size, fs))
+        X.extend(arr)
+    X = np.asarray(X)
+    return X
