@@ -18,7 +18,7 @@ def main(args):
                 args.loss_path)
     elif args.mode=='test':
         print('Staring inference on test data...')
-        inference(args.test_path, args.test_out)
+        inference(args.test_path, args.clean_test_path, args.test_out)
 
 
 
@@ -34,6 +34,7 @@ if __name__ == '__main__':
     parser.add_argument('--mode', type=str, help='Train or test', required=True)
     parser.add_argument('--test_path', type=str, help='path to test data')
     parser.add_argument('--test_out', type=str, help='Path to dir to save test output')
+    parser.add_argument('--clean_test_path', type=str, help='Path to reference test data')
 
 
     args = parser.parse_args()

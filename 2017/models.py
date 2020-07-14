@@ -9,6 +9,7 @@ import copy
 import pickle
 
 from data import make_batch
+from metrics import eval_pesq
 
 
 class trainDataLoader(data.Dataset):
@@ -152,7 +153,7 @@ def pretrain(num_epochs, model_path, x_path, y_path, weights_path,
     pass
 
 
-def inference(test_data_path, out_test,
+def inference(test_data_path, clean_test_path, out_test,
              win_len=512, hop_size=256, fs=44000):
     model = DNN()
     model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
@@ -171,3 +172,5 @@ def inference(test_data_path, out_test,
     output = librosa.istft(np.transpose(output[0].cpu().data.numpy().squeeze()), hop_length=hop_size,
                             win_length=win_len) 
     librosa.output.write_wav(out_test+name, output, fs) 
+
+    eval_pesq(out_test, clean_test_path, out_test)
