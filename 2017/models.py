@@ -123,7 +123,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
         loss = 0.0 
         for step, (audio, target) in enumerate(trainData): 
-            print('Step:', step)
+            #print('Step:', step)
             audio = audio.to(device)
             target = target.to(device)
             model.train()
