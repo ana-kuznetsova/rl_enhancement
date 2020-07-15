@@ -113,6 +113,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
     losses = []
     #Change if not enough memory
     X_chunk, y_chunk = make_batch(x_path, y_path, [0, chunk_size], 5, maxlen, win_len, hop_size, fs)
+    print('X_train:', X_chunk.shape)
 
     trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 64)
 
@@ -121,6 +122,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
         loss = 0.0 
         for step, (audio, target) in enumerate(trainData): 
+            print('Step:', step)
             audio = audio.to(device)
             target = target.to(device)
             model.train()
