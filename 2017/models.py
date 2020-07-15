@@ -23,7 +23,6 @@ class trainDataLoader(data.Dataset):
         return torch.from_numpy(self.x[index]).float(), torch.from_numpy(self.y[index]).float()
     def __len__(self):
         #Number of files
-        print('In data loader:', self.x.shape[0])
         return self.x.shape[0]
 
 
@@ -123,7 +122,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
         loss = 0.0 
         for step, (audio, target) in enumerate(trainData): 
-            #print('Step:', step)
+            print('Step:', step)
             audio = audio.to(device)
             target = target.to(device)
             model.train()
