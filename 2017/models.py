@@ -161,7 +161,7 @@ def inference(test_data_path, clean_test_path, out_test, model_path, maxlen=1399
     X_chunk = make_batch_test(test_data_path, [0, chunk_size], 5, maxlen, win_len, hop_size, fs)
     #X shape: (107520, 2827)
 
-    testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 64)
+    testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 1)
     names = os.listdir(test_data_path)
 
 
