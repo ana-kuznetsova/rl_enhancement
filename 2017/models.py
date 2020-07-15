@@ -23,6 +23,7 @@ class trainDataLoader(data.Dataset):
         return torch.from_numpy(self.x[index]).float(), torch.from_numpy(self.y[index]).float()
     def __len__(self):
         #Number of files
+        print('In data loader:', x.shape[0])
         return self.x.shape[0]
 
 
