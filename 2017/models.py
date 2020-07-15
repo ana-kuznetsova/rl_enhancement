@@ -113,8 +113,6 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
     losses = []
     #Change if not enough memory
     X_chunk, y_chunk = make_batch(x_path, y_path, [0, chunk_size], 5, maxlen, win_len, hop_size, fs)
-    print('X_train:', X_chunk.shape)
-
     trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 100)
 
 
@@ -122,7 +120,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
         loss = 0.0 
         for step, (audio, target) in enumerate(trainData): 
-            print('Step:', step)
+            #print('Step:', step)
             audio = audio.to(device)
             target = target.to(device)
             model.train()
@@ -132,8 +130,6 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
             optimizer.zero_grad()
             newLoss.backward()
             optimizer.step()
-            #print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
-            #loss += chunk_loss
         losses.append(loss/num_epochs)
         print('Epoch:{:2},Loss:{:>.5f}'.format(epoch,loss/epoch))
     ##Save model, save losses
@@ -177,7 +173,7 @@ def inference(test_data_path, clean_test_path, out_test, model_path, maxlen=1399
         with torch.no_grad():
             output = model(audio)
             output = np.transpose(output[0].cpu().data.numpy().squeeze())
-            #print(output, output.shape)
+            print('Out shape:', output.shape)
         #output = librosa.istft(np.transpose(output[0].cpu().data.numpy().squeeze()), hop_length=hop_size,
         #                    win_length=win_len) 
         #    librosa.output.write_wav(out_test+name, output, fs) 
