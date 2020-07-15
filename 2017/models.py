@@ -161,14 +161,14 @@ def inference(test_data_path, clean_test_path, out_test, model_path, maxlen=1399
     chunk_size = len(os.listdir(test_data_path))
     print('Chunk size:', chunk_size)
     X_chunk = make_batch_test(test_data_path, [0, chunk_size], 5, maxlen, win_len, hop_size, fs)
-    print('X shape:', X_chunk.shape)
+    #X shape: (107520, 2827)
 
     testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 64)
     names = os.listdir(test_data_path)
 
 
     for step, audio in enumerate(testData):
-       # print('Step:', step)
+        print('Step:', step)
 
         name = names[step].split('.')[0]
         name = name+'.wav' 
