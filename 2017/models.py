@@ -116,7 +116,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
     X_chunk, y_chunk = make_batch(x_path, y_path, [0, chunk_size], 5, maxlen, win_len, hop_size, fs)
     print('X_train:', X_chunk.shape)
 
-    trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 64)
+    trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 100)
 
 
     for epoch in range(num_epochs):
