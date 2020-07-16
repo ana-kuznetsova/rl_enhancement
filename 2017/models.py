@@ -138,7 +138,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
                 newLoss.backward()
                 optimizer.step()
             
-            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
+            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss/num_chunk))
 
         loss += chunk_loss/num_chunk
 
