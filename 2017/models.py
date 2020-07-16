@@ -94,8 +94,8 @@ def weights(m):
 
 
 def train_dnn(num_epochs, model_path, x_path, y_path, 
-              loss_path, maxlen=1339, win_len=512, hop_size=256, fs=44000,
-              chunk_size=1500, from_pretrained=False):
+              loss_path, chunk_size,
+              maxlen=1339, win_len=512, hop_size=256, fs=44000, from_pretrained=False):
     model = DNN()
     model.apply(weights)
     criterion = nn.MSELoss()

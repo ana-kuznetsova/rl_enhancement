@@ -15,7 +15,8 @@ def main(args):
                 args.model_path,
                 args.x_path,
                 args.y_path,
-                args.loss_path)
+                args.loss_path,
+                args.chunk_size)
     elif args.mode=='test':
         print('Staring inference on test data...')
         inference(args.test_path, args.clean_test_path, args.test_out, args.model_path)
