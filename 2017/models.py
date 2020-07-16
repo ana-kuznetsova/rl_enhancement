@@ -163,31 +163,31 @@ def pretrain(num_epochs, model_path, x_path, y_path, weights_path,
     pass
 
 
-def inference(test_data_path, clean_test_path, out_test, model_path, maxlen=1399,
+def inference(test_data_path, clean_test_path, out_test, model_path, chunk_size, maxlen=1399,
              win_len=512, hop_size=256, fs=44000):
     model = DNN()
     model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
 
-    chunk_size = len(os.listdir(test_data_path))
-    print('Chunk size:', chunk_size)
-    X_chunk = make_batch_test(test_data_path, [0, chunk_size], 5, maxlen, win_len, hop_size, fs)
-    #X shape: (107520, 2827)
+    num_chunk = 4620//chunk_size
+    for chunk in range(num_chunk):
+        chunk_loss = 0
+        start = chunk*chunk_size
+        end = min(start+chunk_size, 4620)
+        print(start, end)
+        X_chunk = make_batch_test(test_data_path, [start, end], 5, maxlen, win_len, hop_size, fs)
+        testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 1339)d
 
-    testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 1339)
-    names = os.listdir(test_data_path)
+        for step, audio in enumerate(testData):
+            print('Step:', step)
 
-
-    for step, audio in enumerate(testData):
-        print('Step:', step)
-
-        #name = names[step].split('.')[0]
-        #name = name+'.wav' 
-        with torch.no_grad():
-            output = model(audio)
-            output = np.transpose(output[0].cpu().data.numpy().squeeze())
-            print('Out shape:', output.shape)
-        #output = librosa.istft(np.transpose(output[0].cpu().data.numpy().squeeze()), hop_length=hop_size,
-        #                    win_length=win_len) 
-        #    librosa.output.write_wav(out_test+name, output, fs) 
+            #name = names[step].split('.')[0]
+            #name = name+'.wav' 
+            with torch.no_grad():
+                output = model(audio)
+                output = np.transpose(output[0].cpu().data.numpy().squeeze())
+                print('Out shape:', output.shape)
+            #output = librosa.istft(np.transpose(output[0].cpu().data.numpy().squeeze()), hop_length=hop_size,
+            #                    win_length=win_len) 
+            #    librosa.output.write_wav(out_test+name, output, fs) 
 
     #eval_pesq(out_test, clean_test_path, out_test)
