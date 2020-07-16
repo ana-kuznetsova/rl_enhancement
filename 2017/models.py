@@ -116,7 +116,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
         loss = 0.0 
         
-        num_chunk = 4620//chunk_size
+        num_chunk = (4620//chunk_size) + 1
         for chunk in range(num_chunk):
             chunk_loss = 0
             start = chunk*chunk_size
@@ -169,11 +169,12 @@ def inference(test_data_path, clean_test_path, out_test, model_path, chunk_size,
     model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
     fnames = os.listdir(test_data_path)
 
-    num_chunk = 1680//chunk_size
+    num_chunk = (1680//chunk_size) +1
     for chunk in range(num_chunk):
         chunk_loss = 0
         start = chunk*chunk_size
         end = min(start+chunk_size, 1680)
+        print(start, end)
         x_list = [test_data_path + n for n in fnames]
         X_chunk = make_batch_test(x_list, [start, end], 5, maxlen, win_len, hop_size, fs)
         testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 1339)
