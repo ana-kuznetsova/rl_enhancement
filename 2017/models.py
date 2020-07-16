@@ -169,7 +169,7 @@ def inference(test_data_path, clean_test_path, out_test, model_path, chunk_size,
     model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
 
     num_chunk = 1680//chunk_size
-    for chunk in tqdm(range(num_chunk)):
+    for chunk in range(num_chunk):
         chunk_loss = 0
         start = chunk*chunk_size
         end = min(start+chunk_size, 4620)
