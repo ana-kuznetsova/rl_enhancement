@@ -162,7 +162,7 @@ def make_batch_test(x_list, ind, P, maxlen=1339, win_len=512, hop_size=256, fs=4
     X = []
     chunk_x = x_list[ind[0]:ind[1]]
     for path in tqdm(chunk_x):
-        arr = pad(np.load(x_path+path), maxlen)
+        arr = pad(np.load(path), maxlen)
         arr = np.abs(get_X_batch(arr, P))
         #arr = np.abs(mel_spec(arr, win_len, hop_size, fs))
         X.extend(arr)
