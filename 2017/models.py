@@ -133,13 +133,14 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
                 model.train()
                 output = model(audio)
                 newLoss = criterion(output,target)
-                loss += newLoss.data
+                chunk_loss += newLoss.data
                 optimizer.zero_grad()
                 newLoss.backward()
                 optimizer.step()
             
             print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
-            loss += chunk_loss
+
+        loss += chunk_loss
 
         losses.append(loss/num_epochs)
         print('Epoch:{:2},Loss:{:>.5f}'.format(epoch,loss/epoch))
