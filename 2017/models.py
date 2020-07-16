@@ -178,6 +178,7 @@ def inference(test_data_path, clean_test_path, out_test, model_path, chunk_size,
         print(start, end)
         x_list = [test_data_path + n for n in fnames]
         X_chunk = make_batch_test(x_list, [start, end], 5, maxlen, win_len, hop_size, fs)
+        print('len x chunk:', X_chunk)
         testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 1339)
 
         chunk_names = fnames[start:end]
