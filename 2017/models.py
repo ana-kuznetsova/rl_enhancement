@@ -140,7 +140,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
             
             print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
 
-        loss += chunk_loss
+        loss += chunk_loss/num_chunk
 
         losses.append(loss/num_epochs)
         print('Epoch:{:2},Loss:{:>.5f}'.format(epoch,loss/epoch))
