@@ -123,7 +123,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
             end = min(start+chunk_size, 4620)
             print(start, end)
 
-            X_chunk, y_chunk = make_batch(x_path, y_path, [start:end], 5, maxlen, win_len, hop_size, fs)
+            X_chunk, y_chunk = make_batch(x_path, y_path, [start, end], 5, maxlen, win_len, hop_size, fs)
             trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 128)
 
             for step, (audio, target) in enumerate(trainData): 
