@@ -167,6 +167,8 @@ def inference(test_data_path, clean_test_path, out_test, model_path, chunk_size,
              win_len=512, hop_size=256, fs=44000):
     model = DNN()
     model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
+    fnames = os.listdir(test_data_path)
+    print('len fnames:', len(fnames))
 
     num_chunk = 1680//chunk_size
     for chunk in range(num_chunk):
@@ -174,12 +176,11 @@ def inference(test_data_path, clean_test_path, out_test, model_path, chunk_size,
         start = chunk*chunk_size
         end = min(start+chunk_size, 1680)
         print(start, end)
-        fnames = os.listdir(test_data_path)
         x_list = [test_data_path + n for n in fnames]
         X_chunk = make_batch_test(x_list, [start, end], 5, maxlen, win_len, hop_size, fs)
         testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 1339)
 
-        chunk_names = fnames[start:end+1]
+        chunk_names = fnames[start:end]
         print(len(chunk_names))
         print('len:', len(testData))
         for step, audio in enumerate(testData):
