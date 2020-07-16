@@ -183,10 +183,8 @@ def inference(test_data_path, clean_test_path, out_test, model_path, chunk_size,
             #name = names[step].split('.')[0]
             #name = name+'.wav' 
             with torch.no_grad():
-                print(audio.shape)
                 output = model(audio)
-                print(output.shape)
-                output = np.transpose(output[0].cpu().data.numpy().squeeze())
+                output = np.transpose(output.cpu().data.numpy().squeeze())
                 print('Out shape:', output.shape)
             #output = librosa.istft(np.transpose(output[0].cpu().data.numpy().squeeze()), hop_length=hop_size,
             #                    win_length=win_len) 
