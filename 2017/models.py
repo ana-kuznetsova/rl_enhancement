@@ -181,6 +181,7 @@ def inference(test_data_path, clean_test_path, out_test, model_path, chunk_size,
 
         chunk_names = fnames[start:end]
         print(chunk_names)
+        print('len:', len(testData))
         for step, audio in enumerate(testData):
             print('Step:', step)
 
