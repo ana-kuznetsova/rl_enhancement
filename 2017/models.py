@@ -48,7 +48,6 @@ class DNN(nn.Module):
         #self.fc4 = nn.Linear(128, 1339)
         
     def forward(self, x):
-        print('X:', x.shape)
         x = Func.sigmoid(self.fc1(x))
         x = self.drop(x)
         x = Func.sigmoid(self.fc2(x))
@@ -133,7 +132,6 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
                 target = target.to(device)
                 model.train()
                 output = model(audio)
-                print("O:", output.shape, target.shape)
                 newLoss = criterion(output,target)
                 loss += newLoss.data
                 optimizer.zero_grad()
