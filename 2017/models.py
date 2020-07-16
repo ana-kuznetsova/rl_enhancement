@@ -175,7 +175,7 @@ def inference(test_data_path, clean_test_path, out_test, model_path, chunk_size,
         end = min(start+chunk_size, 4620)
         print(start, end)
         X_chunk = make_batch_test(test_data_path, [start, end], 5, maxlen, win_len, hop_size, fs)
-        testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 1339)d
+        testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 1339)
 
         for step, audio in enumerate(testData):
             print('Step:', step)
