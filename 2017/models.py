@@ -94,7 +94,7 @@ def weights(m):
 
 def train_dnn(num_epochs, model_path, x_path, y_path, 
               loss_path, maxlen=1339, win_len=512, hop_size=256, fs=44000,
-              chunk_size=4620, from_pretrained=False):
+              chunk_size=1500, from_pretrained=False):
     model = DNN()
     model.apply(weights)
     criterion = nn.MSELoss()
@@ -111,25 +111,36 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
     best_loss = 9999
 
     losses = []
-    #Change if not enough memory
-    X_chunk, y_chunk = make_batch(x_path, y_path, [0, chunk_size], 5, maxlen, win_len, hop_size, fs)
-    trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 128)
-
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
         loss = 0.0 
-        for step, (audio, target) in enumerate(trainData): 
-            #print('Step:', step)
-            audio = audio.to(device)
-            target = target.to(device)
-            model.train()
-            output = model(audio)
-            newLoss = criterion(output,target)
-            loss += newLoss.data
-            optimizer.zero_grad()
-            newLoss.backward()
-            optimizer.step()
+        
+        num_chunk = 4620//chunk_size
+        for chunk in range(num_chunk):
+            chunk_loss = 0
+            start = chunk*chunk_size
+            end = min(start+chunk_size, 4620)
+            print(start, end)
+
+            X_chunk, y_chunk = make_batch(x_path, y_path, [start:end], 5, maxlen, win_len, hop_size, fs)
+            trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 128)
+
+            for step, (audio, target) in enumerate(trainData): 
+                #print('Step:', step)
+                audio = audio.to(device)
+                target = target.to(device)
+                model.train()
+                output = model(audio)
+                newLoss = criterion(output,target)
+                loss += newLoss.data
+                optimizer.zero_grad()
+                newLoss.backward()
+                optimizer.step()
+            
+            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
+            loss += chunk_loss
+
         losses.append(loss/num_epochs)
         print('Epoch:{:2},Loss:{:>.5f}'.format(epoch,loss/epoch))
     ##Save model, save losses
