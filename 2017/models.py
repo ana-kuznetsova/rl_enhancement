@@ -182,7 +182,7 @@ def inference(test_data_path, clean_test_path, out_test, model_path, chunk_size,
         chunk_names = fnames[start:end]
         print(chunk_names)
         for step, audio in enumerate(testData):
-            #print('Step:', step)
+            print('Step:', step)
 
             name = chunk_names[step]
             with torch.no_grad():
