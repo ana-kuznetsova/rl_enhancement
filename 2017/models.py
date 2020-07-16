@@ -168,24 +168,26 @@ def inference(test_data_path, clean_test_path, out_test, model_path, chunk_size,
     model = DNN()
     model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
 
-    num_chunk = 4620//chunk_size
+    num_chunk = 1680//chunk_size
     for chunk in range(num_chunk):
         chunk_loss = 0
         start = chunk*chunk_size
         end = min(start+chunk_size, 4620)
         print(start, end)
-        X_chunk = make_batch_test(test_data_path, [start, end], 5, maxlen, win_len, hop_size, fs)
+        fnames = os.listdir(test_data_path)
+        x_list = [test_data_path + n for n in fnames]
+        X_chunk = make_batch_test(x_list, [start, end], 5, maxlen, win_len, hop_size, fs)
         testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 1339)
 
+        chunk_names = fnames[start:end]
         for step, audio in enumerate(testData):
-            print('Step:', step)
+            #print('Step:', step)
 
-            #name = names[step].split('.')[0]
-            #name = name+'.wav' 
+            name = chunk_names[step]
             with torch.no_grad():
                 output = model(audio)
                 output = np.transpose(output.cpu().data.numpy().squeeze())
-                print('Out shape:', output.shape)
+                np.save(out_test+name, output)
             #output = librosa.istft(np.transpose(output[0].cpu().data.numpy().squeeze()), hop_length=hop_size,
             #                    win_length=win_len) 
             #    librosa.output.write_wav(out_test+name, output, fs) 

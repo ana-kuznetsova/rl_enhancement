@@ -158,9 +158,9 @@ def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, fs):
     return X, y 
 
 
-def make_batch_test(x_path, ind, P, maxlen=1339, win_len=512, hop_size=256, fs=44000):
+def make_batch_test(x_list, ind, P, maxlen=1339, win_len=512, hop_size=256, fs=44000):
     X = []
-    chunk_x = os.listdir(x_path)[ind[0]:ind[1]]
+    chunk_x = x_list[ind[0]:ind[1]]
     for path in tqdm(chunk_x):
         arr = pad(np.load(x_path+path), maxlen)
         arr = np.abs(get_X_batch(arr, P))
