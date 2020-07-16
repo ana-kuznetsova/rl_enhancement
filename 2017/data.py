@@ -151,7 +151,7 @@ def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, fs):
         X.extend(arr)
 
         arr = np.load(y_path+path)
-        arr = np.abs(pad(arr, maxlen))
+        arr = np.abs(pad(arr, maxlen)).T
         y.extend(arr)
     X = np.asarray(X)
     y = np.asarray(y)

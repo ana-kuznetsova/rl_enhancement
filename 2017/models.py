@@ -133,6 +133,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
                 target = target.to(device)
                 model.train()
                 output = model(audio)
+                print("O:", output.shape, target.shape)
                 newLoss = criterion(output,target)
                 loss += newLoss.data
                 optimizer.zero_grad()
