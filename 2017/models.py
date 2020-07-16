@@ -33,6 +33,7 @@ class testDataLoader(data.Dataset):
         return torch.from_numpy(self.x[index]).float()
     def __len__(self):
         #Number of files
+        print('DL:', self.x.shape[0])
         return self.x.shape[0]
 
 
@@ -182,12 +183,10 @@ def inference(test_data_path, clean_test_path, out_test, model_path, chunk_size,
         testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 1339)
 
         chunk_names = fnames[start:end]
-        print(len(chunk_names))
-        print('len:', len(testData))
         for step, audio in enumerate(testData):
             #print('Step:', step)
 
-            name = chunk_names[step-1]
+            name = chunk_names[step]
             with torch.no_grad():
                 output = model(audio)
                 output = np.transpose(output.cpu().data.numpy().squeeze())
