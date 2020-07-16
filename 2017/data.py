@@ -144,18 +144,15 @@ def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, fs):
     X = []
     y = []
     chunk_x = os.listdir(x_path)[ind[0]:ind[1]]
-    chunk_y = os.listdir(y_path)
 
     for path in tqdm(chunk_x):
         arr = np.load(x_path+path)
-        arr = get_X_batch(arr, P)
-        arr = np.abs(mel_spec(arr, win_len, hop_size, fs))
-        X.extend(arr)
-    
-        y_ind = chunk_y.index(path)
-        arr = np.load(y_path+chunk_y[y_ind])
+        arr = np.abs(get_X_batch(arr, P)).T
         arr = pad(arr, maxlen)
-        arr = np.abs(mel_spec(arr, win_len, hop_size, fs))
+        X.extend(arr.T)
+
+        arr = np.load(y_path+path)
+        arr = np.abs(pad(arr, maxlen))
         y.extend(arr)
     X = np.asarray(X)
     y = np.asarray(y)
