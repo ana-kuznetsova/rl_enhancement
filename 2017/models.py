@@ -33,7 +33,6 @@ class testDataLoader(data.Dataset):
         return torch.from_numpy(self.x[index]).float()
     def __len__(self):
         #Number of files
-        print('DL:', self.x.shape[0])
         return self.x.shape[0]
 
 
@@ -169,19 +168,15 @@ def inference(test_data_path, clean_test_path, out_test, model_path, chunk_size,
     model = DNN()
     model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
     fnames = os.listdir(test_data_path)
-    print('len fnames:', len(fnames))
 
     num_chunk = 1680//chunk_size
     for chunk in range(num_chunk):
         chunk_loss = 0
         start = chunk*chunk_size
         end = min(start+chunk_size, 1680)
-        print(start, end)
         x_list = [test_data_path + n for n in fnames]
         X_chunk = make_batch_test(x_list, [start, end], 5, maxlen, win_len, hop_size, fs)
-        print('len x chunk:', X_chunk.shape)
         testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 1339)
-        print('len test data:', len(testData))
 
         chunk_names = fnames[start:end]
         for step, audio in enumerate(testData):
