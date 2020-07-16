@@ -172,7 +172,7 @@ def inference(test_data_path, clean_test_path, out_test, model_path, chunk_size,
     for chunk in range(num_chunk):
         chunk_loss = 0
         start = chunk*chunk_size
-        end = min(start+chunk_size, 4620)
+        end = min(start+chunk_size, 1680)
         print(start, end)
         fnames = os.listdir(test_data_path)
         x_list = [test_data_path + n for n in fnames]
