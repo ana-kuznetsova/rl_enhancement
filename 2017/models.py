@@ -184,7 +184,7 @@ def inference(test_data_path, clean_test_path, out_test, model_path, chunk_size,
         for step, audio in enumerate(testData):
             print('Step:', step)
 
-            name = chunk_names[step]
+            name = chunk_names[step-1]
             with torch.no_grad():
                 output = model(audio)
                 output = np.transpose(output.cpu().data.numpy().squeeze())
