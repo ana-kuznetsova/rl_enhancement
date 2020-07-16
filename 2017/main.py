@@ -19,7 +19,7 @@ def main(args):
                 args.chunk_size)
     elif args.mode=='test':
         print('Staring inference on test data...')
-        inference(args.test_path, args.clean_test_path, args.test_out, args.model_path)
+        inference(args.test_path, args.clean_test_path, args.test_out, args.model_path, args.chunk_size)
 
 
 
