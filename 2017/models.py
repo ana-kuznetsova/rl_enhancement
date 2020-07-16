@@ -43,7 +43,7 @@ class DNN(nn.Module):
 
         self.fc1 = nn.Linear(2827, 128)
         self.fc2 = nn.Linear(128, 128)
-        self.fc3 = nn.Linear(128, 1339)
+        self.fc3 = nn.Linear(128, 257)
         self.drop = nn.Dropout(0.025)
         #self.fc4 = nn.Linear(128, 1339)
         
@@ -113,7 +113,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
     losses = []
     #Change if not enough memory
     X_chunk, y_chunk = make_batch(x_path, y_path, [0, chunk_size], 5, maxlen, win_len, hop_size, fs)
-    trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 100)
+    trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 1339)
 
 
     for epoch in range(num_epochs):
@@ -161,7 +161,7 @@ def inference(test_data_path, clean_test_path, out_test, model_path, maxlen=1399
     X_chunk = make_batch_test(test_data_path, [0, chunk_size], 5, maxlen, win_len, hop_size, fs)
     #X shape: (107520, 2827)
 
-    testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 1)
+    testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 1339)
     names = os.listdir(test_data_path)
 
 
