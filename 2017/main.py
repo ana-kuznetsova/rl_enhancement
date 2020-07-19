@@ -6,7 +6,7 @@ import argparse
 from models import train_dnn
 from models import pretrain
 from models import inference
-
+from data import save_imag
 
 def main(args):
     if args.mode=='train':
@@ -20,6 +20,10 @@ def main(args):
     elif args.mode=='test':
         print('Staring inference on test data...')
         inference(args.test_path, args.clean_test_path, args.test_out, args.model_path, args.chunk_size)
+    elif args.mode=='data':
+        print('Saving phase information')
+        save_imag(args.test_path, args.test_out)
+
 
 
 
