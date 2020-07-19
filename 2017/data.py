@@ -140,18 +140,23 @@ def get_X_batch(stft, P):
     return np.asarray(windows)
 
 
-def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, fs):
+def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, feat_type, fs):
     X = []
     y = []
     chunk_x = os.listdir(x_path)[ind[0]:ind[1]]
 
     for path in tqdm(chunk_x):
         arr = np.load(x_path+path)
-        arr = pad(arr, maxlen)
-        arr = np.abs(get_X_batch(arr, P))
+        if feat_type=='stft':
+            arr = pad(arr, maxlen)
+            arr = np.abs(get_X_batch(arr, P))
+        elif feat_type=='mel':
+            arr = mel_spec(arr, win_len, hop_size)
+            arr = pad(arr, maxlen)
+            arr = np.abs(get_X_batch(arr, P))
         X.extend(arr)
 
-        arr = np.load(y_path+path)
+        arr = np.log(np.load(y_path+path))
         arr = np.abs(pad(arr, maxlen)).T
         y.extend(arr)
     X = np.asarray(X)

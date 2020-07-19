@@ -40,23 +40,37 @@ class testDataLoader(data.Dataset):
 
 class DNN(nn.Module):
     def __init__(self):
-        super().__init__()
+        super().__init__(feat_type)
+        if feat_type=='stft':        
+            self.fc1 = nn.Linear(2827, 128)
+            self.fc2 = nn.Linear(128, 128)
+            self.fc3 = nn.Linear(128, 257)
+            self.drop = nn.Dropout(0.025)
+        elif feat_type='mel':
+            self.fc1 = nn.Linear(64, 128)
+            self.fc2 = nn.Linear(128, 128)
+            self.fc3 = nn.Linear(128, 257)
+            self.drop = nn.Dropout(0.025)
 
-        self.fc1 = nn.Linear(2827, 128)
-        self.fc2 = nn.Linear(128, 128)
-        self.fc3 = nn.Linear(128, 257)
-        self.drop = nn.Dropout(0.025)
-        #self.fc4 = nn.Linear(128, 1339)
+
         
-    def forward(self, x):
-        #x = Func.sigmoid(self.fc1(x))
-        x = Func.relu(self.fc1(x))
-        x = self.drop(x)
-        #x = Func.sigmoid(self.fc2(x))
-        x = Func.relu(self.fc2(x))
-        x = self.drop(x)
-        x = self.fc3(x)
-        return x        
+    def forward(self, x, feat_type):
+        if feat_type=='stft':
+            #x = Func.sigmoid(self.fc1(x))
+            x = Func.relu(self.fc1(x))
+            x = self.drop(x)
+            #x = Func.sigmoid(self.fc2(x))
+            x = Func.relu(self.fc2(x))
+            x = self.drop(x)
+            x = self.fc3(x)
+            return x 
+        elif feat_type=='mel':
+            x = Func.sigmoid(self.fc1(x))
+            x = self.drop(x)
+            x = Func.sigmoid(self.fc2(x))
+            x = self.drop(x)
+            x = self.fc3(x)
+
 
 class DNN_pretrain(nn.Module):
     def __init__(self, layer):
@@ -96,9 +110,9 @@ def weights(m):
 
 
 def train_dnn(num_epochs, model_path, x_path, y_path, 
-              loss_path, chunk_size,
+              loss_path, chunk_size, feat_type,
               maxlen=1339, win_len=512, hop_size=256, fs=44000, from_pretrained=False):
-    model = DNN()
+    model = DNN(feat_type=feat_type)
     model.apply(weights)
     criterion = nn.MSELoss()
     optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
