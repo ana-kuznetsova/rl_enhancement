@@ -52,7 +52,7 @@ class DNN(nn.Module):
         #x = Func.sigmoid(self.fc1(x))
         x = Func.relu(self.fc1(x))
         x = self.drop(x)
-        x = Func.sigmoid(self.fc2(x))
+        #x = Func.sigmoid(self.fc2(x))
         x = Func.relu(self.fc2(x))
         x = self.drop(x)
         x = self.fc3(x)
