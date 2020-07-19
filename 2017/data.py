@@ -172,6 +172,6 @@ def make_batch_test(x_list, ind, P, maxlen=1339, win_len=512, hop_size=256, fs=4
 
 def save_imag(in_path, out_path):
     names = os.listdir(in_path)
-    for f in (names):
+    for f in tqdm(names):
         stft = np.load(in_path+f)
         np.save(out_path+f, stft.imag)
