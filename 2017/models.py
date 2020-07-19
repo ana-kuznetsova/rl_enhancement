@@ -144,7 +144,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
                                          [start, end], 5, 
                                          maxlen, win_len, 
                                          hop_size, feat_type, fs)
-                                         
+
             trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 128)
 
             for step, (audio, target) in enumerate(trainData): 
@@ -206,7 +206,7 @@ def inference(test_data_path, clean_test_path, out_test, model_path, imag_path, 
 
             name = chunk_names[step]
             with torch.no_grad():
-                output = model(audio)
+                output = model(audio, feat_type)
                 output = np.transpose(output.cpu().data.numpy().squeeze())
                 ##Restore phase (imaginary part)
                 imag = pad(np.load(imag_path+name), maxlen)
