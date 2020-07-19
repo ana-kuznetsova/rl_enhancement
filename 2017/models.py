@@ -163,7 +163,7 @@ def pretrain(num_epochs, model_path, x_path, y_path, weights_path,
     pass
 
 
-def inference(test_data_path, clean_test_path, out_test, model_path, chunk_size, maxlen=1339,
+def inference(test_data_path, clean_test_path, out_test, model_path, imag_path, chunk_size, maxlen=1339,
              win_len=512, hop_size=256, fs=44000):
     model = DNN()
     model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
@@ -187,7 +187,9 @@ def inference(test_data_path, clean_test_path, out_test, model_path, chunk_size,
             with torch.no_grad():
                 output = model(audio)
                 output = np.transpose(output.cpu().data.numpy().squeeze())
-                np.save(out_test+name, np.exp(output))
+                ##Restore phase (imaginary part)
+                imag = np.load(imag_path+name)
+                np.save(out_test+name, np.exp(output)+imag)
             #output = librosa.istft(np.transpose(output[0].cpu().data.numpy().squeeze()), hop_length=hop_size,
             #                    win_length=win_len) 
             #    librosa.output.write_wav(out_test+name, output, fs) 

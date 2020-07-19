@@ -40,6 +40,7 @@ if __name__ == '__main__':
     parser.add_argument('--test_path', type=str, help='path to test data')
     parser.add_argument('--test_out', type=str, help='Path to dir to save test output')
     parser.add_argument('--clean_test_path', type=str, help='Path to reference test data')
+    parser.add_argument('--imag', type=str, help='Path to files with imaginary part')
 
 
     args = parser.parse_args()
