@@ -31,7 +31,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--num_epochs', type=int, help='Number of epochs')
     parser.add_argument('--chunk_size', type=int, help='Number of training examples to load from disk')
-    parser.add_argument('--model_path', type=str, help='Dir to save best model', required=True)
+    parser.add_argument('--model_path', type=str, help='Dir to save best model')
     parser.add_argument('--x_path', type=str, help='path to X files')
     parser.add_argument('--y_path', type=str, help='path to y files')
     parser.add_argument('--loss_path', type=str, help='Dir to save losses')
