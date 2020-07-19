@@ -37,39 +37,55 @@ class testDataLoader(data.Dataset):
         return self.x.shape[0]
 
 
-
-class DNN(nn.Module):
-    def __init__(self, feat_type):
-        super().__init__()
-        if feat_type=='stft':        
-            self.fc1 = nn.Linear(2827, 128)
-            self.fc2 = nn.Linear(128, 128)
-            self.fc3 = nn.Linear(128, 257)
-            self.drop = nn.Dropout(0.025)
-        elif feat_type=='mel':
-            self.fc1 = nn.Linear(64, 128)
+'''
+self.fc1 = nn.Linear(64, 128)
             self.fc2 = nn.Linear(128, 128)
             self.fc3 = nn.Linear(128, 257)
             self.drop = nn.Dropout(0.025)
 
-
-        
-    def forward(self, x, feat_type):
-        if feat_type=='stft':
-            #x = Func.sigmoid(self.fc1(x))
-            x = Func.relu(self.fc1(x))
-            x = self.drop(x)
-            #x = Func.sigmoid(self.fc2(x))
-            x = Func.relu(self.fc2(x))
-            x = self.drop(x)
-            x = self.fc3(x)
-            return x 
-        elif feat_type=='mel':
-            x = Func.sigmoid(self.fc1(x))
+x = Func.sigmoid(self.fc1(x))
             x = self.drop(x)
             x = Func.sigmoid(self.fc2(x))
             x = self.drop(x)
             x = self.fc3(x)
+
+'''
+
+class DNN_mel(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.fc1 = nn.Linear(64, 128)
+        self.fc2 = nn.Linear(128, 128)
+        self.fc3 = nn.Linear(128, 257)
+        self.drop = nn.Dropout(0.025)
+    
+    def forward(self, x):
+        x = Func.sigmoid(self.fc1(x))
+        x = self.drop(x)
+        x = Func.sigmoid(self.fc2(x))
+        x = self.drop(x)
+        x = self.fc3(x)
+        return x
+        
+
+
+class DNN(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.fc1 = nn.Linear(2827, 128)
+        self.fc2 = nn.Linear(128, 128)
+        self.fc3 = nn.Linear(128, 257)
+        self.drop = nn.Dropout(0.025)
+        
+    def forward(self, x):
+        #x = Func.sigmoid(self.fc1(x))
+        x = Func.relu(self.fc1(x))
+        x = self.drop(x)
+        #x = Func.sigmoid(self.fc2(x))
+        x = Func.relu(self.fc2(x))
+        x = self.drop(x)
+        x = self.fc3(x)
+        return x 
 
 
 class DNN_pretrain(nn.Module):
@@ -112,7 +128,10 @@ def weights(m):
 def train_dnn(num_epochs, model_path, x_path, y_path, 
               loss_path, chunk_size, feat_type,
               maxlen=1339, win_len=512, hop_size=256, fs=44000, from_pretrained=False):
-    model = DNN(feat_type=feat_type)
+    if feat_type=='stft':
+        model = DNN()
+    elif feat_type=='mel':
+        model = DNN_mel()
     model.apply(weights)
     criterion = nn.MSELoss()
     optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
@@ -206,7 +225,7 @@ def inference(test_data_path, clean_test_path, out_test, model_path, imag_path, 
 
             name = chunk_names[step]
             with torch.no_grad():
-                output = model(audio, feat_type)
+                output = model(audio)
                 output = np.transpose(output.cpu().data.numpy().squeeze())
                 ##Restore phase (imaginary part)
                 imag = pad(np.load(imag_path+name), maxlen)
