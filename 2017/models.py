@@ -49,9 +49,11 @@ class DNN(nn.Module):
         #self.fc4 = nn.Linear(128, 1339)
         
     def forward(self, x):
-        x = Func.sigmoid(self.fc1(x))
+        #x = Func.sigmoid(self.fc1(x))
+        x = Func.relu(self.fc1(x))
         x = self.drop(x)
         x = Func.sigmoid(self.fc2(x))
+        x = Func.relu(self.fc2(x))
         x = self.drop(x)
         x = self.fc3(x)
         return x        
