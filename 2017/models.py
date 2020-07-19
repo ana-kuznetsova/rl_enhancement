@@ -12,6 +12,7 @@ import os
 
 from data import make_batch
 from data import make_batch_test
+from data import pad
 from metrics import eval_pesq
 
 
@@ -188,7 +189,7 @@ def inference(test_data_path, clean_test_path, out_test, model_path, imag_path, 
                 output = model(audio)
                 output = np.transpose(output.cpu().data.numpy().squeeze())
                 ##Restore phase (imaginary part)
-                imag = np.load(imag_path+name)
+                imag = pad(np.load(imag_path+name), maxlen)
                 np.save(out_test+name, np.exp(output)+imag)
             #output = librosa.istft(np.transpose(output[0].cpu().data.numpy().squeeze()), hop_length=hop_size,
             #                    win_length=win_len) 
