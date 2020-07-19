@@ -39,8 +39,8 @@ class testDataLoader(data.Dataset):
 
 
 class DNN(nn.Module):
-    def __init__(self):
-        super().__init__(feat_type)
+    def __init__(self, feat_type):
+        super().__init__()
         if feat_type=='stft':        
             self.fc1 = nn.Linear(2827, 128)
             self.fc2 = nn.Linear(128, 128)
