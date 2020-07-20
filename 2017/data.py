@@ -162,7 +162,6 @@ def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, feat_type, fs)
 
         arr = np.load(y_path+path)
         #predict log of speech
-        arr = np.log(np.abs(pad(arr, maxlen)).T) + 0.000001
         y.extend(arr)
     X = np.asarray(X)
     y = np.asarray(y)
