@@ -54,7 +54,7 @@ def main(args):
         '''
 
         print('Saving phase information')
-        save_imag('/N/slate/anakuzne/se_data/snr0_train/', '/N/slate/anakuzne/se_data/snr0_train_img/')
+        save_imag('/N/slate/anakuzne/se_data/snr0_test/', '/N/slate/anakuzne/se_data/snr0_test_img/')
 
 
 
