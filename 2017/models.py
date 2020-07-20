@@ -109,7 +109,7 @@ def weights(m):
 
 def train_dnn(num_epochs, model_path, x_path, y_path, 
               loss_path, chunk_size, feat_type,
-              maxlen=1339, win_len=512, hop_size=256, fs=44000, from_pretrained=False):
+              maxlen=1339, win_len=512, hop_size=256, fs=16000, from_pretrained=False):
     if feat_type=='stft':
         model = DNN()
     elif feat_type=='mel':
@@ -175,7 +175,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
 
 
 def pretrain(num_epochs, model_path, x_path, y_path, weights_path,
-              loss_path, maxlen=1339, win_len=512, hop_size=256, fs=44000,
+              loss_path, maxlen=1339, win_len=512, hop_size=256, fs=16000,
               chunk_size=4620):
     
     min_delta = 0.05
@@ -188,7 +188,7 @@ def pretrain(num_epochs, model_path, x_path, y_path, weights_path,
 def inference(test_data_path, clean_test_path,
               out_test, model_path, imag_path, 
               chunk_size, feat_type, maxlen=1339,
-              win_len=512, hop_size=256, fs=44000):
+              win_len=512, hop_size=256, fs=16000):
     if feat_type=='stft':
         model = DNN()
     elif feat_type=='mel':
