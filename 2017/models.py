@@ -187,7 +187,7 @@ def pretrain(num_epochs, model_path, x_path, y_path, weights_path,
 
 def inference(test_data_path, clean_test_path,
               out_test, model_path, imag_path, 
-              chunk_size, maxlen=1339, feat_type,
+              chunk_size, feat_type, maxlen=1339,
               win_len=512, hop_size=256, fs=44000):
     if feat_type=='stft':
         model = DNN()
