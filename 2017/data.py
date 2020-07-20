@@ -172,7 +172,7 @@ def make_batch_test(x_list, ind, P, feat_type, maxlen=1339, win_len=512, hop_siz
     X = []
     chunk_x = x_list[ind[0]:ind[1]]
     for path in tqdm(chunk_x):
-        arr = np.load(x_path+path)
+        arr = np.load(path)
         if feat_type=='stft':
             arr = pad(arr, maxlen)
             arr = np.abs(get_X_batch(arr, P))

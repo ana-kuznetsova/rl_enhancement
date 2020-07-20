@@ -166,7 +166,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
 
         loss += chunk_loss/(num_chunk+1)
 
-        print('Epoch:{:2},Loss:{:>.5f}'.format(epoch,loss/(epoch+1)))
+        #print('Epoch:{:2},Loss:{:>.5f}'.format(epoch,loss/(epoch+1)))
     ##Save model
     torch.save(best_model, model_path+'dnn_map_best.pth')
 
