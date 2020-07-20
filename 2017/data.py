@@ -176,11 +176,11 @@ def make_batch_test(x_list, ind, P, feat_type, maxlen=1339, win_len=512, hop_siz
         if feat_type=='stft':
             arr = pad(arr, maxlen)
             arr = np.abs(get_X_batch(arr, P))
-            print('arr:', arr.shape)
         elif feat_type=='mel':
             arr = mel_spec(arr, win_len, hop_size, fs)
             arr = pad(arr, maxlen)
             arr = np.abs(get_X_batch(arr, P))
+        X.append(arr)
     X = np.asarray(X)
     return X
 
