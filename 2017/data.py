@@ -180,7 +180,7 @@ def make_batch_test(x_list, ind, P, feat_type, maxlen=1339, win_len=512, hop_siz
             arr = mel_spec(arr, win_len, hop_size, fs)
             arr = pad(arr, maxlen)
             arr = np.abs(get_X_batch(arr, P))
-        X.append(arr)
+        X.extend(arr)
     X = np.asarray(X)
     return X
 
