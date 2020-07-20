@@ -191,6 +191,7 @@ def inference(test_data_path,
         model = DNN()
     elif feat_type=='mel':
         model = DNN_mel()
+
     model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
     fnames = os.listdir(test_data_path)
 
@@ -201,16 +202,17 @@ def inference(test_data_path,
         end = min(start+chunk_size, 1680)
         print(start, end)
         x_list = [test_data_path + n for n in fnames]
-        X_chunk = make_batch_test(x_list, [start, end], 5, maxlen, win_len, hop_size, fs)
+        X_chunk = make_batch_test(x_list, [start, end], 5, feat_type, maxlen, win_len, hop_size, fs)
         testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 1339)
+        print('len:', len(testData))
 
         chunk_names = fnames[start:end]
         #print('chunk names:', chunk_names)
         for step, audio in enumerate(testData):
-            print('Step:', step)
+            #print('Step:', step)
 
             name = chunk_names[step]
-            print('name:', name)
+            #print('name:', name)
             with torch.no_grad():
                 output = model(audio)
                 output = np.transpose(output.cpu().data.numpy().squeeze())
