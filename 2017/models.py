@@ -205,6 +205,7 @@ def inference(test_data_path,
         testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 1339)
 
         chunk_names = fnames[start:end]
+        print('chunk names:', chunk_names)
         for step, audio in enumerate(testData):
             #print('Step:', step)
 
