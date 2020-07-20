@@ -45,16 +45,17 @@ def main(args):
         out_path = '/N/slate/anakuzne/se_data/snr0_test/'
 
         create_noisy_data(test_files, out_path, noise_path, 0, WIN_LEN, HOP_SIZE, FS)
+        '''
+
 
         print('Generate TARGET data...')
         target_files = collect_paths('/N/project/aspire_research_cs/Data/Corpora/Speech/TIMIT/corpus/')
         calc_masks(target_files, noise_path, FS, WIN_LEN, HOP_SIZE,
                    mask_dir='/N/slate/anakuzne/se_data/snr0_ln_target/',
                    mask_type='ln')
-        '''
-
-        print('Saving phase information')
-        save_imag('/N/slate/anakuzne/se_data/snr0_test/', '/N/slate/anakuzne/se_data/snr0_test_img/')
+        
+        #print('Saving phase information')
+        #save_imag('/N/slate/anakuzne/se_data/snr0_test/', '/N/slate/anakuzne/se_data/snr0_test_img/')
 
 
 
