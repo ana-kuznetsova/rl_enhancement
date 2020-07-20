@@ -205,11 +205,12 @@ def inference(test_data_path,
         testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 1339)
 
         chunk_names = fnames[start:end]
-        print('chunk names:', chunk_names)
+        #print('chunk names:', chunk_names)
         for step, audio in enumerate(testData):
             #print('Step:', step)
 
             name = chunk_names[step]
+            print('name:', name)
             with torch.no_grad():
                 output = model(audio)
                 output = np.transpose(output.cpu().data.numpy().squeeze())
