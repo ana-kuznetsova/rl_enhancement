@@ -22,7 +22,7 @@ def create_noisy_data(data_paths, out_path, noise_path,
                       target_SNR, win_len, hop_size, fs):
     noise = read(noise_path, fs)
 
-    for path in tqdm_notebook(data_paths):
+    for path in tqdm(data_paths):
         speech = read(path, fs)
         noise = pad_noise(speech, noise)
         blend = generate_noisy(speech, noise, target_SNR)
