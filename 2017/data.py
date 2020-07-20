@@ -122,7 +122,7 @@ def calc_masks(speech_paths, noise_path, fs, win_len, hop_size,
             write_npy(mask_dir, fname, wiener)
 
         elif mask_type=='ln':
-            target = np.log(stft_clean) + 0.0000001
+            target = np.log(stft_clean)
             #target = np.nan_to_num(target)
             write_npy(mask_dir, fname, target)
 
