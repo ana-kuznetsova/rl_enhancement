@@ -37,19 +37,7 @@ class testDataLoader(data.Dataset):
         return self.x.shape[0]
 
 
-'''
-self.fc1 = nn.Linear(64, 128)
-            self.fc2 = nn.Linear(128, 128)
-            self.fc3 = nn.Linear(128, 257)
-            self.drop = nn.Dropout(0.025)
 
-x = Func.sigmoid(self.fc1(x))
-            x = self.drop(x)
-            x = Func.sigmoid(self.fc2(x))
-            x = self.drop(x)
-            x = self.fc3(x)
-
-'''
 
 class DNN_mel(nn.Module):
     def __init__(self):
@@ -67,13 +55,37 @@ class DNN_mel(nn.Module):
         x = self.fc3(x)
         return x
         
-
-
-class DNN(nn.Module):
+class Layer1(nn.Module):
     def __init__(self):
         super().__init__()
         self.fc1 = nn.Linear(2827, 128)
+        self.drop = nn.Dropout(0.025)
+
+    def forward(self, x):
+        x = Func.relu(self.fc1(x))
+        return self.drop(x)
+
+class Layer_1_2(nn.Module):
+    def __init__(self, l1):
+        super().__init__()
+        self.fc1 = l1
         self.fc2 = nn.Linear(128, 128)
+        self.drop = nn.Dropout(0.025)
+
+    def forward(self, x):
+        x = Func.relu(self.fc1(x))
+        x = Func.relu(self.fc2(x))
+        return self.drop(x)
+
+class DNN(nn.Module):
+    def __init__(self, l1_2=None):
+        super().__init__()
+        if l1_2:
+            self.fc1 = l1_2.fc1
+            self.fc2 = l1_2.fc2
+        else:
+            self.fc1 = nn.Linear(2827, 128)
+            self.fc2 = nn.Linear(128, 128)
         self.fc3 = nn.Linear(128, 257)
         self.drop = nn.Dropout(0.025)
         
