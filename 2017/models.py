@@ -185,7 +185,7 @@ def pretrain(num_epochs, model_path, x_path, y_path, weights_path,
     pass
 
 
-def inference(test_data_path, clean_test_path,
+def inference(test_data_path,
               out_test, model_path, imag_path, 
               chunk_size, feat_type, maxlen=1339,
               win_len=512, hop_size=256, fs=16000):

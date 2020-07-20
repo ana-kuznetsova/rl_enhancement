@@ -24,7 +24,7 @@ def main(args):
                 args.feat_type)
     elif args.mode=='test':
         print('Staring inference on test data...')
-        inference(args.test_path, args.clean_test_path, args.test_out, args.model_path, args.imag, args.chunk_size)
+        inference(args.test_path, args.test_out, args.model_path, args.imag, args.chunk_size, args.feat_type)
     elif args.mode=='data':
 
         WIN_LEN = 512
