@@ -99,15 +99,15 @@ def pad_noise(speech, noise):
 
 
 def calc_masks(speech_paths, noise_path, fs, win_len, hop_size,
-               stft_dir,
                mask_dir,
                mask_type='IRM',
+               stft_dir=None,
                write_stft=False):
     
     noise = read(noise_path, fs)
 
     for p in tqdm(speech_paths):
-        fname = p.split('/')[-1].split('.')[0] + '.npy'
+        fname = p.split('.')[0] + '.npy'
         speech = read(p, fs)
         noise = pad_noise(speech, noise)
         stft_noise = STFT(noise, win_len, hop_size)
@@ -121,6 +121,10 @@ def calc_masks(speech_paths, noise_path, fs, win_len, hop_size,
             wiener = Wiener(stft_clean, stft_noise)
             write_npy(mask_dir, fname, wiener)
 
+        elif mask_type=='ln':
+            target = np.log(stft_clean)
+            target = np.nan_to_num(target)
+            write_npy(mask_dir, fname, target)
 
 def get_X_batch(stft, P):
     windows = []

@@ -1,4 +1,5 @@
 import numpy as np
+import librosa
 import os
 from tqdm import tqdm
 import argparse
@@ -7,6 +8,9 @@ from models import train_dnn
 from models import pretrain
 from models import inference
 from data import save_imag
+from utils import collect_paths
+from data import create_noisy_data
+from data import calc_masks
 
 def main(args):
     if args.mode=='train':
@@ -22,8 +26,33 @@ def main(args):
         print('Staring inference on test data...')
         inference(args.test_path, args.clean_test_path, args.test_out, args.model_path, args.imag, args.chunk_size)
     elif args.mode=='data':
+
+        WIN_LEN = 512
+        HOP_SIZE = 256
+        FS = 16000
+        ## Generate stfts of noisy data
+        print('Generating TRAINING data...')
+        train_files = collect_paths('/N/project/aspire_research_cs/Data/Corpora/Speech/TIMIT/corpus/')
+        out_path = '/N/slate/anakuzne/se_data/snr0_train/'
+        noise_path = '/N/project/aspire_research_cs/Data/Corpora/Noise/cafe_16k.wav'
+
+        create_noisy_data(train_files, out_path, noise_path, 0, WIN_LEN, HOP_SIZE, FS)
+
+        print('Generating TEST data...')
+
+        test_files = collect_paths('/N/project/aspire_research_cs/Data/Corpora/Speech/TIMIT/test_corpus/corpus/')
+        out_path = '/N/slate/anakuzne/se_data/snr0_test/'
+
+        create_noisy_data(test_files, out_path, noise_path, 0, WIN_LEN, HOP_SIZE, FS)
+
+        print('Generate TARGET data...')
+        target_files = collect_paths('/N/project/aspire_research_cs/Data/Corpora/Speech/TIMIT/corpus/')
+        calc_masks(target_files, noise_path, FS, WIN_LEN, HOP_SIZE,
+                   mask_dir='/N/slate/anakuzne/se_data/snr0_ln_target/',
+                   mask_type='ln')
+
         print('Saving phase information')
-        save_imag(args.test_path, args.test_out)
+        save_imag'/N/project/aspire_research_cs/Data/Corpora/Speech/TIMIT/test_corpus/corpus/', '/N/slate/anakuzne/se_data/snr0_train_img/')
 
 
 
