@@ -203,6 +203,7 @@ def inference(test_data_path,
         print(start, end)
         x_list = [test_data_path + n for n in fnames]
         X_chunk = make_batch_test(x_list, [start, end], 5, feat_type, maxlen, win_len, hop_size, fs)
+        print('X chunk:', X_chunk.shape)
         testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 1339)
         print('len:', len(testData))
 
