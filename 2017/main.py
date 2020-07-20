@@ -52,8 +52,8 @@ def main(args):
         print('Generate TARGET data...')
         target_files = collect_paths('/N/project/aspire_research_cs/Data/Corpora/Speech/TIMIT/corpus/')
         calc_masks(target_files, noise_path, FS, WIN_LEN, HOP_SIZE,
-                   mask_dir='/N/slate/anakuzne/se_data/snr0_ln_target/',
-                   mask_type='ln')
+                   mask_dir='/N/slate/anakuzne/se_data/snr0_irm_target/',
+                   mask_type='IRM')
         
         #print('Saving phase information')
         #save_imag('/N/slate/anakuzne/se_data/snr0_test/', '/N/slate/anakuzne/se_data/snr0_test_img/')
