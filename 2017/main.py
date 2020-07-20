@@ -31,6 +31,7 @@ def main(args):
         HOP_SIZE = 256
         FS = 16000
         ## Generate stfts of noisy data
+        '''
         print('Generating TRAINING data...')
         train_files = collect_paths('/N/project/aspire_research_cs/Data/Corpora/Speech/TIMIT/corpus/')
         out_path = '/N/slate/anakuzne/se_data/snr0_train/'
@@ -50,9 +51,10 @@ def main(args):
         calc_masks(target_files, noise_path, FS, WIN_LEN, HOP_SIZE,
                    mask_dir='/N/slate/anakuzne/se_data/snr0_ln_target/',
                    mask_type='ln')
+        '''
 
         print('Saving phase information')
-        save_imag('/N/project/aspire_research_cs/Data/Corpora/Speech/TIMIT/test_corpus/corpus/', '/N/slate/anakuzne/se_data/snr0_train_img/')
+        save_imag('/N/slate/anakuzne/se_data/snr0_train/', '/N/slate/anakuzne/se_data/snr0_train_img/')
 
 
 
