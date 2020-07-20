@@ -86,36 +86,6 @@ class DNN(nn.Module):
         x = self.drop(x)
         x = self.fc3(x)
         return x 
-
-
-class DNN_pretrain(nn.Module):
-    def __init__(self, layer):
-        super().__init__()
-        
-        if layer==1:
-            self.fc1 = nn.Linear(2827, 128)
-            self.fc2 = nn.Linear(128, 1339)
-        elif layer==2:
-            self.fc1 = nn.Linear(2827, 128)
-            self.fc2 = nn.Linear(128, 128)
-            self.fc3 = nn.Linear(128, 1339)
-        self.drop = nn.Dropout(0.025)
-
-        
-    def forward(self, x, layer):
-        if layer==1:
-            x = Func.sigmoid(self.fc1(x))
-            x = self.drop(x)
-            x = Func.sigmoid(self.fc2(x))
-            return x
-        elif layer==2:
-            x = Func.sigmoid(self.fc1(x))
-            x = self.drop(x)
-            x = Func.sigmoid(self.fc2(x))
-            x = self.drop(x)
-            x = self.drop(x)
-            x = self.fc3(x)
-            return x
         
 
 def weights(m):
@@ -182,7 +152,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
 
         loss += chunk_loss/num_chunk
 
-        losses.append(loss/num_epochs)
+        losses.append(loss.detach().cpu().numpy()/num_epochs)
         print('Epoch:{:2},Loss:{:>.5f}'.format(epoch,loss/epoch))
     ##Save model, save losses
 
@@ -203,9 +173,14 @@ def pretrain(num_epochs, model_path, x_path, y_path, weights_path,
     pass
 
 
-def inference(test_data_path, clean_test_path, out_test, model_path, imag_path, chunk_size, maxlen=1339,
-             win_len=512, hop_size=256, fs=44000):
-    model = DNN()
+def inference(test_data_path, clean_test_path,
+              out_test, model_path, imag_path, 
+              chunk_size, maxlen=1339, feat_type,
+              win_len=512, hop_size=256, fs=44000):
+    if feat_type=='stft':
+        model = DNN()
+    elif feat_type=='mel':
+        model = DNN_mel()
     model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
     fnames = os.listdir(test_data_path)
 
