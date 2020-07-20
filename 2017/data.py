@@ -107,9 +107,7 @@ def calc_masks(speech_paths, noise_path, fs, win_len, hop_size,
     noise = read(noise_path, fs)
 
     for p in tqdm(speech_paths):
-        print(p)
         fname = p.split('/')[-2]+ '_' + p.split('/')[-1].split('.')[0] + '.npy'
-        print(fname)
         speech = read(p, fs)
         noise = pad_noise(speech, noise)
         stft_noise = STFT(noise, win_len, hop_size)
