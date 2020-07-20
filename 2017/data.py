@@ -154,6 +154,7 @@ def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, feat_type, fs)
         if feat_type=='stft':
             arr = pad(arr, maxlen)
             arr = np.abs(get_X_batch(arr, P))
+            print('x shape:', arr.shape)
         elif feat_type=='mel':
             arr = mel_spec(arr, win_len, hop_size, fs)
             arr = pad(arr, maxlen)
