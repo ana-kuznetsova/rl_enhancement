@@ -149,7 +149,9 @@ def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, feat_type, fs)
     y = []
     chunk_x = os.listdir(x_path)[ind[0]:ind[1]]
 
-    for path in tqdm(chunk_x):
+    print('Loading training examples...')
+
+    for path in chunk_x:
         arr = np.load(x_path+path)
         if feat_type=='stft':
             arr = pad(arr, maxlen)
@@ -171,7 +173,8 @@ def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, feat_type, fs)
 def make_batch_test(x_list, ind, P, feat_type, maxlen=1339, win_len=512, hop_size=256, fs=16000):
     X = []
     chunk_x = x_list[ind[0]:ind[1]]
-    for path in tqdm(chunk_x):
+    print('Loading test examples...')
+    for path in chunk_x:
         arr = np.load(path)
         if feat_type=='stft':
             arr = pad(arr, maxlen)
