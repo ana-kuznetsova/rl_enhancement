@@ -168,7 +168,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
             
             epoch_loss+=chunk_loss
 
-            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss)))
+            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
             losses_l1.append(chunk_loss/(num_chunk+1))
             pickle.dump(losses_l1, open(loss_path+"losses_l1.p", "wb" ) )
 
