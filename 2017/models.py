@@ -184,12 +184,11 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
                 continue
             else:
                 torch.save(best_model, model_path+'dnn_l1.pth')
+                print('Finished pretraining Layer 1...')
                 break
         else:
             epoch_loss += chunk_loss/(num_chunk+1)
             continue
-
-        print('Finished pretraining Layer 1...')
 
 
 
