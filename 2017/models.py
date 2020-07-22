@@ -45,7 +45,7 @@ class DNN_mel(nn.Module):
         self.fc1 = nn.Linear(704, 128)
         self.fc2 = nn.Linear(128, 128)
         self.fc3 = nn.Linear(128, 257)
-        self.drop = nn.Dropout(0.025)
+        self.drop = nn.Dropout(0.3)
     
     def forward(self, x):
         x = Func.sigmoid(self.fc1(x))
@@ -87,7 +87,7 @@ class DNN(nn.Module):
             self.fc1 = nn.Linear(2827, 128)
             self.fc2 = nn.Linear(128, 128)
         self.fc3 = nn.Linear(128, 257)
-        self.drop = nn.Dropout(0.025)
+        self.drop = nn.Dropout(0.3)
         
     def forward(self, x):
         #x = Func.sigmoid(self.fc1(x))
