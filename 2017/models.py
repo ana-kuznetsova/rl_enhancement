@@ -170,10 +170,10 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
             epoch_loss+=chunk_loss
 
             print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
-            losses_l1.append(chunk_loss/(num_chunk+1))
-            pickle.dump(losses_l1, open(loss_path+"losses_l1.p", "wb" ) )
 
         #Check for early stopping
+        losses_l1.append(epoch_loss/num_chunk)
+        pickle.dump(losses_l1, open(loss_path+"losses_l1.p", "wb" ) )
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
 
         delta = prev_loss - (epoch_loss/num_chunk)
@@ -219,8 +219,6 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
     #Training loop
 
     best_model = copy.deepcopy(model.state_dict())
-    best_loss = 9999
-
     losses = []
 
     for epoch in range(num_epochs):
@@ -252,16 +250,21 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
                 optimizer.zero_grad()
                 newLoss.backward()
                 optimizer.step()
+
+                chunk_loss = (chunk_loss.detach().cpu().numpy())/len(trainData)
             
-            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss/(num_chunk+1)))
-            losses.append(chunk_loss.detach().cpu().numpy()/(num_chunk+1))
-            pickle.dump(losses, open( loss_path+"losses.p", "wb" ) )
+            epoch_loss+=chunk_loss
+            
+            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss/len(trainData)))
 
         loss += chunk_loss/(num_chunk+1)
 
+        losses.append(epoch_loss/num_chunk))
+        pickle.dump(losses, open( loss_path+"losses.p", "wb" ) )
+
         #print('Epoch:{:2},Loss:{:>.5f}'.format(epoch,loss/(epoch+1)))
     ##Save model
-    torch.save(best_model, model_path+'dnn_map_best.pth')
+        torch.save(best_model, model_path+'dnn_map_best.pth')
 
 
 
