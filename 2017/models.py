@@ -166,13 +166,14 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
                 optimizer.step()
             
             chunk_loss = chunk_loss.detach().cpu().numpy()
+            epoch_loss+=chunk_loss
 
             print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss/(num_chunk+1)))
             losses_l1.append(chunk_loss/(num_chunk+1))
             pickle.dump(losses_l1, open(loss_path+"losses_l1.p", "wb" ) )
 
         #Check for early stopping
-        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, chunk_loss/(num_chunk+1)))
+        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/(num_chunk+1)))
 
         delta = epoch_loss - (chunk_loss/(num_chunk+1))
         print('Current delta:', delta, 'Min delta:', min_delta)
