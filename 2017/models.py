@@ -221,8 +221,8 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
     best_model = copy.deepcopy(model.state_dict())
     losses = []
 
-    for epoch in range(num_epochs):
-        print('Epoch {}/{}'.format(epoch, num_epochs - 1))
+    for epoch in range(1, num_epochs+1):
+        print('Epoch {}/{}'.format(epoch, num_epochs)
         loss = 0.0 
         
         num_chunk = (4620//chunk_size) + 1
@@ -251,19 +251,20 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
                 newLoss.backward()
                 optimizer.step()
 
-                chunk_loss = (chunk_loss.detach().cpu().numpy())/len(trainData)
+                chunk_loss = chunk_loss.detach().cpu().numpy()/len(trainData)
             
             epoch_loss+=chunk_loss
             
             print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss/len(trainData)))
 
-        loss += chunk_loss/(num_chunk+1)
+        loss += chunk_loss
 
-        losses.append(epoch_loss/num_chunk))
-        pickle.dump(losses, open( loss_path+"losses.p", "wb" ) )
+        losses.append(loss/num_chunk)
+        pickle.dump(losses, open(loss_path+"losses.p", "wb" ) )
+        
+        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, loss/num_chunk))
 
-        #print('Epoch:{:2},Loss:{:>.5f}'.format(epoch,loss/(epoch+1)))
-    ##Save model
+
         torch.save(best_model, model_path+'dnn_map_best.pth')
 
 
