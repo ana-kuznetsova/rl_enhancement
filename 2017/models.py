@@ -137,7 +137,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
     print("Start PRETRAINING first layer...")
 
     for epoch in range(1, num_epochs+1):
-        print('Epoch {}/{}'.format(epoch, num_epochs - 1))
+        print('Epoch {}/{}'.format(epoch, num_epochs))
 
         num_chunk = (4620//chunk_size) + 1
         for chunk in range(num_chunk):
@@ -172,11 +172,11 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
             pickle.dump(losses_l1, open(loss_path+"losses_l1.p", "wb" ) )
 
         #Check for early stopping
-        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/(num_chunk+1)))
+        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/epoch))
 
         delta = prev_loss - (epoch_loss/epoch)
         prev_loss = epoch_loss/epoch
-        
+
         print('Current delta:', delta, 'Min delta:', min_delta)
         print('No improvement for ', no_improv, ' epochs.')
         if delta <= min_delta:
