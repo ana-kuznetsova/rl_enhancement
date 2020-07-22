@@ -172,6 +172,8 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=100,
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, chunk_loss/(num_chunk+1)))
 
         delta = epoch_loss - (chunk_loss/(num_chunk+1))
+        print('Current delta:', delta, 'Min delta:', min_delta)
+        print('No improvement for ', no_improv, ' epochs.')
         if delta <= min_delta:
             no_improv+=1
             if no_improv < stop_epoch:
