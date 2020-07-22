@@ -222,7 +222,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
     losses = []
 
     for epoch in range(1, num_epochs+1):
-        print('Epoch {}/{}'.format(epoch, num_epochs)
+        print('Epoch {}/{}'.format(epoch, num_epochs))
         loss = 0.0 
         
         num_chunk = (4620//chunk_size) + 1
