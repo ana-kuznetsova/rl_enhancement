@@ -58,7 +58,8 @@ def main(args):
         #print('Saving phase information')
         #save_imag('/N/slate/anakuzne/se_data/snr0_test/', '/N/slate/anakuzne/se_data/snr0_test_img/')
 
-
+    elif args.mode=='pretrain':
+        pretrain(args.chunk_size, args.model_path, args.x_path, args.y_path, args.loss_path)
 
 
 if __name__ == '__main__':
@@ -69,7 +70,6 @@ if __name__ == '__main__':
     parser.add_argument('--x_path', type=str, help='path to X files')
     parser.add_argument('--y_path', type=str, help='path to y files')
     parser.add_argument('--loss_path', type=str, help='Dir to save losses')
-    parser.add_argument('--pretrained', type=str, help='True or false, load weights from pretrained model')
     parser.add_argument('--mode', type=str, help='Train or test', required=True)
     parser.add_argument('--test_path', type=str, help='path to test data')
     parser.add_argument('--test_out', type=str, help='Path to dir to save test output')

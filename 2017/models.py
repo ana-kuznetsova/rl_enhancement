@@ -106,6 +106,90 @@ def weights(m):
         nn.init.constant_(m.bias.data,0.1)
 
 
+def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=100,
+              loss_path, maxlen=1339, win_len=512, hop_size=256, fs=16000):
+    
+    min_delta = 0.05 #Min change in loss which can be considered as improvement
+    stop_epoch = 15 #Number of epochs without improvement
+    no_improv = 0
+
+    losses_l1 = []
+    losses_l2 = []
+
+    ############# PRETRAIN FIRST LAYER ################
+
+    model = DNN()
+    model.apply(weights)
+    criterion = nn.MSELoss()
+    optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
+    device = torch.device("cuda")
+    model.cuda()
+    model = model.to(device)
+    criterion.cuda()
+
+    best_model = copy.deepcopy(model.state_dict())
+    best_loss = 9999
+
+    print("Start PRETRAINING first layer...")
+
+    for epoch in range(num_epochs):
+        print('Epoch {}/{}'.format(epoch, num_epochs - 1))
+
+        epoch_loss = 0.0
+
+        num_chunk = (4620//chunk_size) + 1
+        for chunk in range(num_chunk):
+            chunk_loss = 0
+            start = chunk*chunk_size
+            end = min(start+chunk_size, 4620)
+            print(start, end)
+
+            X_chunk, y_chunk = make_batch(x_path, y_path, 
+                                         [start, end], 5, 
+                                         maxlen, win_len, 
+                                         hop_size, feat_type, fs)
+
+            trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 128)
+
+            for step, (audio, target) in enumerate(trainData): 
+                audio = audio.to(device)
+                target = target.to(device)
+                model.train()
+                output = model(audio)
+                newLoss = criterion(output,target)                
+                chunk_loss += newLoss.data
+                optimizer.zero_grad()
+                newLoss.backward()
+                optimizer.step()
+            
+            chunk_loss = chunk_loss.detach().cpu().numpy()
+
+            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss/(num_chunk+1)))
+            losses_l1.append(chunk_loss/(num_chunk+1))
+            pickle.dump(losses_l1, open(loss_path+"losses_l1.p", "wb" ) )
+
+        #Check for early stopping
+        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, chunk_loss/(num_chunk+1)))
+
+        delta = epoch_loss - (chunk_loss/(num_chunk+1))
+        if delta <= min_delta:
+            no_improv+=1
+            if no_improv < stop_epoch:
+                epoch_loss += chunk_loss/(num_chunk+1)
+                continue
+            else:
+                torch.save(best_model, model_path+'dnn_l1.pth')
+                break
+        else:
+            epoch_loss += chunk_loss/(num_chunk+1)
+            continue
+
+        print('Finished pretraining Layer 1...')
+
+
+
+
+
 
 def train_dnn(num_epochs, model_path, x_path, y_path, 
               loss_path, chunk_size, feat_type,
@@ -170,17 +254,6 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
     ##Save model
     torch.save(best_model, model_path+'dnn_map_best.pth')
 
-
-
-def pretrain(num_epochs, model_path, x_path, y_path, weights_path,
-              loss_path, maxlen=1339, win_len=512, hop_size=256, fs=16000,
-              chunk_size=4620):
-    
-    min_delta = 0.05
-
-    #Pretrain first layer
-
-    pass
 
 
 def inference(test_data_path,
