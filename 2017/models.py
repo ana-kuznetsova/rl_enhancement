@@ -115,6 +115,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
     min_delta = 0.05 #Min change in loss which can be considered as improvement
     stop_epoch = 15 #Number of epochs without improvement
     no_improv = 0
+    prev_loss = 400
 
     losses_l1 = []
     losses_l2 = []
@@ -131,14 +132,12 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
     criterion.cuda()
 
     best_model = copy.deepcopy(model.state_dict())
-    best_loss = 9999
+    epoch_loss = 0.0
 
     print("Start PRETRAINING first layer...")
 
-    for epoch in range(num_epochs):
+    for epoch in range(1, num_epochs+1):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
-
-        epoch_loss = 0.0
 
         num_chunk = (4620//chunk_size) + 1
         for chunk in range(num_chunk):
@@ -175,7 +174,9 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
         #Check for early stopping
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/(num_chunk+1)))
 
-        delta = epoch_loss - (chunk_loss/(num_chunk+1))
+        delta = prev_loss - (epoch_loss/epoch)
+        prev_loss = epoch_loss/epoch
+        
         print('Current delta:', delta, 'Min delta:', min_delta)
         print('No improvement for ', no_improv, ' epochs.')
         if delta <= min_delta:
