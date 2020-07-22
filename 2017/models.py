@@ -106,8 +106,8 @@ def weights(m):
         nn.init.constant_(m.bias.data,0.1)
 
 
-def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=100,
-              loss_path, maxlen=1339, win_len=512, hop_size=256, fs=16000):
+def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
+            maxlen=1339, win_len=512, hop_size=256, fs=16000):
     
     min_delta = 0.05 #Min change in loss which can be considered as improvement
     stop_epoch = 15 #Number of epochs without improvement
