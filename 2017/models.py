@@ -253,7 +253,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
 
             chunk_loss = chunk_loss.detach().cpu().numpy()/len(trainData) 
             loss += chunk_loss           
-            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss/len(trainData)))
+            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
 
 
         losses.append(loss/num_chunk)
