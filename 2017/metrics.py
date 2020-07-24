@@ -3,8 +3,9 @@ import pypesq
 from tqdm import tqdm
 import os
 import soundfile as sf
+import librosa
 
-def eval_pesq(noisy_test, clean_test, out_path, fs=44000):
+def eval_pesq(noisy_test, clean_test, out_path, fs=16000):
     noisy = os.listdir(noisy_test)
     clean = os.listdir(clean_test)
 
@@ -12,9 +13,9 @@ def eval_pesq(noisy_test, clean_test, out_path, fs=44000):
 
     print('Calculating PESQ...')
     for f in tqdm(clean_test):
-        reference, sr = sf.read(clean_test+f)
+        reference = librosa.istft(f, hop_length=256, win_length=512)
         ind = noisy.index(f)
-        degraded, sr = sf.read(noisy_test+noisy[ind])
+        degraded = librosa.istft(noisy_test+noisy[ind], hop_length=256, win_length=512)
         score = pypesq(reference, degraded, fs)
         print('Test file:', f, 'PESQ: ', score)
         scores.append(score)
