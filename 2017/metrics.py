@@ -34,7 +34,7 @@ def eval_pesq(noisy_test, clean_test, out_path,
             score = pesq(reference, degraded, fs)
             #print('Test file:', f, 'PESQ: ', score)
             scores.append(score)
-    clean = [n for n in clean if '.wav' in n]
+    clean = [n for n in clean if '.wav' in n][:2]
     print('len:', len(clean), len(scores))
     data = {'fname':clean, 'PESQ':scores}
     df = pd.DataFrame(data, columns=['fname', 'PESQ'])
