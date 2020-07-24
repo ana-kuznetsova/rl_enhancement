@@ -18,7 +18,7 @@ def eval_pesq(noisy_test, clean_test, out_path,
     scores = []
 
     print('Calculating PESQ...')
-    for f in tqdm(clean[:2]):
+    for f in tqdm(clean):
         if '.wav' in f:
             reference, sr = librosa.load(clean_test+f, mono=True)
             reference = librosa.core.resample(reference, sr, 16000)
@@ -34,8 +34,7 @@ def eval_pesq(noisy_test, clean_test, out_path,
             score = pesq(reference, degraded, fs)
             #print('Test file:', f, 'PESQ: ', score)
             scores.append(score)
-    clean = [n for n in clean if '.wav' in n][:2]
-    print('len:', len(clean), len(scores))
+    clean = [n for n in clean if '.wav' in n]
     data = {'fname':clean, 'PESQ':scores}
     df = pd.DataFrame(data, columns=['fname', 'PESQ'])
     df.to_csv(out_path+'PESQ.csv')
