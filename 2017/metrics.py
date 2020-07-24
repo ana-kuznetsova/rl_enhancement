@@ -18,8 +18,10 @@ def eval_pesq(noisy_test, clean_test, out_path,
     print('Calculating PESQ...')
     for f in tqdm(clean):
         if '.wav' in f:
+            print("clean:", f)
             reference, sr = librosa.load(clean_test+f, mono=True)
             reference = librosa.core.resample(reference, sr, 16000)
+            print('Reference:', reference.shape)
             ind = noisy.index('corpus_'+ f.split('.')[0]+'.npy')
             degraded = np.load(noisy_test+noisy[ind])
             imag = np.load(img_path+noisy[ind])
