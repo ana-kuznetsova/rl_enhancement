@@ -12,10 +12,12 @@ def eval_pesq(noisy_test, clean_test, out_path, fs=16000):
     scores = []
 
     print('Calculating PESQ...')
-    for f in tqdm(clean_test):
-        reference = librosa.istft(f, hop_length=256, win_length=512)
+    for f in tqdm(clean):
+        reference, sr = librosa.load(clean_test+f, mono=True)
+        reference = librosa.core.resample(reference, sr, 16000)
         ind = noisy.index(f)
         degraded = librosa.istft(noisy_test+noisy[ind], hop_length=256, win_length=512)
+        degraded = degraded[:reference.shape[0]]
         score = pypesq(reference, degraded, fs)
         print('Test file:', f, 'PESQ: ', score)
         scores.append(score)

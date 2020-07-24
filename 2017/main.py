@@ -11,6 +11,7 @@ from data import save_imag
 from utils import collect_paths
 from data import create_noisy_data
 from data import calc_masks
+from metrics import eval_pesq
 
 def main(args):
     if args.mode=='train':
@@ -60,6 +61,9 @@ def main(args):
 
     elif args.mode=='pretrain':
         pretrain(args.chunk_size, args.model_path, args.x_path, args.y_path, args.loss_path)
+
+    elif args.mode=='eval':
+        eval_pesq(args.y_path, args.test_path, args.test_out)
 
 
 if __name__ == '__main__':
