@@ -12,22 +12,24 @@ def eval_pesq(noisy_test, clean_test, out_path,
 
     noisy = os.listdir(noisy_test)
     clean = os.listdir(clean_test)
+    imag = os.listdir(img_path)
 
     scores = []
 
     print('Calculating PESQ...')
     for f in tqdm(clean):
         if '.wav' in f:
-            print("clean:", f)
             reference, sr = librosa.load(clean_test+f, mono=True)
             reference = librosa.core.resample(reference, sr, 16000)
-            print('Reference:', reference.shape)
             ind = noisy.index('corpus_'+ f.split('.')[0]+'.npy')
             degraded = np.load(noisy_test+noisy[ind])
+            
+            ind = imag.index('corpus_'+ f.split('.')[0]+'.npy')
             imag = np.load(img_path+noisy[ind])
             degraded = degraded + imag
             degraded = librosa.istft(degraded, hop_length=256, win_length=512)
             degraded = degraded[:reference.shape[0]]
+            #print('degraded:', degraded.shape)
             score = pesq(reference, degraded, fs)
             print('Test file:', f, 'PESQ: ', score)
             scores.append(score)
