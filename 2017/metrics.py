@@ -35,6 +35,7 @@ def eval_pesq(noisy_test, clean_test, out_path,
             #print('Test file:', f, 'PESQ: ', score)
             scores.append(score)
     clean = [n for n in clean if '.wav' in n]
+    print('len:', len(clean), len(scores))
     data = {'fname':clean, 'PESQ':scores}
     df = pd.DataFrame(data, columns=['fname', 'PESQ'])
     df.to_csv(out_path+'PESQ.csv')
