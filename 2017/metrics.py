@@ -1,5 +1,5 @@
 import pandas as pd 
-import pypesq
+from pypesq import pesq
 from tqdm import tqdm
 import os
 import soundfile as sf
@@ -26,7 +26,7 @@ def eval_pesq(noisy_test, clean_test, out_path,
             degraded = degraded + imag
             degraded = librosa.istft(degraded, hop_length=256, win_length=512)
             degraded = degraded[:reference.shape[0]]
-            score = pypesq(reference, degraded, fs)
+            score = pesq(reference, degraded, fs)
             print('Test file:', f, 'PESQ: ', score)
             scores.append(score)
 
