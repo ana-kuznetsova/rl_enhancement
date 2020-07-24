@@ -26,8 +26,8 @@ def eval_pesq(noisy_test, clean_test, out_path,
             degraded = np.load(noisy_test+noisy[ind])
             
             ind = imag.index('corpus_'+ f.split('.')[0]+'.npy')
-            imag = pad(np.load(img_path+noisy[ind]), 1339)
-            degraded = degraded + imag
+            imag_num = pad(np.load(img_path+noisy[ind]), 1339)
+            degraded = degraded + imag_num
             degraded = librosa.istft(degraded, hop_length=256, win_length=512)
             degraded = degraded[:reference.shape[0]]
             #print('degraded:', degraded.shape)
