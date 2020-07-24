@@ -4,6 +4,7 @@ from tqdm import tqdm
 import os
 import soundfile as sf
 import librosa
+import numpy as np
 
 def eval_pesq(noisy_test, clean_test, out_path, 
     img_path='/N/slate/anakuzne/se_data/snr0_test_img/', 
