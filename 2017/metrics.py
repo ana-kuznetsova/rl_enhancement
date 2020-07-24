@@ -19,7 +19,7 @@ def eval_pesq(noisy_test, clean_test, out_path,
         if '.wav' in f:
             reference, sr = librosa.load(clean_test+f, mono=True)
             reference = librosa.core.resample(reference, sr, 16000)
-            ind = noisy.index(f)
+            ind = noisy.index('corpus_'+ f)
             degraded = np.load(noisy_test+noisy[ind])
             imag = np.load(img_path+noisy[ind])
             degraded = degraded + imag
