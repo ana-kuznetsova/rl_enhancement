@@ -32,7 +32,7 @@ def eval_pesq(noisy_test, clean_test, out_path,
             degraded = degraded[:reference.shape[0]]
             #print('degraded:', degraded.shape)
             score = pesq(reference, degraded, fs)
-            print('Test file:', f, 'PESQ: ', score)
+            #print('Test file:', f, 'PESQ: ', score)
             scores.append(score)
 
     df = pd.DataFrame([clean, scores], columns=['fname', 'PESQ'])
