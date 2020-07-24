@@ -5,6 +5,7 @@ import os
 import soundfile as sf
 import librosa
 import numpy as np
+from data import pad
 
 def eval_pesq(noisy_test, clean_test, out_path, 
     img_path='/N/slate/anakuzne/se_data/snr0_test_img/', 
@@ -25,7 +26,7 @@ def eval_pesq(noisy_test, clean_test, out_path,
             degraded = np.load(noisy_test+noisy[ind])
             
             ind = imag.index('corpus_'+ f.split('.')[0]+'.npy')
-            imag = np.load(img_path+noisy[ind])
+            imag = pad(np.load(img_path+noisy[ind]), 1339)
             degraded = degraded + imag
             degraded = librosa.istft(degraded, hop_length=256, win_length=512)
             degraded = degraded[:reference.shape[0]]
