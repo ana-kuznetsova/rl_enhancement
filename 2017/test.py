@@ -15,5 +15,5 @@ pretrain_path = '/N/slate/anakuzne/se_out/pretrain/dnn_l1.pth'
 l1 = Layer1()
 l1.load_state_dict(torch.load(pretrain_path))
 
-l1.fc1 = nn.Sequential(*[l1.fc1[i] for i in range(3)])
-print(l1.fc1)
+newmodel = torch.nn.Sequential(*(list(l1.children())))
+print(newmodel)
