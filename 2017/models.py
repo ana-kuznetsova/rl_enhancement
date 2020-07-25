@@ -128,7 +128,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=1,
     losses_l2 = []
 
     ############# PRETRAIN FIRST LAYER ################
-    '''
+    
     l1 = Layer1()
     l1.apply(weights)
     criterion = nn.MSELoss()
@@ -203,7 +203,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=1,
             torch.save(best_l1, model_path+'dnn_l1.pth')
             continue
         
-    '''
+    
     ###### TRAIN SECOND LAYER ##########
 
     l1 = Layer1()
