@@ -63,10 +63,12 @@ class Layer1(nn.Module):
         super().__init__()
         self.fc1 = nn.Linear(704, 128)
         self.drop = nn.Dropout(0.3)
+        self.out = nn.Linear(128, 257)
 
     def forward(self, x):
         x = Func.relu(self.fc1(x))
-        return self.drop(x)
+        x = self.drop(x)
+        return self.out(x)
 
 class Layer_1_2(nn.Module):
     def __init__(self, l1):
