@@ -193,6 +193,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=1,
             print('No improvement for ', no_improv, ' epochs.')
             if no_improv < stop_epoch:
                 epoch_loss += chunk_loss/(num_chunk+1)
+                torch.save(best_l1, model_path+'dnn_l1.pth')
                 continue
             else:
                 torch.save(best_l1, model_path+'dnn_l1.pth')
