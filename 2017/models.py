@@ -205,6 +205,9 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=2,
     l1 = Layer1()
 
     l1.load_state_dict(torch.load(model_path+'dnn_l1.pth'))
+    
+    #Remove the last layer
+    l1.classifier=l1.classifier[:-1]
 
     l2 = Layer_1_2(l1)
     criterion = nn.MSELoss()
