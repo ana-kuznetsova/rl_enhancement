@@ -113,7 +113,7 @@ def weights(m):
         nn.init.constant_(m.bias.data,0.1)
 
 
-def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=1,
+def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
             maxlen=1339, win_len=512, hop_size=256, fs=16000):
     
     #temp change later
@@ -140,7 +140,9 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=1,
 
     best_l1 = copy.deepcopy(l1.state_dict())
 
+    print('---------------------------------')
     print("Start PRETRAINING first layer...")
+    print('--------------------------------')
 
     for epoch in range(1, num_epochs+1):
         print('Epoch {}/{}'.format(epoch, num_epochs))
@@ -224,7 +226,9 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=1,
 
     best_l2 = copy.deepcopy(l2.state_dict())
 
+    print('---------------------------------')
     print("Start PRETRAINING second layer...")
+    print('---------------------------------')
 
     for epoch in range(1, num_epochs+1):
         print('Epoch {}/{}'.format(epoch, num_epochs))
@@ -277,6 +281,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=1,
             print('No improvement for ', no_improv, ' epochs.')
             if no_improv < stop_epoch:
                 epoch_loss += chunk_loss/(num_chunk+1)
+                torch.save(best_l2, model_path+'dnn_l2.pth')
                 continue
             else:
                 torch.save(best_l2, model_path+'dnn_l2.pth')
