@@ -76,11 +76,13 @@ class Layer_1_2(nn.Module):
         self.fc1 = l1
         self.fc2 = nn.Linear(128, 128)
         self.drop = nn.Dropout(0.3)
+        self.out = nn.Linear(128, 257)
 
     def forward(self, x):
         x = Func.relu(self.fc1(x))
         x = Func.relu(self.fc2(x))
-        return self.drop(x)
+        x = self.drop(x)
+        return self.out(x)
 
 class DNN(nn.Module):
     def __init__(self, l1_2=None):
@@ -126,7 +128,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=1,
     losses_l2 = []
 
     ############# PRETRAIN FIRST LAYER ################
-
+    '''
     l1 = Layer1()
     l1.apply(weights)
     criterion = nn.MSELoss()
@@ -201,7 +203,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=1,
             torch.save(best_l1, model_path+'dnn_l1.pth')
             continue
         
-
+    '''
     ###### TRAIN SECOND LAYER ##########
 
     l1 = Layer1()
