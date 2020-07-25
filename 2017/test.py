@@ -15,5 +15,6 @@ pretrain_path = '/N/slate/anakuzne/se_out/pretrain/dnn_l1.pth'
 l1 = Layer1()
 l1.load_state_dict(torch.load(pretrain_path))
 
-print(l1.fc1.children())
+for child in l1.fc1.children():
+    print(child)
 
