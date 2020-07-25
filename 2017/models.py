@@ -109,7 +109,7 @@ def weights(m):
         nn.init.constant_(m.bias.data,0.1)
 
 
-def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
+def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=2,
             maxlen=1339, win_len=512, hop_size=256, fs=16000):
     
     #temp change later
