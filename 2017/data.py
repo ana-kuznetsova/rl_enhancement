@@ -198,7 +198,7 @@ def save_imag(in_path, out_path):
 
 
 def get_freq_bins(train_paths, ind, maxlen=1339):
-    chunk_x = train_path[ind[0]:ind[1]]
+    chunk_x = train_paths[ind[0]:ind[1]]
     freqs = 0
     first = True
     for path in chunk_x:
