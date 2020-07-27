@@ -48,9 +48,11 @@ class DNN_mel(nn.Module):
         self.drop = nn.Dropout(0.3)
     
     def forward(self, x):
-        x = Func.sigmoid(self.fc1(x))
+        #x = Func.sigmoid(self.fc1(x))
+        x = Func.relu(self.fc1(x))
         x = self.drop(x)
-        x = Func.sigmoid(self.fc2(x))
+        #x = Func.sigmoid(self.fc2(x))
+        x = Func.relu(self.fc2(x))
         x = self.drop(x)
         x = self.fc3(x)
         return x
@@ -97,11 +99,11 @@ class DNN(nn.Module):
         self.drop = nn.Dropout(0.3)
         
     def forward(self, x):
-        #x = Func.sigmoid(self.fc1(x))
-        x = Func.relu(self.fc1(x))
+        x = Func.sigmoid(self.fc1(x))
+        #x = Func.relu(self.fc1(x))
         x = self.drop(x)
-        #x = Func.sigmoid(self.fc2(x))
-        x = Func.relu(self.fc2(x))
+        x = Func.sigmoid(self.fc2(x))
+        #x = Func.relu(self.fc2(x))
         x = self.drop(x)
         x = self.fc3(x)
         return x 
