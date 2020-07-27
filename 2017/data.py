@@ -201,7 +201,7 @@ def get_freq_bins(train_paths, ind, maxlen=1339):
     chunk_x = train_path[ind[0]:ind[1]]
     freqs = 0
     first = True
-    for path in tqdm(chunk_x):
+    for path in chunk_x:
         f = read(path)
         f = STFT(f, 512, 256)
         f = pad(f, maxlen)
@@ -220,7 +220,7 @@ def KMeans(num_chunks, train_path, out_path):
 
     paths = collect_paths(train_path)
     num_chunk = (4620//chunk_size) + 1
-    for chunk in range(num_chunk):
+    for chunk in tqdm(range(num_chunk)):
         start = chunk*chunk_size
         end = min(start+chunk_size, 4620)
         print(start, end)
