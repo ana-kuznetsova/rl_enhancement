@@ -201,7 +201,7 @@ def get_freq_bins(train_path, maxlen=1339):
     freqs = 0
     first = True
     for f in tqdm(os.listdir(train_path)):
-        if '.waw' in f:
+        if '.wav' in f:
             f = read(train_path+f)
             f = STFT(f, 512, 256)
             f = pad(f, maxlen)
@@ -209,7 +209,7 @@ def get_freq_bins(train_path, maxlen=1339):
                 freqs = f
                 first = False
             freqs = np.concatenate([freqs, f], axis=0)
-            print('SHape:', freqs.shape)
+            #print('SHape:', freqs.shape)
     return freqs
 
 
