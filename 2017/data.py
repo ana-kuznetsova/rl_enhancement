@@ -202,7 +202,7 @@ def get_freq_bins(train_path, maxlen=1339):
     first = True
     for f in tqdm(os.listdir(train_path)):
         if '.waw' in f:
-            f = read(f)
+            f = read(train_path+f)
             f = STFT(f, 512, 256)
             f = pad(f, maxlen)
             if first:
