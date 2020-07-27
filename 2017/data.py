@@ -197,28 +197,35 @@ def save_imag(in_path, out_path):
 
 
 
-def get_freq_bins(train_path, maxlen=1339):
+def get_freq_bins(train_paths, ind, maxlen=1339):
+    chunk_x = train_path[ind[0]:ind[1]]
     freqs = 0
     first = True
-    for f in tqdm(os.listdir(train_path)):
-        if '.wav' in f:
-            f = read(train_path+f)
-            f = STFT(f, 512, 256)
-            f = pad(f, maxlen)
-            if first:
-                freqs = f
-                first = False
-            freqs = np.concatenate([freqs, f], axis=0)
+    for path in tqdm(chunk_x):
+        f = read(path)
+        f = STFT(f, 512, 256)
+        f = pad(f, maxlen)
+        if first:
+            freqs = f
+            first = False
+        freqs = np.concatenate([freqs, f], axis=0)
             #print('SHape:', freqs.shape)
     return freqs
 
 
-def KMeans(train_path, out_path):
-    print('Make features...')
-    X = get_freq_bins(train_path)
-    print('Start K-Means clustering...')
+def KMeans(num_chunks, train_path, out_path):
     kmeans = MiniBatchKMeans(n_clusters=32, 
                          batch_size=128,
-                         max_iter=100).fit(np.abs(X))
+                         max_iter=100)
+
+    paths = collect_paths(train_path)
+    num_chunk = (4620//chunk_size) + 1
+    for chunk in range(num_chunk):
+        start = chunk*chunk_size
+        end = min(start+chunk_size, 4620)
+        print(start, end)
+        X = get_freq_bins(paths, [start, end])
+        kmeans = kmeans.partial_fit(X)
+
     centers = kmeans.cluster_centers_
     np.save(out_path+'kmeans_centers.npy', centers)
