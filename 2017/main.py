@@ -65,7 +65,7 @@ def main(args):
 
     elif args.mode=='eval':
         eval_pesq(args.y_path, args.test_path, args.test_out)
-    elif arg.mode=='cluster':
+    elif args.mode=='cluster':
         KMeans(args.x_path, args.test_out)
 
 
