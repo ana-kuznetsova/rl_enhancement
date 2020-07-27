@@ -197,10 +197,9 @@ def save_imag(in_path, out_path):
 
 
 def get_freq_bins(train_path, maxlen=1339):
-    num_masks = len(os.listdir(path))
     freqs = 0
     first = True
-    for f in tqdm(os.listdir(path)):
+    for f in tqdm(os.listdir(train_path)):
         if '.waw' in f:
             f = read(f)
             f = STFT(f, 512, 256)
