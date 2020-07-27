@@ -213,7 +213,7 @@ def get_freq_bins(train_paths, ind, maxlen=1339):
     return freqs
 
 
-def KMeans(num_chunks, train_path, out_path):
+def KMeans(chunk_size, train_path, out_path):
     kmeans = MiniBatchKMeans(n_clusters=32, 
                          batch_size=128,
                          max_iter=100)
