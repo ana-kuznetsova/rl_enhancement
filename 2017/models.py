@@ -120,7 +120,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
     feat_type='mel'
 
     min_delta = 0.05 #Min change in loss which can be considered as improvement
-    stop_epoch = 15 #Number of epochs without improvement
+    stop_epoch = 10 #Number of epochs without improvement
     no_improv = 0
     prev_loss = 1
 
@@ -198,6 +198,8 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
                 torch.save(best_l1, model_path+'dnn_l1.pth')
                 continue
             else:
+                prev_loss = 1
+                no_improv = 0
                 torch.save(best_l1, model_path+'dnn_l1.pth')
                 print('Finished pretraining Layer 1...')
                 break
