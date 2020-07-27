@@ -193,3 +193,30 @@ def save_imag(in_path, out_path):
     for f in tqdm(names):
         stft = np.load(in_path+f)
         np.save(out_path+f, stft.imag)
+
+
+
+def get_freq_bins(train_path, maxlen=1339):
+    num_masks = len(os.listdir(path))
+    freqs = 0
+    first = True
+    for f in tqdm(os.listdir(path)):
+        f = read(f)
+        f = STFT(f, 512, 256)
+        f = pad(f, maxlen)
+        if first:
+            freqs = f
+            first = False
+        freqs = np.concatenate([freqs, f], axis=0)
+    return freqs
+
+
+def KMeans(train_path, out_path):
+    print('Make features...')
+    X = get_freq_bins(train_path)
+    print('Start K-Means clustering...')
+    kmeans = MiniBatchKMeans(n_clusters=32, 
+                         batch_size=128,
+                         max_iter=100).fit(np.abs(X))
+    centers = kmeans.cluster_centers_
+    np.save(out_path+'kmeans_centers.npy', centers)
