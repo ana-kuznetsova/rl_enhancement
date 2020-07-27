@@ -209,6 +209,7 @@ def get_freq_bins(train_path, maxlen=1339):
                 freqs = f
                 first = False
             freqs = np.concatenate([freqs, f], axis=0)
+            print('SHape:', freqs.shape)
     return freqs
 
 
