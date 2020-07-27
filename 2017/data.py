@@ -224,7 +224,7 @@ def KMeans(chunk_size, train_path, out_path):
         start = chunk*chunk_size
         end = min(start+chunk_size, 4620)
         print(start, end)
-        X = get_freq_bins(paths, [start, end])
+        X = np.log(get_freq_bins(paths, [start, end]))
         print('Shape:', X.shape)
         kmeans = kmeans.partial_fit(np.abs(X))
 
