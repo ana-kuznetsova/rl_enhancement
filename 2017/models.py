@@ -312,8 +312,18 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
     if feat_type=='stft':
         model = DNN()
     elif feat_type=='mel':
-        model = DNN_mel()
-    model.apply(weights)
+        if from_pretrained:
+            l1_2 = Layer_1_2()
+            l1_2.load_state_dict(torch.load(model_path+'dnn_l2.pth'))
+    
+            #Remove the last layer
+            hidden = torch.nn.Sequential(*(list(l1_2.children())[:-2]))
+            model = DNN_mel(hidden)
+        
+        else:
+            model = DNN_mel()
+            model.apply(weights)
+
     criterion = nn.MSELoss()
     optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
     device = torch.device("cuda")
