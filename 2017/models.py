@@ -63,26 +63,30 @@ class Layer1(nn.Module):
     '''
     def __init__(self):
         super().__init__()
+        self.bnorm = nn.BatchNorm2d(704)
         self.fc1 = nn.Linear(704, 128)
         self.drop = nn.Dropout(0.3)
         self.out = nn.Linear(128, 257)
 
     def forward(self, x):
-        x = Func.relu(self.fc1(x))
+        x = self.bnorm(x)
+        x = Func.sigmoid(self.fc1(x))
         x = self.drop(x)
         return self.out(x)
 
 class Layer_1_2(nn.Module):
     def __init__(self, l1):
         super().__init__()
+        self.bnorm = nn.BatchNorm2d(704)
         self.fc1 = l1
         self.fc2 = nn.Linear(128, 128)
         self.drop = nn.Dropout(0.3)
         self.out = nn.Linear(128, 257)
 
     def forward(self, x):
-        x = Func.relu(self.fc1(x))
-        x = Func.relu(self.fc2(x))
+        x = self.bnorm(x)
+        x = Func.sigmoid(self.fc1(x))
+        x = Func.sigmoid(self.fc2(x))
         x = self.drop(x)
         return self.out(x)
 
