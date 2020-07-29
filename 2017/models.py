@@ -327,7 +327,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
     elif feat_type=='mel':
         if from_pretrained:
             l1 = Layer1()
-            l1.load_state_dict('/u/anakuzne/data/pretrain_sig/dnn_l2.pth')
+            l1.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
             l1_2 = Layer_1_2(l1)
             l1_2.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
     
