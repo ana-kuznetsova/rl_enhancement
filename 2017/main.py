@@ -23,7 +23,7 @@ def main(args):
                 args.y_path,
                 args.loss_path,
                 args.chunk_size, 
-                args.feat_type, 
+                args.feat_type,
                 args.from_pretrained)
     elif args.mode=='test':
         print('Staring inference on test data...')
