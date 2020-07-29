@@ -314,11 +314,6 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
                 continue
 
 
-
-
-
-
-
 def train_dnn(num_epochs, model_path, x_path, y_path, 
               loss_path, chunk_size, feat_type, from_pretrained=False,
               maxlen=1339, win_len=512, hop_size=256, fs=16000):
@@ -328,7 +323,9 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
         if from_pretrained:
             l1 = Layer1()
             l1.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
-            l1_2 = Layer_1_2(l1)
+            newmodel = torch.nn.Sequential(*(list(l1.children())[:-2]))
+
+            l1_2 = Layer_1_2(newmodel)
             l1_2.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
     
             #Remove the last layer
