@@ -84,7 +84,7 @@ if __name__ == '__main__':
     parser.add_argument('--clean_test_path', type=str, help='Path to reference test data')
     parser.add_argument('--imag', type=str, help='Path to files with imaginary part')
     parser.add_argument('--feat_type', type=str, help='Features to use')
-    parser.add_argument('--from_pretrained', type=bool, 'true or false')
+    parser.add_argument('--from_pretrained', type=bool, help='true or false')
 
 
     args = parser.parse_args()
