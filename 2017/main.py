@@ -37,7 +37,7 @@ def main(args):
         
         print('Generating TRAINING data...')
         train_files = collect_paths('/u/anakuzne/data/TIMIT_full/train/')
-        out_path = '/N/slate/anakuzne/se_data/snr0_train/'
+        out_path = '/u/anakuzne/data/snr0_train/'
 
         create_noisy_data(train_files, out_path, noise_path, 0, WIN_LEN, HOP_SIZE, FS)
 
