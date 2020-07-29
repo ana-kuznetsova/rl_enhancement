@@ -327,7 +327,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
     elif feat_type=='mel':
         if from_pretrained:
             l1_2 = Layer_1_2()
-            l1_2.load_state_dict(torch.load(model_path+'dnn_l2.pth'))
+            l1_2.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
     
             #Remove the last layer
             hidden = torch.nn.Sequential(*(list(l1_2.children())[:-2]))
