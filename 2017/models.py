@@ -42,17 +42,17 @@ class testDataLoader(data.Dataset):
 class DNN_mel(nn.Module):
     def __init__(self):
         super().__init__()
+        self.bnorm = nn.BatchNorm1d(704)
         self.fc1 = nn.Linear(704, 128)
         self.fc2 = nn.Linear(128, 128)
         self.fc3 = nn.Linear(128, 257)
         self.drop = nn.Dropout(0.3)
     
     def forward(self, x):
-        #x = Func.sigmoid(self.fc1(x))
-        x = Func.relu(self.fc1(x))
+        x = self.bnorm(x)
+        x = Func.sigmoid(self.fc1(x))
         x = self.drop(x)
-        #x = Func.sigmoid(self.fc2(x))
-        x = Func.relu(self.fc2(x))
+        x = Func.sigmoid(self.fc2(x))
         x = self.drop(x)
         x = self.fc3(x)
         return x
