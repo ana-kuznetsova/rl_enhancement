@@ -53,7 +53,7 @@ def main(args):
 
         target_files = collect_paths('/u/anakuzne/data/TIMIT_full/train/')
         calc_masks(target_files, noise_path, FS, WIN_LEN, HOP_SIZE,
-                   mask_dir='u/anakuzne/data/snr0_ln_target/',
+                   mask_dir='/u/anakuzne/data/snr0_ln_target/',
                    mask_type='ln')
         
         print('Saving phase information')
