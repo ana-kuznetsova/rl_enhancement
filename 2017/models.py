@@ -38,7 +38,7 @@ class testDataLoader(data.Dataset):
 
 
 
-
+'''
 class DNN_mel(nn.Module):
     def __init__(self):
         super().__init__()
@@ -56,7 +56,7 @@ class DNN_mel(nn.Module):
         x = self.drop(x)
         x = self.fc3(x)
         return x
-        
+'''
 class Layer1(nn.Module):
     '''
     Train with mel features
@@ -90,24 +90,24 @@ class Layer_1_2(nn.Module):
         x = self.drop(x)
         return self.out(x)
 
-class DNN(nn.Module):
+class DNN_mel(nn.Module):
     def __init__(self, l1_2=None):
         super().__init__()
         if l1_2:
             self.fc1 = l1_2.fc1
             self.fc2 = l1_2.fc2
         else:
-            self.fc1 = nn.Linear(2827, 128)
+            self.fc1 = nn.Linear(704, 128)
             self.fc2 = nn.Linear(128, 128)
+        self.bnorm = nn.BatchNorm1d(704)
         self.fc3 = nn.Linear(128, 257)
         self.drop = nn.Dropout(0.3)
         
     def forward(self, x):
+        x = self.bnorm(x)
         x = Func.sigmoid(self.fc1(x))
-        #x = Func.relu(self.fc1(x))
         x = self.drop(x)
         x = Func.sigmoid(self.fc2(x))
-        #x = Func.relu(self.fc2(x))
         x = self.drop(x)
         x = self.fc3(x)
         return x 
@@ -282,7 +282,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
 
         #Check for early stopping
         losses_l2.append(epoch_loss/num_chunk)
-        pickle.dump(losses_l1, open(loss_path+"losses_l2.p", "wb" ) )
+        pickle.dump(losses_l2, open(loss_path+"losses_l2.p", "wb" ) )
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
 
         if epoch==1:
