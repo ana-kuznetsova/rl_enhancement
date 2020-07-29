@@ -32,20 +32,19 @@ def main(args):
         WIN_LEN = 512
         HOP_SIZE = 256
         FS = 16000
-        noise_path = '/N/project/aspire_research_cs/Data/Corpora/Noise/cafe_16k.wav'
+        noise_path = '/u/anakuzne/data/cafe_16k.wav'
         ## Generate stfts of noisy data
-        '''
+        
         print('Generating TRAINING data...')
-        train_files = collect_paths('/N/project/aspire_research_cs/Data/Corpora/Speech/TIMIT/corpus/')
+        train_files = collect_paths('/u/anakuzne/data/TIMIT_full/train')
         out_path = '/N/slate/anakuzne/se_data/snr0_train/'
-        noise_path = '/N/project/aspire_research_cs/Data/Corpora/Noise/cafe_16k.wav'
 
         create_noisy_data(train_files, out_path, noise_path, 0, WIN_LEN, HOP_SIZE, FS)
 
         print('Generating TEST data...')
 
-        test_files = collect_paths('/N/project/aspire_research_cs/Data/Corpora/Speech/TIMIT/test_corpus/corpus/')
-        out_path = '/N/slate/anakuzne/se_data/snr0_test/'
+        test_files = collect_paths('/u/anakuzne/data/TIMIT_full/test/')
+        out_path = '/u/anakuzne/data/snr0_test/'
 
         create_noisy_data(test_files, out_path, noise_path, 0, WIN_LEN, HOP_SIZE, FS)
         '''
@@ -56,9 +55,10 @@ def main(args):
         calc_masks(target_files, noise_path, FS, WIN_LEN, HOP_SIZE,
                    mask_dir='/N/slate/anakuzne/se_data/snr0_irm_target/',
                    mask_type='IRM')
+        '''
         
-        #print('Saving phase information')
-        #save_imag('/N/slate/anakuzne/se_data/snr0_test/', '/N/slate/anakuzne/se_data/snr0_test_img/')
+        print('Saving phase information')
+        save_imag('/u/anakuzne/data/snr0_test/', '/u/anakuzne/data/snr0_test_img/')
 
     elif args.mode=='pretrain':
         pretrain(args.chunk_size, args.model_path, args.x_path, args.y_path, args.loss_path)
