@@ -167,7 +167,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
                                          maxlen, win_len, 
                                          hop_size, feat_type, fs)
 
-            trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 128)
+            trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 64)
 
             for step, (audio, target) in enumerate(trainData): 
                 audio = audio.to(device)
@@ -255,7 +255,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
                                          maxlen, win_len, 
                                          hop_size, feat_type, fs)
 
-            trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 128)
+            trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 64)
 
             for step, (audio, target) in enumerate(trainData): 
                 audio = audio.to(device)
