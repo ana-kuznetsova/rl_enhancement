@@ -15,11 +15,11 @@ pretrain_path = '/u/anakuzne/data/pretrain_sig/dnn_l1.pth'
 
 l1 = Layer1()
 l1.load_state_dict(torch.load(pretrain_path))
-#print('L1 before:', l1)
+print('L1 before:', l1)
 
 newmodel = torch.nn.Sequential(*(list(l1.children())[1:-2]))
 
-#print('L1 after:', newmodel)
+print('L1 after:', newmodel)
 
 l2 = Layer_1_2(newmodel)
 l2.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
