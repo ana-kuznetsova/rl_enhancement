@@ -11,19 +11,21 @@ from models import Layer1
 from models import Layer_1_2
 from models import DNN_mel
 
+
 pretrain_path = '/u/anakuzne/data/pretrain_sig/dnn_l1.pth'
 
 l1 = Layer1()
 l1.load_state_dict(torch.load(pretrain_path))
-print(l1.fc1)
 
 l2 = Layer_1_2(l1)
-#l2.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
+l2.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
 print('L2:', l2)
 
-'''
+
 dnn = DNN_mel(newmodel)
 print('DNN:', dnn)
+
+'''
 
 criterion = nn.MSELoss()
 optimizer = optim.SGD(l2.parameters(), lr=0.01, momentum=0.9)
