@@ -26,6 +26,10 @@ l2.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
 print('L2:', l2)
 newmodel = torch.nn.Sequential(*(list(l2.children())[1:-2]))
 print('L2 after:', newmodel)
+
+dnn = DNN_mel(newmodel)
+print('DNN:', dnn)
+
 criterion = nn.MSELoss()
 optimizer = optim.SGD(l2.parameters(), lr=0.01, momentum=0.9)
 device = torch.device("cuda")
