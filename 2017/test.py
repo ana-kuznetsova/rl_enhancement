@@ -20,13 +20,15 @@ l1.load_state_dict(torch.load(pretrain_path))
 
 l2 = Layer_1_2()
 l2.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
-print('L2:', l2)
+#print('L2:', l2)
 
-print('Weights L1:', l2.fc1.weight)
+#print('Weights L1:', l2.fc1.weight)
 
 
 dnn = DNN_mel(l2)
 print('DNN:', dnn)
+print('Weights L1:', dnn.fc1.weight)
+print('Weights L2:', dnn.fc2.weight)
 
 '''
 
