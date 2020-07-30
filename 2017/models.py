@@ -224,11 +224,8 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
     l1 = Layer1()
 
     l1.load_state_dict(torch.load(model_path+'dnn_l1.pth'))
-    
-    #Remove the last layer
-    newmodel = torch.nn.Sequential(*(list(l1.children())[:-2]))
 
-    l2 = Layer_1_2(newmodel)
+    l2 = Layer_1_2(l1)
     criterion = nn.MSELoss()
     optimizer = optim.SGD(l2.parameters(), lr=0.01, momentum=0.9)
     device = torch.device("cuda")
