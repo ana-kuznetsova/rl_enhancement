@@ -11,13 +11,14 @@ from models import Layer1
 from models import Layer_1_2
 from models import DNN_mel
 
-
+'''
 pretrain_path = '/u/anakuzne/data/pretrain_sig/dnn_l1.pth'
 
 l1 = Layer1()
 l1.load_state_dict(torch.load(pretrain_path))
+'''
 
-l2 = Layer_1_2(l1)
+l2 = Layer_1_2()
 l2.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
 print('L2:', l2)
 
