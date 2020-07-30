@@ -320,14 +320,9 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
         if from_pretrained:
             l1 = Layer1()
             l1.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l1.pth'))
-            cut_l1 = torch.nn.Sequential(*(list(l1.children())[:-2]))
-
-            l1_2 = Layer_1_2(cut_l1)
+            l1_2 = Layer_1_2(l1)
             l1_2.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
-    
-            #Remove the last layer
-            hidden = torch.nn.Sequential(*(list(l1_2.children())[:-2]))
-            model = DNN_mel(hidden)
+            model = DNN_mel(l1_2)
         
         else:
             model = DNN_mel()
