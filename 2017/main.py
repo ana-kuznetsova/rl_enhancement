@@ -35,7 +35,7 @@ def main(args):
         FS = 16000
         noise_path = '/u/anakuzne/data/cafe_16k.wav'
         ## Generate stfts of noisy data
-        
+        '''
         print('Generating TRAINING data...')
         train_files = collect_paths('/u/anakuzne/data/TIMIT_full/train/')
         out_path = '/u/anakuzne/data/snr0_train/'
@@ -48,17 +48,18 @@ def main(args):
         out_path = '/u/anakuzne/data/snr0_test/'
 
         create_noisy_data(test_files, out_path, noise_path, 0, WIN_LEN, HOP_SIZE, FS)
-        
+        '''
 
         print('Generate TARGET data...')
 
         target_files = collect_paths('/u/anakuzne/data/TIMIT_full/train/')
         calc_masks(target_files, noise_path, FS, WIN_LEN, HOP_SIZE,
-                   mask_dir='/u/anakuzne/data/snr0_ln_target/',
-                   mask_type='ln')
-        
+                   mask_dir='/u/anakuzne/data/snr0_w_target/',
+                   mask_type='Wiener')
+        '''
         print('Saving phase information')
         save_imag('/u/anakuzne/data/snr0_test/', '/u/anakuzne/data/snr0_test_img/')
+        '''
 
     elif args.mode=='pretrain':
         pretrain(args.chunk_size, args.model_path, args.x_path, args.y_path, args.loss_path)
