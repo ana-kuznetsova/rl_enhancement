@@ -16,7 +16,9 @@ pretrain_path = '/u/anakuzne/data/pretrain_sig/dnn_l1.pth'
 l1 = Layer1()
 l1.load_state_dict(torch.load(pretrain_path))
 print('L1 before:', l1)
+print('L1 hidden:', l1.fc1)
 
+'''
 newmodel = torch.nn.Sequential(*(list(l1.children())[:-2]))
 
 print('L1 after:', newmodel)
@@ -26,6 +28,7 @@ l2.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
 print('L2:', l2)
 newmodel = torch.nn.Sequential(*(list(l2.children())[1:-2]))
 print('L2 after:', newmodel)
+
 
 dnn = DNN_mel(newmodel)
 print('DNN:', dnn)
@@ -37,3 +40,4 @@ l2.cuda()
 l2 = l2.to(device)
 criterion.cuda()
 best_l2 = copy.deepcopy(l2.state_dict())
+'''
