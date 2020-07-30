@@ -22,7 +22,7 @@ l2.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
 print('L2:', l2)
 
 
-dnn = DNN_mel(newmodel)
+dnn = DNN_mel(l2)
 print('DNN:', dnn)
 
 '''
