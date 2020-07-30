@@ -22,6 +22,8 @@ print('L1 after:', newmodel)
 
 l2 = Layer_1_2(newmodel)
 print('L2:', l2)
+newmodel = torch.nn.Sequential(*(list(l2.children())[:-2]))
+print('L2 after:', newmodel)
 criterion = nn.MSELoss()
 optimizer = optim.SGD(l2.parameters(), lr=0.01, momentum=0.9)
 device = torch.device("cuda")
