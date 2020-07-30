@@ -21,7 +21,7 @@ newmodel = torch.nn.Sequential(*(list(l1.children())[:-2]))
 
 #print('L1 after:', newmodel)
 
-l2 = Layer_1_2()
+l2 = Layer_1_2(l1)
 l2.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
 print('L2:', l2)
 newmodel = torch.nn.Sequential(*(list(l2.children())[:-2]))
