@@ -9,6 +9,7 @@ import copy
 
 from models import Layer1
 from models import Layer_1_2
+from models import DNN_mel
 
 pretrain_path = '/u/anakuzne/data/pretrain_sig/dnn_l1.pth'
 
@@ -18,9 +19,10 @@ l1.load_state_dict(torch.load(pretrain_path))
 
 newmodel = torch.nn.Sequential(*(list(l1.children())[:-2]))
 
-print('L1 after:', newmodel)
+#print('L1 after:', newmodel)
 
-l2 = Layer_1_2(newmodel)
+l2 = Layer_1_2()
+l2.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
 print('L2:', l2)
 newmodel = torch.nn.Sequential(*(list(l2.children())[:-2]))
 print('L2 after:', newmodel)
