@@ -15,6 +15,7 @@ pretrain_path = '/u/anakuzne/data/pretrain_sig/dnn_l1.pth'
 
 l1 = Layer1()
 l1.load_state_dict(torch.load(pretrain_path))
+print(l1)
 
 l2 = Layer_1_2(l1.fc1)
 #l2.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
