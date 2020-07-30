@@ -17,7 +17,7 @@ l1 = Layer1()
 l1.load_state_dict(torch.load(pretrain_path))
 #print('L1 before:', l1)
 
-newmodel = torch.nn.Sequential(*(list(l1.children())[:-2]))
+newmodel = torch.nn.Sequential(*(list(l1.children())[1:-2]))
 
 #print('L1 after:', newmodel)
 
