@@ -190,7 +190,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
 
         if epoch==1:
-            prev_loss = prev_loss = epoch_loss/num_chunk
+            prev_loss = epoch_loss/num_chunk
             epoch_loss += chunk_loss/(num_chunk+1)
             torch.save(best_l1, model_path+'dnn_l1.pth')
             continue
