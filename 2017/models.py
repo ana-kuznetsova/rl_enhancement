@@ -321,10 +321,6 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
         model = DNN()
     elif feat_type=='mel':
         if from_pretrained:
-            l1 = Layer1()
-            l1.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
-            newmodel = torch.nn.Sequential(*(list(l1.children())[:-2]))
-
             l1_2 = Layer_1_2(newmodel)
             l1_2.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
     
