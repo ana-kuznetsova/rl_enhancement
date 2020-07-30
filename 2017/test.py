@@ -10,12 +10,15 @@ import copy
 from models import Layer1
 from models import Layer_1_2
 
-pretrain_path = '/N/slate/anakuzne/se_out/pretrain/dnn_l1.pth'
+pretrain_path = '/u/anakuzne/pretrain_sig/dnn_l1.pth'
 
 l1 = Layer1()
 l1.load_state_dict(torch.load(pretrain_path))
+print('L1 before:', l1)
 
 newmodel = torch.nn.Sequential(*(list(l1.children())[:-2]))
+
+print('L1 after:', newmodel)
 
 l2 = Layer_1_2(newmodel)
 criterion = nn.MSELoss()
