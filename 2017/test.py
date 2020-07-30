@@ -17,14 +17,14 @@ l1 = Layer1()
 l1.load_state_dict(torch.load(pretrain_path))
 print('L1 before:', l1)
 
-newmodel = torch.nn.Sequential(*(list(l1.children())[1:-2]))
+newmodel = torch.nn.Sequential(*(list(l1.children())[-2]))
 
 print('L1 after:', newmodel)
 
 l2 = Layer_1_2(newmodel)
 l2.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
 print('L2:', l2)
-newmodel = torch.nn.Sequential(*(list(l2.children())[:-2]))
+newmodel = torch.nn.Sequential(*(list(l2.children())[1:-2]))
 print('L2 after:', newmodel)
 criterion = nn.MSELoss()
 optimizer = optim.SGD(l2.parameters(), lr=0.01, momentum=0.9)
