@@ -20,6 +20,7 @@ def eval_pesq(noisy_test, clean_test, out_path,
     print('Calculating PESQ clean refernence...')
     for f in tqdm(clean):
         if '.wav' in f:
+            print('F:', f)
             reference, sr = librosa.load(clean_test+f, mono=True)
             reference = librosa.core.resample(reference, sr, 16000)
             print('FNAME:', p.split('/')[-2]+ '_' + p.split('/')[-1].split('.')[0] + '.npy')
