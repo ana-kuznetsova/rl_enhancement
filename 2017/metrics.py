@@ -20,7 +20,7 @@ def eval_pesq(predicted_path, noisy_test, clean_test, out_path,
 
     noisy_ref = os.listdir(noisy_test) #.wav
     clean_ref = collect_paths(clean_test) #.wav
-    predicted = os.listdir(predicted_path)
+    predicted = os.listdir(predicted_path) #.npy
     imag = os.listdir(img_path) #.npy
 
     scores_clean_ref = []

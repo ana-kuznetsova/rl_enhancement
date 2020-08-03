@@ -65,7 +65,13 @@ def main(args):
         pretrain(args.chunk_size, args.model_path, args.x_path, args.y_path, args.loss_path)
 
     elif args.mode=='eval':
-        eval_pesq(args.y_path, args.test_path, args.test_out)
+        eval_pesq(args.preds_path, args.y_path, args.test_path, args.test_out)
+        '''
+        preds_path: stfts predicted by the model
+        y_path: stfts of noise mixture
+        test_path: clean unmixed test signals
+        test_out: where to output file with the results
+        '''
     elif args.mode=='cluster':
         KMeans(args.chunk_size, args.x_path, args.test_out)
 
@@ -86,6 +92,7 @@ if __name__ == '__main__':
     parser.add_argument('--imag', type=str, help='Path to files with imaginary part')
     parser.add_argument('--feat_type', type=str, help='Features to use')
     parser.add_argument('--from_pretrained', type=bool, help='true or false')
+    parser.add_argument('--preds_path', type=str, help='Path to the predicted output')
 
 
     args = parser.parse_args()
