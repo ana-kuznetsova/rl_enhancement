@@ -17,12 +17,13 @@ def eval_pesq(noisy_test, clean_test, out_path,
 
     scores = []
 
-    print('Calculating PESQ...')
+    print('Calculating PESQ clean refernence...')
     for f in tqdm(clean):
         if '.wav' in f:
             reference, sr = librosa.load(clean_test+f, mono=True)
             reference = librosa.core.resample(reference, sr, 16000)
-            ind = noisy.index('corpus_'+ f.split('.')[0]+'.npy')
+            print('FNAME:', p.split('/')[-2]+ '_' + p.split('/')[-1].split('.')[0] + '.npy')
+            ind = noisy.index(p.split('/')[-2]+ '_' + p.split('/')[-1].split('.')[0] + '.npy')
             degraded = np.load(noisy_test+noisy[ind])
             
             ind = imag.index('corpus_'+ f.split('.')[0]+'.npy')
@@ -35,6 +36,6 @@ def eval_pesq(noisy_test, clean_test, out_path,
             #print('Test file:', f, 'PESQ: ', score)
             scores.append(score)
     clean = [n for n in clean if '.wav' in n]
-    data = {'fname':clean, 'PESQ':scores}
-    df = pd.DataFrame(data, columns=['fname', 'PESQ'])
+    data = {'fname':clean, 'PESQ_clean':scores}
+    df = pd.DataFrame(data, columns=['fname', 'PESQ_clean_ref', 'PESQ_noisy_ref'])
     df.to_csv(out_path+'PESQ.csv')
