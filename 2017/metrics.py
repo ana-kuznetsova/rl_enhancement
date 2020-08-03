@@ -51,12 +51,11 @@ def eval_pesq(predicted_path, noisy_test, clean_test, out_path,
         noisy_r = librosa.istft(noisy_r, hop_length=256, win_length=512)
         pred = librosa.istft(pred, hop_length=256, win_length=512)
         pred = pred[:noisy_r.shape[0]]
-        print('Shapes:', noisy_r.shape, pred.shape)
+        
+        score_noisy = pesq(noisy_r, pred, fs)
+        scores_noisy_ref.append(score_noisy)
 
-
-    '''
-    clean = [n for n in clean if '.wav' in n]
-    data = {'fname':clean, 'PESQ_clean':scores}
+    wav_names = [n.split('/')[-1] for n in clean_ref]
+    data = {'fname':wav_names, 'PESQ_clean_ref':scores_clean_ref, 'PESQ_noisy_ref':scores_noisy_ref}
     df = pd.DataFrame(data, columns=['fname', 'PESQ_clean_ref', 'PESQ_noisy_ref'])
     df.to_csv(out_path+'PESQ.csv')
-    '''
