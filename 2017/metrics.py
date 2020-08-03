@@ -6,14 +6,15 @@ import soundfile as sf
 import librosa
 import numpy as np
 from data import pad
+from data import collect_paths
 
 def eval_pesq(noisy_test, clean_test, out_path, 
     img_path='/u/anakuzne/data/snr0_test_img/', 
     fs=16000):
 
-    noisy = os.listdir(noisy_test)
-    clean = os.listdir(clean_test)
-    imag = os.listdir(img_path)
+    noisy = collect_paths(noisy_test)
+    clean = collect_paths(clean_test)
+    imag = collect_paths(img_path)
 
     scores = []
 
