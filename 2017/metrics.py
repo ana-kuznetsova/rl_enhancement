@@ -19,12 +19,12 @@ def eval_pesq(noisy_test, clean_test, out_path,
     scores = []
 
     print('Calculating PESQ clean refernence...')
-    for f in tqdm(clean):
+    for p in tqdm(clean):
         reference, sr = librosa.load(f, mono=True)
         reference = librosa.core.resample(reference, sr, 16000)
         print('FNAME:', p.split('/')[-2]+ '_' + p.split('/')[-1].split('.')[0] + '.npy')
         ind = noisy.index(p.split('/')[-2]+ '_' + p.split('/')[-1].split('.')[0] + '.npy')
-        degraded = np.load(noisy_test+noisy[ind])
+        degraded = np.load(noisy[ind])
             
         ind = imag.index('corpus_'+ f.split('.')[0]+'.npy')
         imag_num = pad(np.load(img_path+noisy[ind]), 1339)
