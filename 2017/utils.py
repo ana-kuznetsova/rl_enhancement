@@ -14,7 +14,7 @@ def collect_paths(train_dir):
     paths = []
     for dirs, subdirs, files in os.walk(train_dir):
       for file in files:
-        if ('.wav' or '.npy') in file:
+        if '.wav' in file:
           paths.append(os.path.join(dirs, file))
     return paths
 
