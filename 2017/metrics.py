@@ -48,8 +48,10 @@ def eval_pesq(predicted_path, noisy_test, clean_test, out_path,
         ind = noisy_ref.index(fname)
         pred = np.load(predicted_path+predicted[ind])
         noisy_r = np.exp(np.load(noisy_test+noisy_ref[ind]))
-        print('Shapes:', pred.shape, noisy_r.shape)
         noisy_r = librosa.istft(noisy_r, hop_length=256, win_length=512)
+        pred = librosa.istft(pred, hop_length=256, win_length=512)
+        pred = pred[:noisy_r.shape[0]]
+        print('Shapes:', noisy_r.shape, pred.shape)
 
 
     '''
