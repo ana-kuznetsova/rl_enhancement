@@ -13,9 +13,8 @@ def eval_pesq(noisy_test, clean_test, out_path,
     fs=16000):
 
     noisy = os.listdir(noisy_test)
-    print('noisy 10:', noisy[:20])
     clean = collect_paths(clean_test)
-    imag = collect_paths(img_path)
+    imag = os.listdir(img_path)
 
     scores = []
 
@@ -24,8 +23,8 @@ def eval_pesq(noisy_test, clean_test, out_path,
         reference, sr = librosa.load(p, mono=True)
         reference = librosa.core.resample(reference, sr, 16000)
         fname = p.split('/')[-2]+ '_' + p.split('/')[-1].split('.')[0] + '.npy'
-        ind = noisy.index(noisy_test+fname)
-        degraded = np.load(noisy[ind])
+        ind = noisy.index(fname)
+        degraded = np.load(noisy_test+noisy[ind])
             
         ind = imag.index(img_path+fname)
         imag_num = pad(np.load(imag[ind]), 1339)
