@@ -63,13 +63,13 @@ class Layer1(nn.Module):
     '''
     def __init__(self):
         super().__init__()
-        #self.bnorm = nn.BatchNorm1d(704)
+        self.bnorm = nn.BatchNorm1d(704)
         self.fc1 = nn.Linear(704, 128)
         self.drop = nn.Dropout(0.3)
         self.out = nn.Linear(128, 257)
 
     def forward(self, x):
-        #x = self.bnorm(x)
+        x = self.bnorm(x)
         x = Func.sigmoid(self.fc1(x))
         x = self.drop(x)
         return self.out(x)
@@ -77,7 +77,7 @@ class Layer1(nn.Module):
 class Layer_1_2(nn.Module):
     def __init__(self, l1=None):
         super().__init__()
-        #self.bnorm = nn.BatchNorm1d(704)
+        self.bnorm = nn.BatchNorm1d(704)
         if l1:
             self.fc1 = l1.fc1
         self.fc1 = nn.Linear(704, 128)
@@ -86,7 +86,7 @@ class Layer_1_2(nn.Module):
         self.out = nn.Linear(128, 257)
 
     def forward(self, x):
-        #x = self.bnorm(x)
+        x = self.bnorm(x)
         x = Func.sigmoid(self.fc1(x))
         x = Func.sigmoid(self.fc2(x))
         x = self.drop(x)
@@ -101,12 +101,12 @@ class DNN_mel(nn.Module):
         else:
             self.fc1 = nn.Linear(704, 128)
             self.fc2 = nn.Linear(128, 128)
-        #self.bnorm = nn.BatchNorm1d(704)
+        self.bnorm = nn.BatchNorm1d(704)
         self.fc3 = nn.Linear(128, 257)
         self.drop = nn.Dropout(0.3)
         
     def forward(self, x):
-        #x = self.bnorm(x)
+        x = self.bnorm(x)
         x = Func.sigmoid(self.fc1(x))
         x = self.drop(x)
         x = Func.sigmoid(self.fc2(x))
@@ -425,8 +425,3 @@ def inference(test_data_path,
                 ##Restore phase (imaginary part)
                 imag = pad(np.load(imag_path+name), maxlen)
                 np.save(out_test+name, np.exp(output)+imag)
-            #output = librosa.istft(np.transpose(output[0].cpu().data.numpy().squeeze()), hop_length=hop_size,
-            #                    win_length=win_len) 
-            #    librosa.output.write_wav(out_test+name, output, fs) 
-
-    #eval_pesq(out_test, clean_test_path, out_test)
