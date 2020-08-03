@@ -53,9 +53,9 @@ def main(args):
 
         print('Generate TARGET data...')
 
-        target_files = collect_paths('/u/anakuzne/data/TIMIT_full/train/')
+        target_files = collect_paths('/nobackup/anakuzne/data/train/')
         calc_masks(target_files, noise_path, FS, WIN_LEN, HOP_SIZE,
-                   mask_dir='/u/anakuzne/data/snr0_w_target/',
+                   mask_dir='/nobackup/anakuzne/data/snr0_w_target/',
                    mask_type='Wiener')
         '''
         print('Saving phase information')
