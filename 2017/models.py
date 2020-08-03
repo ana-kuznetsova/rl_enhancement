@@ -314,16 +314,16 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
 
 
 def train_dnn(num_epochs, model_path, x_path, y_path, 
-              loss_path, chunk_size, feat_type, from_pretrained=False,
+              loss_path, chunk_size, feat_type, pretrain_path, from_pretrained=False,
               maxlen=1339, win_len=512, hop_size=256, fs=16000):
     if feat_type=='stft':
         model = DNN()
     elif feat_type=='mel':
         if from_pretrained:
             l1 = Layer1()
-            l1.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l1.pth'))
+            l1.load_state_dict(torch.load(pretrain_path+'dnn_l1.pth'))
             l1_2 = Layer_1_2(l1)
-            l1_2.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
+            l1_2.load_state_dict(torch.load(pretrain_path+'dnn_l2.pth'))
             model = DNN_mel(l1_2)
         
         else:

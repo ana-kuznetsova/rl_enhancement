@@ -24,6 +24,7 @@ def main(args):
                 args.loss_path,
                 args.chunk_size, 
                 args.feat_type,
+                args.pre_path,
                 args.from_pretrained)
     elif args.mode=='test':
         print('Staring inference on test data...')
@@ -93,6 +94,7 @@ if __name__ == '__main__':
     parser.add_argument('--feat_type', type=str, help='Features to use')
     parser.add_argument('--from_pretrained', type=bool, help='true or false')
     parser.add_argument('--preds_path', type=str, help='Path to the predicted output')
+    parser.add_argument('--pre_path', type=str, help='paths to pretrained model')
 
 
     args = parser.parse_args()
