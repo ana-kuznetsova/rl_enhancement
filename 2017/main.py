@@ -65,7 +65,7 @@ def main(args):
         pretrain(args.chunk_size, args.model_path, args.x_path, args.y_path, args.loss_path)
 
     elif args.mode=='eval':
-        eval_pesq(args.preds_path, args.y_path, args.test_path, args.test_out)
+        eval_pesq(args.preds_path, args.y_path, args.test_path, args.test_out, args.imag)
         '''
         preds_path: stfts predicted by the model
         y_path: stfts of noise mixture
