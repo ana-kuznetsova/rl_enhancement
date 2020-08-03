@@ -34,7 +34,7 @@ def main(args):
         WIN_LEN = 512
         HOP_SIZE = 256
         FS = 16000
-        noise_path = '/u/anakuzne/data/cafe_16k.wav'
+        noise_path = '/nobackup/anakuzne/data/cafe_16k.wav'
         ## Generate stfts of noisy data
         '''
         print('Generating TRAINING data...')
