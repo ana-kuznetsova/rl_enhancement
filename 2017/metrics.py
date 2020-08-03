@@ -47,7 +47,7 @@ def eval_pesq(predicted_path, noisy_test, clean_test, out_path,
         #Compare to degraded signal
         ind = noisy_ref.index(fname)
         pred = np.load(predicted_path+predicted[ind])
-        noisy_r = np.exp(np.load(noisy_test+noisy_ref[ind]))
+        noisy_r = np.load(noisy_test+noisy_ref[ind])
         noisy_r = librosa.istft(noisy_r, hop_length=256, win_length=512)
         pred = librosa.istft(pred, hop_length=256, win_length=512)
         pred = pred[:noisy_r.shape[0]]
