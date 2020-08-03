@@ -22,12 +22,12 @@ def eval_pesq(noisy_test, clean_test, out_path,
     for p in tqdm(clean):
         reference, sr = librosa.load(p, mono=True)
         reference = librosa.core.resample(reference, sr, 16000)
-        print('FNAME:', p.split('/')[-2]+ '_' + p.split('/')[-1].split('.')[0] + '.npy')
-        ind = noisy.index(p.split('/')[-2]+ '_' + p.split('/')[-1].split('.')[0] + '.npy')
+        fname = p.split('/')[-2]+ '_' + p.split('/')[-1].split('.')[0] + '.npy'
+        ind = noisy.index(noisy_test+fname)
         degraded = np.load(noisy[ind])
             
-        ind = imag.index('corpus_'+ f.split('.')[0]+'.npy')
-        imag_num = pad(np.load(img_path+noisy[ind]), 1339)
+        ind = imag.index(img_path+fname)
+        imag_num = pad(np.load(imag[ind]), 1339)
         degraded = degraded + imag_num
         degraded = librosa.istft(degraded, hop_length=256, win_length=512)
         degraded = degraded[:reference.shape[0]]
