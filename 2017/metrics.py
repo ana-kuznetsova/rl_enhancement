@@ -20,7 +20,7 @@ def eval_pesq(noisy_test, clean_test, out_path,
 
     print('Calculating PESQ clean refernence...')
     for p in tqdm(clean):
-        reference, sr = librosa.load(f, mono=True)
+        reference, sr = librosa.load(p, mono=True)
         reference = librosa.core.resample(reference, sr, 16000)
         print('FNAME:', p.split('/')[-2]+ '_' + p.split('/')[-1].split('.')[0] + '.npy')
         ind = noisy.index(p.split('/')[-2]+ '_' + p.split('/')[-1].split('.')[0] + '.npy')
