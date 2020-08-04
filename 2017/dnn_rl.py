@@ -45,16 +45,14 @@ class DNN_mel(nn.Module):
     def __init__(self, l1_2=None):
         super().__init__()
         self.fc1 = nn.Linear(704, 64)
-        self.fc2 = nn.Linear(64, 64)
-        self.bnorm = nn.BatchNorm1d(704)
-        self.fc3 = nn.Linear(128, 257)
+        self.fc2 = nn.Linear(64, 32)
+        self.soft = nn.Softmax(dim=1)
         self.drop = nn.Dropout(0.3)
         
     def forward(self, x):
-        x = self.bnorm(x)
         x = Func.sigmoid(self.fc1(x))
         x = self.drop(x)
         x = Func.sigmoid(self.fc2(x))
         x = self.drop(x)
-        x = self.fc3(x)
+        x = self.soft(x)
         return x 
