@@ -41,7 +41,7 @@ def time_weight(Y, S):
 
 
 
-class DNN_mel(nn.Module):
+class DNN_RL(nn.Module):
     def __init__(self, l1_2=None):
         super().__init__()
         self.fc1 = nn.Linear(704, 64)
