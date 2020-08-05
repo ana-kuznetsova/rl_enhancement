@@ -423,5 +423,6 @@ def inference(test_data_path,
                 if mask=='ln':
                     np.save(out_test+name, np.exp(output)+imag)
                 elif mask=='wiener':
+                    print('Saving wiener output...')
                     result = np.multiply(output, audio)
                     np.save(out_test+name, result+imag)
