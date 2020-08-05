@@ -422,7 +422,5 @@ def inference(test_data_path,
                     np.save(out_test+name, np.exp(output)+imag)
                 elif mask=='wiener':
                     noisy_aud = pad(np.load(test_data_path+name), maxlen)
-                    print('Saving wiener output...')
-                    print('Shape out:', output.shape, 'Shape aud:', noisy_aud.shape)
                     result = np.multiply(output, noisy_aud)
                     np.save(out_test+name, result+imag)
