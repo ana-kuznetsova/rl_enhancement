@@ -404,9 +404,7 @@ def inference(test_data_path,
         print(start, end)
         x_list = [test_data_path + n for n in fnames]
         X_chunk = make_batch_test(x_list, [start, end], 5, feat_type, maxlen, win_len, hop_size, fs)
-        print('X chunk:', X_chunk.shape)
         testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 1339)
-        print('len:', len(testData))
 
         chunk_names = fnames[start:end]
         #print('chunk names:', chunk_names)
@@ -423,6 +421,8 @@ def inference(test_data_path,
                 if mask=='ln':
                     np.save(out_test+name, np.exp(output)+imag)
                 elif mask=='wiener':
+                    noisy_aud = np.load(test_data_path+name)
                     print('Saving wiener output...')
-                    result = np.multiply(output, audio)
+                    print('Shape out:', output.shape, 'Shape aud:', noisy_aud.shape)
+                    result = np.multiply(output, noisy_aud)
                     np.save(out_test+name, result+imag)
