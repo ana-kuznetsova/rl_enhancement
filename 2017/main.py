@@ -28,7 +28,10 @@ def main(args):
                 args.from_pretrained)
     elif args.mode=='test':
         print('Staring inference on test data...')
-        inference(args.test_path, args.test_out, args.model_path, args.imag, args.chunk_size, args.feat_type)
+        inference(args.test_path, args.test_out, args.model_path, args.imag, 
+                  args.chunk_size,
+                  args.feat_type,
+                  args.mask)
     elif args.mode=='data':
 
         WIN_LEN = 512
@@ -95,7 +98,7 @@ if __name__ == '__main__':
     parser.add_argument('--from_pretrained', type=bool, help='true or false')
     parser.add_argument('--preds_path', type=str, help='Path to the predicted output')
     parser.add_argument('--pre_path', type=str, help='paths to pretrained model')
-
+    parser.add_argument('--mask', type=str, help='mask type')
 
     args = parser.parse_args()
     main(args)
