@@ -384,7 +384,7 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
 
 def inference(test_data_path,
               out_test, model_path, imag_path, 
-              chunk_size, feat_type, maxlen=1339,
+              chunk_size, feat_type, mask='ln', maxlen=1339,
               win_len=512, hop_size=256, fs=16000):
     if feat_type=='stft':
         model = DNN()
@@ -418,4 +418,8 @@ def inference(test_data_path,
                 output = np.transpose(output.cpu().data.numpy().squeeze())
                 ##Restore phase (imaginary part)
                 imag = pad(np.load(imag_path+name), maxlen)
-                np.save(out_test+name, np.exp(output)+imag)
+                if mask=='ln':
+                    np.save(out_test+name, np.exp(output)+imag)
+                elif mask=='wiener':
+                    result = np.multiply(output, audio)
+                    np.save(out_test+name, result+imag)

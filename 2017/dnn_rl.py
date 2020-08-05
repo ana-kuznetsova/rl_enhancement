@@ -10,6 +10,7 @@ import pickle
 import numpy as np
 from models import trainDataLoader
 from models import testDataLoader
+from models import weights
 from data import make_batch
 
 #### REWARD DEFINITION ####
@@ -56,3 +57,11 @@ class DNN_RL(nn.Module):
         x = self.drop(x)
         x = self.soft(x)
         return x 
+
+
+def q_learning(num_episodes=50000, epsilon=0.01, from_pretrained=False):
+    ### Initialization ###
+    dnn_rl = DNN_RL()
+    dnn_rl.apply(weights)
+
+    criterion = None
