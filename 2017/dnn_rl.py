@@ -1,3 +1,5 @@
+import os
+
 import torch
 import torch.nn.functional as Func
 import torch.nn as nn
@@ -11,7 +13,8 @@ import numpy as np
 from models import trainDataLoader
 from models import testDataLoader
 from models import weights
-from data import make_batch
+from data import mel_spec
+from data import pad
 
 #### REWARD DEFINITION ####
 
@@ -59,9 +62,37 @@ class DNN_RL(nn.Module):
         return x 
 
 
-def q_learning(num_episodes=50000, epsilon=0.01, from_pretrained=False):
+def q_learning(x_path, y_path, 
+               num_episodes=50000, epsilon=0.01, maxlen=1339, 
+               win_len=512,
+               hop_size=256,
+               fs=16000,
+               from_pretrained=False):
+    '''
+    Params:
+        x_path: path to the training examples
+        y_path: path to the cluster centers
+    '''
     ### Initialization ###
+    P=5 #Window size
+
     dnn_rl = DNN_RL()
     dnn_rl.apply(weights)
 
-    criterion = None
+    criterion = nn.MSELoss()
+    optimizer = optim.SGD(dnn_rl.parameters(), lr=0.01, momentum=0.9)
+    device = torch.device("cuda")
+    dnn_rl.cuda()
+    dnn_rl = dnn_rl.to(device)
+    criterion.cuda()
+
+    ## Make training example, put into data loader
+    #Select random
+    x_files = os.listdir(x_path)
+    x = np.random.choice(x_files)
+
+    x = np.load(x_path+x)
+    x = mel_spec(x, win_len, hop_size, fs)
+    x = pad(x, maxlen)
+    x = np.abs(get_X_batch(x, P))
+    print('X shape:', x.shape)

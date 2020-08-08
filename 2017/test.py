@@ -11,12 +11,14 @@ from models import Layer1
 from models import Layer_1_2
 from models import DNN_mel
 
+from dnn_rl import q_learning
+
 '''
 pretrain_path = '/u/anakuzne/data/pretrain_sig/dnn_l1.pth'
 
 l1 = Layer1()
 l1.load_state_dict(torch.load(pretrain_path))
-'''
+
 
 l2 = Layer_1_2()
 l2.load_state_dict(torch.load('/u/anakuzne/data/pretrain_sig/dnn_l2.pth'))
@@ -30,7 +32,6 @@ print('DNN:', dnn)
 print('Weights L1:', dnn.fc1.weight)
 print('Weights L2:', dnn.fc2.weight)
 
-'''
 
 criterion = nn.MSELoss()
 optimizer = optim.SGD(l2.parameters(), lr=0.01, momentum=0.9)
@@ -40,3 +41,6 @@ l2 = l2.to(device)
 criterion.cuda()
 best_l2 = copy.deepcopy(l2.state_dict())
 '''
+
+q_learning(x_path='/nobackup/anakuzne/data/snr0_train/', 
+           y_path='/nobackup/anakuzne/data/snr0_train/')

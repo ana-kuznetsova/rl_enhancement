@@ -170,7 +170,6 @@ def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, feat_type, fs)
     y = np.asarray(y)
     return X, y 
 
-
 def make_batch_test(x_list, ind, P, feat_type, maxlen=1339, win_len=512, hop_size=256, fs=16000):
     X = []
     chunk_x = x_list[ind[0]:ind[1]]
