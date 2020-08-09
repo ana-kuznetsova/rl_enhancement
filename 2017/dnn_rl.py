@@ -100,6 +100,6 @@ def q_learning(x_path, y_path,
     print('X shape:', x.shape)
     x = np.abs(get_X_batch(x, P))
 
-    for row in x:
+    for row in x.T:
         x_k = np.repeat(x, y.shape[1], axis=1)
         print('X shape:', x_k.shape)
