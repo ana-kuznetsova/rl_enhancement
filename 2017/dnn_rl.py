@@ -90,8 +90,8 @@ def q_learning(x_path, y_path,
 
     ## Make training example, put into data loader
     #Select random
-    temp = np.load(y_path)
-    y = np.repeat(temp, maxlen, axis=1)
+    y = np.load(y_path)
+    print('Y:', y.shape)
     x_files = os.listdir(x_path)
     x = np.random.choice(x_files)
 
@@ -99,5 +99,5 @@ def q_learning(x_path, y_path,
     x = mel_spec(x, win_len, hop_size, fs)
     x = pad(x, maxlen)
     x = np.abs(get_X_batch(x, P))
-    x = np.repeat(x, y.shape[1], axis=1)
+    #x = np.repeat(x, y.shape[1], axis=1)
     print('X shape:', x.shape)
