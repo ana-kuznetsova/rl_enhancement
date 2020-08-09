@@ -201,9 +201,10 @@ def get_freq_bins(train_paths, ind, maxlen=1339):
     freqs = 0
     first = True
     for path in tqdm(chunk_x):
-        f = read(path)
-        f = STFT(f, 512, 256)
-        f = pad(f, maxlen).T
+        #f = read(path)
+        #f = STFT(f, 512, 256)
+        #f = pad(f, maxlen).T
+        f = np.load(path)
         if first:
             freqs = f
             first = False
