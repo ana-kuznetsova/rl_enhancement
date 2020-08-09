@@ -97,7 +97,7 @@ def q_learning(x_path, y_path,
 
     x = np.load(x_path+x)
     x = mel_spec(x, win_len, hop_size, fs)
-    x = np.abs(get_X_batch(x, P))
+    x = np.abs(get_X_batch(x, P)).T
     print('X shape:', x.shape)
 
     '''
