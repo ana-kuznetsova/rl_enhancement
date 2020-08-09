@@ -90,7 +90,7 @@ def q_learning(x_path, y_path,
 
     ## Make training example, put into data loader
     X = []
-    y = []
+    Y = []
 
     #Select random
     y = np.load(y_path).T
