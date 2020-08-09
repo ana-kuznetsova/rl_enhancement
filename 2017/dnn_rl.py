@@ -104,6 +104,7 @@ def q_learning(x_path, y_path,
 
     for col in range(x.shape[1]):
         x_k = np.repeat(x[:, col].reshape(-1, 1), y.shape[1], axis=1)
+        x_k = x_k.reshape(1, -1)
         X.append(x_k)
         Y.append(y)
     #Input     
