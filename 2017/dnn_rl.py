@@ -106,7 +106,7 @@ def q_learning(x_path, y_path,
         x_k = np.repeat(x[:, col].reshape(-1, 1), y.shape[1], axis=1)
         x_k = x_k.flatten()
         X.append(x_k)
-        Y.append(y)
+        Y.append(y.flatten())
     #Input     
     X = np.asarray(X) #(1339, 704, 32)
     Y = np.asarray(Y) #(1339, 257, 32)
