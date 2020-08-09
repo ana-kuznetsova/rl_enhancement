@@ -85,9 +85,6 @@ def q_learning(x_path, y_path,
     dnn_rl = dnn_rl.to(device)
     criterion.cuda()
 
-    ## Make training example, put into data loader
-    X = []
-
     #Select random
     x_files = os.listdir(x_path)
     x = np.random.choice(x_files)
@@ -97,7 +94,7 @@ def q_learning(x_path, y_path,
     x = np.abs(get_X_batch(x, P)).T
     x = pad(x, maxlen)
 
-    print('Shape X:', X.shape)
+    print('Shape X:', x.shape)
 
     '''
     
