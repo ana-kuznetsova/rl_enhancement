@@ -1,7 +1,6 @@
 import os
 
 import torch
-import torch.nn.functional as Func
 import torch.nn as nn
 from torch.autograd import Variable
 import torch.optim as optim
@@ -53,9 +52,9 @@ class DNN_RL(nn.Module):
         self.drop = nn.Dropout(0.3)
         
     def forward(self, x):
-        x = Func.sigmoid(self.fc1(x))
+        x = torch.sigmoid(self.fc1(x))
         x = self.drop(x)
-        x = Func.sigmoid(self.fc2(x))
+        x = torch.sigmoid(self.fc2(x))
         x = self.drop(x)
         x = self.soft(x)
         return x 
