@@ -51,7 +51,7 @@ class DNN_RL(nn.Module):
         super().__init__()
         self.fc1 = nn.Linear(704, 64)
         self.fc2 = nn.Linear(64, 32)
-        self.soft = nn.Softmax(dim=1)
+        self.soft = nn.Softmax(dim=2)
         self.drop = nn.Dropout(0.3)
         
     def forward(self, x):
