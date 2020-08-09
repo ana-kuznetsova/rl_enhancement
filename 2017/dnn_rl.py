@@ -92,7 +92,8 @@ def q_learning(x_path, y_path,
     Y = []
 
     #Select random
-    y = np.load(y_path).T
+    y = np.load(y_path)
+    print('Y shape:', y)
     x_files = os.listdir(x_path)
     x = np.random.choice(x_files)
 
