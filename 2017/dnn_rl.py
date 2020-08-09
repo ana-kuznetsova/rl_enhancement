@@ -76,7 +76,7 @@ def q_learning(x_path, y_path,
     '''
     ### Initialization ###
     P=5 #Window size
-    '''
+
     dnn_rl = DNN_RL()
     dnn_rl.apply(weights)
 
@@ -86,7 +86,6 @@ def q_learning(x_path, y_path,
     dnn_rl.cuda()
     dnn_rl = dnn_rl.to(device)
     criterion.cuda()
-    '''
 
     ## Make training example, put into data loader
     X = []
@@ -111,4 +110,9 @@ def q_learning(x_path, y_path,
     Y = np.asarray(Y) #(1339, 257, 32)
 
     trainData = data.DataLoader(trainDataLoader(X, Y), batch_size = 1)
-    print(len(trainData))
+    
+    for step, (audio, target) in enumerate(trainData): 
+        audio = audio.to(device)
+        target = target.to(device)
+        dnn_rl.train()
+        output = dnn_rl(audio)
