@@ -49,7 +49,7 @@ class DNN_RL(nn.Module):
         super().__init__()
         self.fc1 = nn.Linear(704, 64)
         self.fc2 = nn.Linear(64, 32)
-        self.soft = nn.Softmax(dim=2)
+        self.soft = nn.Softmax(dim=1)
         self.drop = nn.Dropout(0.3)
         
     def forward(self, x):
@@ -91,16 +91,10 @@ def q_learning(x_path, y_path,
 
     x = np.load(x_path+x)
     x = mel_spec(x, win_len, hop_size, fs)
-    x = np.abs(get_X_batch(x, P)).T
+    x = np.abs(get_X_batch(x, P))
     x = pad(x, maxlen)
 
     print('Shape X:', x.shape)
 
-    '''
-    
-    for step, (audio, target) in enumerate(trainData): 
-        audio = audio.to(device)
-        target = target.to(device)
-        dnn_rl.train()
-        output = dnn_rl(audio)
-    '''
+    x = torch.tensor(x).float()
+    print(x)
