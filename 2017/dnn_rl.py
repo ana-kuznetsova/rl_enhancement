@@ -107,8 +107,8 @@ def q_learning(x_path, y_path,
         X.append(x_k)
         Y.append(y)
     #Input     
-    X = np.asarray(X)
-    Y = np.asarray(Y)
+    X = np.asarray(X) #(1339, 704, 32)
+    Y = np.asarray(Y) #(1339, 257, 32)
 
-    print(X.shape)
-    print(Y.shape)
+    trainData = data.DataLoader(trainDataLoader(X, Y), batch_size = 1)
+    print(len(trainData))
