@@ -15,6 +15,7 @@ from models import testDataLoader
 from models import weights
 from data import mel_spec
 from data import pad
+from data import get_X_batch
 
 #### REWARD DEFINITION ####
 
@@ -75,7 +76,7 @@ def q_learning(x_path, y_path,
     '''
     ### Initialization ###
     P=5 #Window size
-
+    '''
     dnn_rl = DNN_RL()
     dnn_rl.apply(weights)
 
@@ -85,6 +86,7 @@ def q_learning(x_path, y_path,
     dnn_rl.cuda()
     dnn_rl = dnn_rl.to(device)
     criterion.cuda()
+    '''
 
     ## Make training example, put into data loader
     #Select random
