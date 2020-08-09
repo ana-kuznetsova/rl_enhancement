@@ -94,7 +94,7 @@ def q_learning(x_path, y_path,
     x = np.abs(get_X_batch(x, P)).T
     x = pad(x, maxlen).T
 
-    print('Shape X:', x.shape)
-
     x = torch.tensor(x).float()
-    print(x)
+
+    output = dnn_rl(x)
+    print(output)
