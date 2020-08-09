@@ -89,6 +89,9 @@ def q_learning(x_path, y_path,
     '''
 
     ## Make training example, put into data loader
+    X = []
+    y = []
+
     #Select random
     y = np.load(y_path).T
     print('Y:', y.shape)
@@ -102,4 +105,5 @@ def q_learning(x_path, y_path,
 
     for col in range(x.shape[1]):
         x_k = np.repeat(x[:, col].reshape(-1, 1), y.shape[1], axis=1)
-        print('X_k shape:', x_k.shape)
+        X.append(x_k)
+        Y.append(y)
