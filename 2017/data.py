@@ -218,6 +218,7 @@ def KMeans(chunk_size, train_path, out_path):
                          max_iter=100)
 
     paths = collect_paths(train_path)
+    print('Paths:', paths[:10])
     num_chunk = (4620//chunk_size) + 1
     for chunk in range(num_chunk):
         start = chunk*chunk_size
