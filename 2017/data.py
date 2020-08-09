@@ -219,14 +219,14 @@ def KMeans(chunk_size, train_path, out_path):
 
     paths = os.listdir(train_path)
     paths = [train_path+p for p in paths]
-    print('Paths:', paths[:10])
+    #print('Paths:', paths[:10])
     num_chunk = (4620//chunk_size) + 1
     for chunk in range(num_chunk):
         start = chunk*chunk_size
         end = min(start+chunk_size, 4620)
         print(start, end)
         X = get_freq_bins(paths, [start, end])
-        #print('Shape:', X.shape)
+        print('Shape:', X.shape)
         kmeans = kmeans.partial_fit(np.abs(X))
 
     centers = kmeans.cluster_centers_
