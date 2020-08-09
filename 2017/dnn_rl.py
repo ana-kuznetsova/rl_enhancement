@@ -10,8 +10,6 @@ import copy
 import pickle
 
 import numpy as np
-from models import trainDataLoader
-from models import testDataLoader
 from models import weights
 from data import mel_spec
 from data import pad
@@ -89,11 +87,8 @@ def q_learning(x_path, y_path,
 
     ## Make training example, put into data loader
     X = []
-    Y = []
 
     #Select random
-    y = np.load(y_path).T
-    #print('Y shape:', y.shape)
     x_files = os.listdir(x_path)
     x = np.random.choice(x_files)
 
@@ -102,22 +97,13 @@ def q_learning(x_path, y_path,
     x = np.abs(get_X_batch(x, P)).T
     x = pad(x, maxlen)
 
-    for col in range(x.shape[1]):
-        x_k = np.repeat(x[:, col].reshape(-1, 1), y.shape[1], axis=1)
-        x_k = x_k.flatten()
-        X.append(x_k)
-        Y.append(y.flatten())
-    #Input     
-    X = np.asarray(X) #(1339, 704, 32)
-    Y = np.asarray(Y) #(1339, 257, 32)
-
     print('Shape X:', X.shape)
-    print('Shape Y:', Y.shape)
 
-    trainData = data.DataLoader(trainDataLoader(X, Y), batch_size = 1)
+    '''
     
     for step, (audio, target) in enumerate(trainData): 
         audio = audio.to(device)
         target = target.to(device)
         dnn_rl.train()
         output = dnn_rl(audio)
+    '''
