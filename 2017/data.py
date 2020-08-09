@@ -225,7 +225,7 @@ def KMeans(chunk_size, train_path, out_path):
         end = min(start+chunk_size, 4620)
         print(start, end)
         X = get_freq_bins(paths, [start, end])
-        print('Shape:', X.shape)
+        #print('Shape:', X.shape)
         kmeans = kmeans.partial_fit(np.abs(X))
 
     centers = kmeans.cluster_centers_
