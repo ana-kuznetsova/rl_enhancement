@@ -98,9 +98,9 @@ def q_learning(x_path, y_path,
     x = np.load(x_path+x)
     x = mel_spec(x, win_len, hop_size, fs)
     x = np.abs(get_X_batch(x, P)).T
-    #print('X shape:', x.shape)
+    print('X shape:', x.shape)
 
 
     for row in x:
-        x_k = np.repeat(row, y.shape[1], axis=1)
-        print('X shape:', x_k.shape)
+        #x_k = np.repeat(row, y.shape[1], axis=1)
+        #print('X shape:', x_k.shape)
