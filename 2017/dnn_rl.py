@@ -103,5 +103,5 @@ def q_learning(x_path, y_path,
 
 
     for row in x.T:
-        x_k = np.repeat(row, y.shape[1], axis=1)
+        x_k = np.repeat(row, y.shape[1], axis=0)
         print('X shape:', x_k.shape)
