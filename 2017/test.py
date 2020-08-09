@@ -43,4 +43,4 @@ best_l2 = copy.deepcopy(l2.state_dict())
 '''
 
 q_learning(x_path='/nobackup/anakuzne/data/snr0_train/', 
-           y_path='/nobackup/anakuzne/data/snr0_train/')
+           y_path='/nobackup/anakuzne/data/kmeans_centers.npy')
