@@ -105,4 +105,4 @@ def q_learning(x_path, y_path,
         ind = np.argmax(row.detach().numpy())
         G_k_pred = G[ind]
         wiener_pred[i] = G_k_pred
-    print(wiener_pred)        
+    print(wiener_pred.shape)        
