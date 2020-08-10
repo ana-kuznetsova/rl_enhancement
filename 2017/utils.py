@@ -37,3 +37,9 @@ def make_csv(train_noisy_path, irm_path, df_path):
     train_files = [train_noisy_path+t  for t in train_files]
     train_df = pd.DataFrame({"train_path":train_files, "irm_path":irms_ordered})
     train_df.to_csv(df_path+'train_paths.csv')
+
+
+def invert(spec):
+    istft = librosa.istft(spec, hop_length=256, win_length=512)
+    istft_res = librosa.core.resample(istft, 16000, 44000)
+    return istft_res

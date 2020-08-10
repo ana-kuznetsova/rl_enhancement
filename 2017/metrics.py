@@ -59,3 +59,8 @@ def eval_pesq(predicted_path, noisy_test, clean_test, out_path,
     data = {'fname':wav_names, 'PESQ_clean_ref':scores_clean_ref, 'PESQ_noisy_ref':scores_noisy_ref}
     df = pd.DataFrame(data, columns=['fname', 'PESQ_clean_ref', 'PESQ_noisy_ref'])
     df.to_csv(out_path+'PESQ.csv')
+
+
+def calc_Z(noisy_mix, pred, fs=16000):
+    z = pesq(noisy_mix, pred, fs)
+    return z
