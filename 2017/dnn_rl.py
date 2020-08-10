@@ -97,4 +97,4 @@ def q_learning(x_path, y_path,
 
   
     output = dnn_rl(x)
-    print('OUT shape:', output.size())
+    print(output)
