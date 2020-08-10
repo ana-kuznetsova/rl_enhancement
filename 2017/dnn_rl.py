@@ -60,7 +60,7 @@ class DNN_RL(nn.Module):
         return x 
 
 
-def q_learning(x_path, y_path, imag_path='/nobackup/anakuzne/data/snr0_train_img/'
+def q_learning(x_path, y_path, imag_path='/nobackup/anakuzne/data/snr0_train_img/',
                num_episodes=50000, epsilon=0.01, maxlen=1339, 
                win_len=512,
                hop_size=256,
