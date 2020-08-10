@@ -98,5 +98,7 @@ def q_learning(x_path, y_path,
   
     output = dnn_rl(x)
     
+    #Select template index
     for row in output:
-        print(row.detach().numpy())
+        ind = np.argmax(row.detach().numpy())
+        print(ind)
