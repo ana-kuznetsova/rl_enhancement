@@ -79,7 +79,7 @@ def q_learning(x_path, y_path, model_path,
 
     dnn_rl = DNN_RL()
     dnn_rl.apply(weights)
-    dnn_rl = dnn_rl.to("cuda:2")
+    dnn_rl = dnn_rl.to("cuda:4")
 
     ###Load DNN-mapping model
     dnn_map = DNN_mel()
