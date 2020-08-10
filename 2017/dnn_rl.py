@@ -81,12 +81,12 @@ def q_learning(x_path, y_path, model_path,
     dnn_rl.apply(weights)
 
     ###Load DNN-mapping model
-    dnn_map = DNN_mel()
-    dnn_map.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
+    #dnn_map = DNN_mel()
+    #dnn_map.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
 
     criterion = nn.MSELoss()
     optimizer = optim.SGD(dnn_rl.parameters(), lr=0.01, momentum=0.9)
-    device = torch.device('cuda')
+    device = torch.device('cuda:0')
     #dnn_rl.cuda()
     #dnn_rl = dnn_rl.to(device)
     #criterion.cuda()
