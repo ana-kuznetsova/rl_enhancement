@@ -86,7 +86,7 @@ def q_learning(x_path, y_path, model_path,
 
     criterion = nn.MSELoss()
     optimizer = optim.SGD(dnn_rl.parameters(), lr=0.01, momentum=0.9)
-    device = torch.device('cuda:3')
+    device = torch.device('cuda')
     #dnn_rl.cuda()
     #dnn_rl = dnn_rl.to(device)
     #criterion.cuda()
