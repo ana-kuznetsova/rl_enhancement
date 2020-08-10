@@ -101,8 +101,8 @@ def q_learning(x_path, y_path,
     wiener_pred = np.zeros((1339, 257))
     
     #Select template index
-    for row in output:
+    for i, row in enumerate(output):
         ind = np.argmax(row.detach().numpy())
         G_k_pred = G[ind]
-        print(G_k_pred.shape)
-        
+        wiener_pred[i] = G_k_pred
+    print(wiener_pred)        
