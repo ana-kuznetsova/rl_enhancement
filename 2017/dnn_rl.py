@@ -89,8 +89,8 @@ def q_learning(x_path, y_path, imag_path='/nobackup/anakuzne/data/snr0_train_img
     x_files = os.listdir(x_path)
     x_name = np.random.choice(x_files)
 
-    x = np.load(x_path+x_name)
-    x = mel_spec(x, win_len, hop_size, fs)
+    x_source = np.load(x_path+x_name)
+    x = mel_spec(x_source, win_len, hop_size, fs)
     x = np.abs(get_X_batch(x, P)).T
     x = pad(x, maxlen).T
     x = torch.tensor(x).float()
@@ -106,4 +106,8 @@ def q_learning(x_path, y_path, imag_path='/nobackup/anakuzne/data/snr0_train_img
         G_k_pred = G[ind]
         wiener_pred[i] = G_k_pred
 
-    wiener_pred = wiener_pred.T       
+    wiener_pred = wiener_pred.T
+    phase = np.load(imag_path+x_name)
+
+    y_pred = np.multiply(x_source, wiener_pred) + phase
+    np.save('test_out.npy', y_pred)   
