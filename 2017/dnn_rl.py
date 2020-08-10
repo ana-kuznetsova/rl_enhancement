@@ -73,7 +73,7 @@ def q_learning(x_path, y_path,
     '''
     ### Initialization ###
     P=5 #Window size
-    templates = np.load(y_path)
+    G = np.load(y_path) #Cluster centers for wiener masks
 
     dnn_rl = DNN_RL()
     dnn_rl.apply(weights)
@@ -97,8 +97,12 @@ def q_learning(x_path, y_path,
 
   
     output = dnn_rl(x)
+
+    wiener_pred = np.zeros((1339, 257))
     
     #Select template index
     for row in output:
         ind = np.argmax(row.detach().numpy())
-        print(ind)
+        G_k_pred = G[ind]
+        print(G_k_pred.shape)
+        
