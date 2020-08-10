@@ -1,15 +1,15 @@
 import os
-
-import torch
-import torch.nn as nn
-from torch.autograd import Variable
-import torch.optim as optim
-import torch.utils.data as data
+import numpy as np
 import copy
 import pickle
 
-import numpy as np
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.utils.data as data
+
 from models import weights
+from models import DNN_mel
 from data import mel_spec
 from data import pad
 from data import get_X_batch
@@ -60,7 +60,8 @@ class DNN_RL(nn.Module):
         return x 
 
 
-def q_learning(x_path, y_path, imag_path='/nobackup/anakuzne/data/snr0_train_img/',
+def q_learning(x_path, y_path, model_path,
+               imag_path='/nobackup/anakuzne/data/snr0_train_img/',
                num_episodes=50000, epsilon=0.01, maxlen=1339, 
                win_len=512,
                hop_size=256,
@@ -70,6 +71,7 @@ def q_learning(x_path, y_path, imag_path='/nobackup/anakuzne/data/snr0_train_img
     Params:
         x_path: path to the training examples
         y_path: path to the cluster centers
+        model_path: path to dir where DNN-mapping model is stored
     '''
     ### Initialization ###
     P=5 #Window size
@@ -77,6 +79,10 @@ def q_learning(x_path, y_path, imag_path='/nobackup/anakuzne/data/snr0_train_img
 
     dnn_rl = DNN_RL()
     dnn_rl.apply(weights)
+
+    ###Load DNN-mapping model
+    dnn_map = DNN_mel()
+    dnn_map.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
 
     criterion = nn.MSELoss()
     optimizer = optim.SGD(dnn_rl.parameters(), lr=0.01, momentum=0.9)
@@ -89,25 +95,26 @@ def q_learning(x_path, y_path, imag_path='/nobackup/anakuzne/data/snr0_train_img
     x_files = os.listdir(x_path)
     x_name = np.random.choice(x_files)
 
+    phase = pad(np.load(imag_path+x_name), maxlen)
+
     x_source = np.load(x_path+x_name)
     x = mel_spec(x_source, win_len, hop_size, fs)
     x = np.abs(get_X_batch(x, P)).T
     x = pad(x, maxlen).T
     x = torch.tensor(x).float()
 
-  
-    output = dnn_rl(x)
-
-    wiener_pred = np.zeros((1339, 257))
+    ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
+    rl_out = dnn_rl(x)
+    wiener_rl = np.zeros((1339, 257))
     
     #Select template index, predict Wiener filter
-    for i, row in enumerate(output):
+    for i, row in enumerate(rl_out):
         ind = np.argmax(row.detach().numpy())
         G_k_pred = G[ind]
         wiener_pred[i] = G_k_pred
 
-    wiener_pred = wiener_pred.T
-    phase = pad(np.load(imag_path+x_name), maxlen)
+    wiener_rl = wiener_rl.T
+    y_pred_rl = np.multiply(pad(x_source, maxlen), wiener_pred) + phase  
 
-    y_pred = np.multiply(pad(x_source, maxlen), wiener_pred) + phase
-    np.save('test_out.npy', y_pred)   
+    map_out = dnn_map(x)
+    print(map_out.shape)
