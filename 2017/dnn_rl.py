@@ -109,5 +109,5 @@ def q_learning(x_path, y_path, imag_path='/nobackup/anakuzne/data/snr0_train_img
     wiener_pred = wiener_pred.T
     phase = np.load(imag_path+x_name)
 
-    y_pred = np.multiply(x_source, wiener_pred) + phase
+    y_pred = np.multiply(pad(x_source, maxlen), wiener_pred) + phase
     np.save('test_out.npy', y_pred)   
