@@ -99,4 +99,4 @@ def q_learning(x_path, y_path,
     output = dnn_rl(x)
     
     for row in output:
-        print(row.size())
+        print(row.numpy())
