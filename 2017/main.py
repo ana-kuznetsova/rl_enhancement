@@ -63,7 +63,7 @@ def main(args):
 
         '''
         print('Saving phase information')
-        save_imag('/nobackup/anakuzne/data/snr0_train/', '/u/anakuzne/data/snr0_train_img/')
+        save_imag('/nobackup/anakuzne/data/snr0_train/', '/nobackup/anakuzne/data/snr0_train_img/')
 
     elif args.mode=='pretrain':
         pretrain(args.chunk_size, args.model_path, args.x_path, args.y_path, args.loss_path)
