@@ -60,7 +60,7 @@ class DNN_RL(nn.Module):
         return x 
 
 
-def q_learning(x_path, y_path, 
+def q_learning(x_path, y_path, imag_path='/nobackup/anakuzne/data/snr0_train_img/'
                num_episodes=50000, epsilon=0.01, maxlen=1339, 
                win_len=512,
                hop_size=256,
@@ -87,9 +87,9 @@ def q_learning(x_path, y_path,
 
     #Select random
     x_files = os.listdir(x_path)
-    x = np.random.choice(x_files)
+    x_name = np.random.choice(x_files)
 
-    x = np.load(x_path+x)
+    x = np.load(x_path+x_name)
     x = mel_spec(x, win_len, hop_size, fs)
     x = np.abs(get_X_batch(x, P)).T
     x = pad(x, maxlen).T
@@ -100,9 +100,10 @@ def q_learning(x_path, y_path,
 
     wiener_pred = np.zeros((1339, 257))
     
-    #Select template index
+    #Select template index, predict Wiener filter
     for i, row in enumerate(output):
         ind = np.argmax(row.detach().numpy())
         G_k_pred = G[ind]
         wiener_pred[i] = G_k_pred
-    print(wiener_pred.shape)        
+
+    wiener_pred = wiener_pred.T       
