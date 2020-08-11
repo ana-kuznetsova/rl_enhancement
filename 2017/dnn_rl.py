@@ -90,8 +90,7 @@ def q_learning(x_path, y_path, model_path, clean_path,
     dnn_rl = DNN_RL()
     dnn_rl.apply(weights)
     dnn_rl = dnn_rl.to("cuda:0")
-    
-    '''
+
     #criterion = nn.MSELoss()
     #optimizer = optim.SGD(dnn_rl.parameters(), lr=0.01, momentum=0.9)
     #device = torch.device('cuda:3')
@@ -111,7 +110,8 @@ def q_learning(x_path, y_path, model_path, clean_path,
     x = np.abs(get_X_batch(x, P)).T
     x = pad(x, maxlen).T
     x = torch.tensor(x).float()
-
+    print('X:', x.size())
+    '''
     ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
     rl_out = dnn_rl(x)
     wiener_rl = np.zeros((1339, 257))
