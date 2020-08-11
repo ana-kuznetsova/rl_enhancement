@@ -99,6 +99,7 @@ if __name__ == '__main__':
     parser.add_argument('--preds_path', type=str, help='Path to the predicted output')
     parser.add_argument('--pre_path', type=str, help='paths to pretrained model')
     parser.add_argument('--mask', type=str, help='mask type')
+    parser.add_argument('--clean_path', type=str, help='path to clean stfts')
 
     args = parser.parse_args()
     main(args)

@@ -62,7 +62,7 @@ class DNN_RL(nn.Module):
         return x 
 
 
-def q_learning(x_path, y_path, model_path,
+def q_learning(x_path, y_path, model_path, clean_path,
                imag_path='/nobackup/anakuzne/data/snr0_train_img/',
                num_episodes=50000, epsilon=0.01, maxlen=1339, 
                win_len=512,
@@ -74,6 +74,7 @@ def q_learning(x_path, y_path, model_path,
         x_path: path to the training examples
         y_path: path to the cluster centers
         model_path: path to dir where DNN-mapping model is stored
+        clean_path: path to clean reference (stft)
     '''
     ### Initialization ###
     P=5 #Window size
@@ -133,6 +134,7 @@ def q_learning(x_path, y_path, model_path,
     z_rl = calc_Z(x_source_wav, y_rl_wav)
     z_map = calc_Z(x_source_wav, y_map_wav)
     #print('Z-scores:', z_rl, z_map)
-    #FIXME: not x_source but clean speech signal
+    
+    clean = np.load(clean_path+x_name)
     E = time_weight(y_pred_rl, pad(clean, maxlen))
     r = reward([z_rl, z_map], E)
