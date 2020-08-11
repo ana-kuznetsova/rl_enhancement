@@ -117,7 +117,7 @@ def q_learning(x_path, y_path, model_path, clean_path,
     #Select template index, predict Wiener filter
     for i, row in enumerate(rl_out):
         #ind = np.argmax(row.detach().numpy())
-        print(row.detach().cpu().numpy())
+        print(row)
         #ind = row.cpu()
         #print('IND:', ind)
         G_k_pred = G[ind]
