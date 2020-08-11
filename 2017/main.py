@@ -57,7 +57,7 @@ def main(args):
         print('Generate TARGET data...')
         '''
         target_files = collect_paths('/nobackup/anakuzne/data/train/')
-        calc_masks(target_files, '', FS, WIN_LEN, HOP_SIZE,
+        calc_masks(target_files, noise_path, FS, WIN_LEN, HOP_SIZE,
                    mask_dir='/nobackup/anakuzne/data/snr0_train_clean/',
                    mask_type='stft')
         '''
