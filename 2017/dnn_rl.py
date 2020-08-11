@@ -18,19 +18,19 @@ from metrics import calc_Z
 
 #### REWARD DEFINITION ####
 
-def reward(preds, E):
-    R_ = R(preds)
+def reward(z_scores, E):
+    '''
+    z_scores[0]: predicted G from DNN-RL
+    z_scores[1]: predicted G from DNN-map
+    '''
+    R_ = R(z_scores)
     if R_ > 0:
         return (1 - E)*R_
     else:
         return E*R_
 
 
-def R(preds, alpha=20):
-    '''
-    Preds[0]: predicted G from DNN-RL
-    Preds[1]: predicted G from DNN-map
-    '''
+def R(z_scores, alpha=20):
     return np.tanh(alpha(preds[0]- preds[1]))
 
 def time_weight(Y, S):
@@ -83,7 +83,7 @@ def q_learning(x_path, y_path, model_path,
   
     dnn_map = DNN_mel()
     dnn_map.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
-    dnn_map = dnn_map.to("cuda")
+    dnn_map = dnn_map.to("cuda:0")
 
     dnn_rl = DNN_RL()
     dnn_rl.apply(weights)
@@ -132,4 +132,6 @@ def q_learning(x_path, y_path, model_path,
 
     z_rl = calc_Z(x_source_wav, y_rl_wav)
     z_map = calc_Z(x_source_wav, y_map_wav)
-    print('Z-scores:', z_rl, z_map)
+    #print('Z-scores:', z_rl, z_map)
+    E = time_weight(y_pred_rl, pad(x_source, maxlen))
+    r = reward([z_rl, z_map], E)
