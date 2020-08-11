@@ -55,15 +55,15 @@ def main(args):
 
 
         print('Generate TARGET data...')
-
+        '''
         target_files = collect_paths('/nobackup/anakuzne/data/train/')
-        calc_masks(target_files, noise_path, FS, WIN_LEN, HOP_SIZE,
-                   mask_dir='/nobackup/anakuzne/data/snr0_w_target/',
-                   mask_type='Wiener')
-
+        calc_masks(target_files, '', FS, WIN_LEN, HOP_SIZE,
+                   mask_dir='/nobackup/anakuzne/data/snr0_train_clean/',
+                   mask_type='stft')
         '''
         print('Saving phase information')
         save_imag('/nobackup/anakuzne/data/snr0_train/', '/nobackup/anakuzne/data/snr0_train_img/')
+        '''
 
     elif args.mode=='pretrain':
         pretrain(args.chunk_size, args.model_path, args.x_path, args.y_path, args.loss_path)

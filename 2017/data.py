@@ -102,8 +102,7 @@ def pad_noise(speech, noise):
 def calc_masks(speech_paths, noise_path, fs, win_len, hop_size,
                mask_dir,
                mask_type='IRM',
-               stft_dir=None,
-               write_stft=False):
+               stft_dir=None):
     
     noise = read(noise_path, fs)
 
@@ -113,8 +112,6 @@ def calc_masks(speech_paths, noise_path, fs, win_len, hop_size,
         noise = pad_noise(speech, noise)
         stft_noise = STFT(noise, win_len, hop_size)
         stft_clean = STFT(speech, win_len, hop_size)
-        if write_stft:
-            write_npy(stft_dir, fname, stft_clean)
         if mask_type=='IRM':
             irm = IRM(stft_clean, stft_noise)
             write_npy(mask_dir, fname, irm)
@@ -126,6 +123,9 @@ def calc_masks(speech_paths, noise_path, fs, win_len, hop_size,
             target = np.log(stft_clean) + 0.0000001
             #target = np.nan_to_num(target)
             write_npy(mask_dir, fname, target)
+        elif mask_type='stft':
+            write_npy(stft_dir, fname, stft_clean)
+
 
 def get_X_batch(stft, P):
     windows = []
