@@ -116,10 +116,7 @@ def q_learning(x_path, y_path, model_path, clean_path,
     ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
     rl_out = dnn_rl(x)
     wiener_rl = np.zeros((1339, 257))
-
-    print("OUT:", rl_out.detach().cpu().numpy())
     
-    '''
     #Select template index, predict Wiener filter
     for i, row in enumerate(rl_out):
         #ind = np.argmax(row.detach().numpy())
