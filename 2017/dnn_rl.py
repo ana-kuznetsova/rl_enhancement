@@ -81,15 +81,17 @@ def q_learning(x_path, y_path, model_path, clean_path,
     G = np.load(y_path) #Cluster centers for wiener masks
 
     ###Load DNN-mapping model
+    device = torch.device('cuda:2')
+    torch.cuda.set_device(2)
     
     dnn_map = DNN_mel()
     dnn_map.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
-    dnn_map = dnn_map.to("cuda:2")
+    dnn_map = dnn_map.to(device)
     
     
     dnn_rl = DNN_RL()
     dnn_rl.apply(weights)
-    dnn_rl = dnn_rl.to("cuda:2")
+    dnn_rl = dnn_rl.to(device)
 
     #criterion = nn.MSELoss()
     #optimizer = optim.SGD(dnn_rl.parameters(), lr=0.01, momentum=0.9)
