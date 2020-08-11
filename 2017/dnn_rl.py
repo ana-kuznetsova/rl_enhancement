@@ -115,7 +115,7 @@ def q_learning(x_path, y_path, model_path, clean_path,
     rl_out = dnn_rl(x)
     wiener_rl = np.zeros((1339, 257))
 
-    print("OUT:", rl_out)
+    print("OUT:", rl_out.detach().numpy())
     
     '''
     #Select template index, predict Wiener filter
