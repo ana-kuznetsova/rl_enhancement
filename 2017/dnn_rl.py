@@ -86,12 +86,12 @@ def q_learning(x_path, y_path, model_path, clean_path,
     dnn_map.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
     dnn_map = dnn_map.to("cuda")
     
-    '''
+    
     dnn_rl = DNN_RL()
     dnn_rl.apply(weights)
     dnn_rl = dnn_rl.to("cuda:0")
+    
     '''
-
     #criterion = nn.MSELoss()
     #optimizer = optim.SGD(dnn_rl.parameters(), lr=0.01, momentum=0.9)
     #device = torch.device('cuda:3')
@@ -146,3 +146,4 @@ def q_learning(x_path, y_path, model_path, clean_path,
     clean = np.load(clean_path+x_name)
     E = time_weight(y_pred_rl, pad(clean, maxlen))
     r = reward([z_rl, z_map], E)
+    '''
