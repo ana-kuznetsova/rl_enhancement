@@ -130,7 +130,7 @@ def q_learning(x_path, y_path, model_path, clean_path,
     wiener_map = map_out.detach().cpu().numpy()
     print('Map:', wiener_map.shape)
     print('Source:', pad(x_source, maxlen).shape)
-    y_pred_map = np.multiply(pad(x_source.T, maxlen), wiener_map) + phase  
+    y_pred_map = np.multiply(pad(x_source, maxlen).T, wiener_map) + phase  
 
     '''
     ##### Calculate reward ######
