@@ -84,11 +84,11 @@ def q_learning(x_path, y_path, model_path, clean_path,
   
     dnn_map = DNN_mel()
     dnn_map.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
-    dnn_map = dnn_map.to("cuda:3")
+    dnn_map = dnn_map.to("cuda")
 
     dnn_rl = DNN_RL()
     dnn_rl.apply(weights)
-    dnn_rl = dnn_rl.to("cuda:3")
+    dnn_rl = dnn_rl.to("cuda")
 
     #criterion = nn.MSELoss()
     #optimizer = optim.SGD(dnn_rl.parameters(), lr=0.01, momentum=0.9)
@@ -117,7 +117,8 @@ def q_learning(x_path, y_path, model_path, clean_path,
     #Select template index, predict Wiener filter
     for i, row in enumerate(rl_out):
         #ind = np.argmax(row.detach().numpy())
-        ind = row.detach().cpu().clone().numpy()
+        print(row)
+        ind = row.cpu()
         print('IND:', ind)
         G_k_pred = G[ind]
         wiener_pred[i] = G_k_pred
