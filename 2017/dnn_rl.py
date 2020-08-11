@@ -120,10 +120,9 @@ def q_learning(x_path, y_path, model_path, clean_path,
     #Select template index, predict Wiener filter
     for i, row in enumerate(rl_out):
         ind = np.argmax(row.detach().cpu().numpy())
-        print('IND:', ind)
         G_k_pred = G[ind]
-        wiener_pred[i] = G_k_pred
-    '''
+        wiener_rl[i] = G_k_pred
+
     wiener_rl = wiener_rl.T
     y_pred_rl = np.multiply(pad(x_source, maxlen), wiener_rl) + phase  
 
@@ -131,6 +130,7 @@ def q_learning(x_path, y_path, model_path, clean_path,
     wiener_map = map_out.detach().numpy()
     y_pred_map = np.multiply(pad(x_source, maxlen), wiener_map) + phase  
 
+    '''
     ##### Calculate reward ######
     x_source_wav = invert(x_source)
     y_map_wav = invert(y_pred_map)[:x_source_wav.shape[0]]
