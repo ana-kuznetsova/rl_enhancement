@@ -109,7 +109,7 @@ def q_learning(x_path, y_path, model_path, clean_path,
     x = mel_spec(x_source, win_len, hop_size, fs)
     x = np.abs(get_X_batch(x, P)).T
     x = pad(x, maxlen).T
-    x = torch.tensor(x).float()
+    x = torch.tensor(x).float().cuda()
     print('X:', x.size())
     '''
     ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
