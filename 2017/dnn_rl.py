@@ -133,5 +133,6 @@ def q_learning(x_path, y_path, model_path,
     z_rl = calc_Z(x_source_wav, y_rl_wav)
     z_map = calc_Z(x_source_wav, y_map_wav)
     #print('Z-scores:', z_rl, z_map)
-    E = time_weight(y_pred_rl, pad(x_source, maxlen))
+    #FIXME: not x_source but clean speech signal
+    E = time_weight(y_pred_rl, pad(clean, maxlen))
     r = reward([z_rl, z_map], E)
