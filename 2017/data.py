@@ -124,7 +124,7 @@ def calc_masks(speech_paths, noise_path, fs, win_len, hop_size,
             #target = np.nan_to_num(target)
             write_npy(mask_dir, fname, target)
         elif mask_type=='stft':
-            write_npy(stft_dir, fname, stft_clean)
+            write_npy(mask_dir, fname, stft_clean)
 
 
 def get_X_batch(stft, P):
