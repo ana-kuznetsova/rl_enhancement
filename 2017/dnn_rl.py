@@ -42,6 +42,7 @@ def time_weight(Y, S):
     Y = np.nan_to_num(np.log(np.abs(Y)))
     S = np.nan_to_num(np.log(np.abs(S)))
     sum_ = np.nan_to_num((Y - S)**2)
+    print('sum:', sum_)
     E_approx = np.nan_to_num(np.sum(sum_, axis=0))
     E = E_approx/np.max(E_approx)
     return E
