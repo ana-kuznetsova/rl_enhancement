@@ -78,13 +78,14 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
     device = torch.device('cuda:2')
     torch.cuda.set_device(2)
 
-    criterion = nn.MSELoss()
-    criterion.cuda()
-    optimizer = optim.SGD(l1.parameters(), lr=0.01, momentum=0.9)
-
     dnn_rl = DNN_RL()
     dnn_rl.apply(weights)
     dnn_rl = dnn_rl.to(device)
+
+    criterion = nn.MSELoss()
+    criterion.cuda()
+    optimizer = optim.SGD(dnn_rl.parameters(), lr=0.01, momentum=0.9)
+
 
     for epoch in range(1, epochs):
         #Select random
