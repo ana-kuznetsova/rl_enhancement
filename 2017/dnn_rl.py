@@ -44,7 +44,6 @@ def time_weight(Y, S):
     sum_ = np.nan_to_num((Y - S)**2)
     E_approx = np.nan_to_num(np.sum(sum_, axis=0))
     E = E_approx/np.max(E_approx)
-    print('E:', E)
     return E
 
 
@@ -147,7 +146,5 @@ def q_learning(x_path, y_path, model_path, clean_path,
 
     clean = np.load(clean_path+x_name)
     E = time_weight(y_pred_rl, pad(clean, maxlen))
-    print('E:', E.shape)
     r = reward(z_rl, z_map, E)
-
-    print('R:', r, r.shape)
+    print('Reward:', r)
