@@ -116,7 +116,7 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
         wiener_rl = wiener_rl.T
         y_pred_rl = np.multiply(pad(x_source, maxlen), wiener_rl) + phase
 
-        y_pred_rl = torch.tensor(y_pred_rl).cuda().float()
+        y_pred_rl = torch.tensor(y_pred_rl, requires_grad=True).cuda().float()
 
         clean = pad(np.load(clean_path+x_name), maxlen)
         clean = torch.tensor(clean).cuda().float()
