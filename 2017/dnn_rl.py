@@ -70,7 +70,7 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
                 maxlen=1339, 
                 win_len=512,
                 hop_size=256, fs=16000):
-
+    epochs = 100
     P=5 #Window size
     G = np.load(y_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
@@ -78,40 +78,46 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
     device = torch.device('cuda:2')
     torch.cuda.set_device(2)
 
+    criterion = nn.MSELoss()
+    criterion.cuda()
+    optimizer = optim.SGD(l1.parameters(), lr=0.01, momentum=0.9)
+
     dnn_rl = DNN_RL()
     dnn_rl.apply(weights)
     dnn_rl = dnn_rl.to(device)
 
-    #Select random
-    x_files = os.listdir(x_path)
-    x_name = np.random.choice(x_files)
+    for epoch in range(1, epochs):
+        #Select random
+        x_files = os.listdir(x_path)
+        x_name = np.random.choice(x_files)
 
-    phase = pad(np.load(imag_path+x_name), maxlen)
+        phase = pad(np.load(imag_path+x_name), maxlen)
 
-    x_source = np.load(x_path+x_name)
-    x = mel_spec(x_source, win_len, hop_size, fs)
-    x = np.abs(get_X_batch(x, P)).T
-    x = pad(x, maxlen).T
-    x = torch.tensor(x).cuda().float()
+        x_source = np.load(x_path+x_name)
+        x = mel_spec(x_source, win_len, hop_size, fs)
+        x = np.abs(get_X_batch(x, P)).T
+        x = pad(x, maxlen).T
+        x = torch.tensor(x).cuda().float()
 
-    Q_pred = dnn_rl(x).detach().cpu().numpy() #Q_pred - q-function predicted by DNN-RL [1339, 32]
-    wiener_rl = np.zeros((1339, 257))
+        Q_pred = dnn_rl(x).detach().cpu().numpy() #Q_pred - q-function predicted by DNN-RL [1339, 32]
+        wiener_rl = np.zeros((1339, 257))
 
-    #Save selected actions
-    selected_actions = []
-    
-    #Select template index, predict Wiener filter
-    for i, row in enumerate(Q_pred):
-        ind = np.argmax(row)
-        selected_actions.append(ind)
-        G_k_pred = G[ind]
-        wiener_rl[i] = G_k_pred
+        #Save selected actions
+        selected_actions = []
+        
+        #Select template index, predict Wiener filter
+        for i, row in enumerate(Q_pred):
+            ind = np.argmax(row)
+            selected_actions.append(ind)
+            G_k_pred = G[ind]
+            wiener_rl[i] = G_k_pred
 
-    wiener_rl = wiener_rl.T
-    y_pred_rl = np.multiply(pad(x_source, maxlen), wiener_rl) + phase
-    print('Pred shape:', y_pred_rl.shape)
-    clean = np.load(clean_path+x_name)
-    print('Clean shape:', clean.shape)
+        wiener_rl = wiener_rl.T
+        y_pred_rl = np.multiply(pad(x_source, maxlen), wiener_rl) + phase
+
+        clean = pad(np.load(clean_path+x_name), maxlen)
+        newLoss = criterion(y_pred_rl.to(device), clean.to(device))
+        print('Loss:', newLoss)
 
 
 def q_learning(x_path, y_path, model_path, clean_path,
