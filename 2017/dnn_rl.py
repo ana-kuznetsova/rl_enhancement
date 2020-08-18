@@ -168,6 +168,6 @@ def q_learning(x_path, y_path, model_path, clean_path,
         if R_ > 0:
             Q_target[i][selected_actions[i]] = r[i] + max(Q_pred[i])
         else:
-            Q_target[i][selected_actions[i]] = Q_pred[i]selected_actions[i]
+            Q_target[i][selected_actions[i]] = Q_pred[i][selected_actions[i]]
         print('After upd:', Q_target[i][selected_actions[i]])
 
