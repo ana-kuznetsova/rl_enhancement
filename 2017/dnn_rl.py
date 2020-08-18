@@ -117,11 +117,16 @@ def q_learning(x_path, y_path, model_path, clean_path,
     x = torch.tensor(x).cuda().float()
 
     ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
-    rl_out = dnn_rl(x)
+
+    Q_target = np.zeros((1339, 257))
+    Q_MMSE = np.zeros((1339, 257))
+
+    Q_pred = dnn_rl(x) #Q_pred - q-function predicted by DNN-RL
+    print('Qfunc:', Q_pred.size())
     wiener_rl = np.zeros((1339, 257))
     
     #Select template index, predict Wiener filter
-    for i, row in enumerate(rl_out):
+    for i, row in enumerate(Q_pred):
         ind = np.argmax(row.detach().cpu().numpy())
         G_k_pred = G[ind]
         wiener_rl[i] = G_k_pred
