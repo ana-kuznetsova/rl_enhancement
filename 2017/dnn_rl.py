@@ -65,6 +65,56 @@ class DNN_RL(nn.Module):
         return x 
 
 
+def MMSE_pretrain(x_path, y_path, model_path, clean_path,
+                 imag_path='/nobackup/anakuzne/data/snr0_train_img/',
+                 maxlen=1339, 
+                 win_len=512,
+                 hop_size=256,
+                 fs=16000)
+
+    P=5 #Window size
+    G = np.load(y_path) #Cluster centers for wiener masks
+    torch.cuda.empty_cache() 
+    ###Load DNN-mapping model
+    device = torch.device('cuda:2')
+    torch.cuda.set_device(2)
+
+    dnn_rl = DNN_RL()
+    dnn_rl.apply(weights)
+    dnn_rl = dnn_rl.to(device)
+
+    #Select random
+    x_files = os.listdir(x_path)
+    x_name = np.random.choice(x_files)
+
+    phase = pad(np.load(imag_path+x_name), maxlen)
+
+    x_source = np.load(x_path+x_name)
+    x = mel_spec(x_source, win_len, hop_size, fs)
+    x = np.abs(get_X_batch(x, P)).T
+    x = pad(x, maxlen).T
+    x = torch.tensor(x).cuda().float()
+
+    Q_pred = dnn_rl(x).detach().cpu().numpy() #Q_pred - q-function predicted by DNN-RL [1339, 32]
+    wiener_rl = np.zeros((1339, 257))
+
+    #Save selected actions
+    selected_actions = []
+    
+    #Select template index, predict Wiener filter
+    for i, row in enumerate(Q_pred):
+        ind = np.argmax(row)
+        selected_actions.append(ind)
+        G_k_pred = G[ind]
+        wiener_rl[i] = G_k_pred
+
+    wiener_rl = wiener_rl.T
+    y_pred_rl = np.multiply(pad(x_source, maxlen), wiener_rl) + phase
+    print('Pred shape:', y_pred_rl.shape)
+    clean = np.load(clean_path+x_name)
+    print('Clean shape:', clean.shape)
+
+
 def q_learning(x_path, y_path, model_path, clean_path,
                imag_path='/nobackup/anakuzne/data/snr0_train_img/',
                num_episodes=50000, epsilon=0.01, maxlen=1339, 
@@ -164,10 +214,9 @@ def q_learning(x_path, y_path, model_path, clean_path,
     R_ = R(z_rl, z_map)
 
     for i in range(r.shape[0]):
-        print('Before upd:', Q_target[i][selected_actions[i]])
         if R_ > 0:
             Q_target[i][selected_actions[i]] = r[i] + max(Q_pred[i])
         else:
             Q_target[i][selected_actions[i]] = Q_pred[i][selected_actions[i]]
-        print('After upd:', Q_target[i][selected_actions[i]])
+
 

@@ -12,6 +12,7 @@ from models import Layer_1_2
 from models import DNN_mel
 
 from dnn_rl import q_learning
+from dnn_rl import MMSE_pretrain
 
 '''
 pretrain_path = '/u/anakuzne/data/pretrain_sig/dnn_l1.pth'
@@ -41,8 +42,14 @@ l2 = l2.to(device)
 criterion.cuda()
 best_l2 = copy.deepcopy(l2.state_dict())
 '''
-
+'''
 q_learning(x_path='/nobackup/anakuzne/data/snr0_train/', 
+           y_path='/nobackup/anakuzne/data/kmeans_centers.npy', 
+           model_path='/nobackup/anakuzne/data/model_wiener_50/',
+           clean_path='/nobackup/anakuzne/data/snr0_train_clean/')
+'''
+
+MMSE_pretrain(x_path='/nobackup/anakuzne/data/snr0_train/', 
            y_path='/nobackup/anakuzne/data/kmeans_centers.npy', 
            model_path='/nobackup/anakuzne/data/model_wiener_50/',
            clean_path='/nobackup/anakuzne/data/snr0_train_clean/')
