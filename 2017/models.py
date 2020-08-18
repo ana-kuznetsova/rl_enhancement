@@ -70,7 +70,7 @@ class Layer1(nn.Module):
 
     def forward(self, x):
         x = self.bnorm(x)
-        x = Func.sigmoid(self.fc1(x))
+        x = torch.sigmoid(self.fc1(x))
         x = self.drop(x)
         return self.out(x)
 
@@ -87,8 +87,8 @@ class Layer_1_2(nn.Module):
 
     def forward(self, x):
         x = self.bnorm(x)
-        x = Func.sigmoid(self.fc1(x))
-        x = Func.sigmoid(self.fc2(x))
+        x = torch.sigmoid(self.fc1(x))
+        x = torch.sigmoid(self.fc2(x))
         x = self.drop(x)
         return self.out(x)
 
@@ -107,9 +107,9 @@ class DNN_mel(nn.Module):
         
     def forward(self, x):
         x = self.bnorm(x)
-        x = Func.sigmoid(self.fc1(x))
+        x = torch.sigmoid(self.fc1(x))
         x = self.drop(x)
-        x = Func.sigmoid(self.fc2(x))
+        x = torch.sigmoid(self.fc2(x))
         x = self.drop(x)
         x = self.fc3(x)
         return x 

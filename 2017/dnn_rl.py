@@ -18,8 +18,6 @@ from metrics import calc_Z
 
 #### REWARD DEFINITION ####
 
-np.seterr(all='warn')
-
 def reward(z_rl, z_map, E):
     '''
     z_rl: predicted G from DNN-RL
@@ -127,10 +125,14 @@ def q_learning(x_path, y_path, model_path, clean_path,
 
     Q_pred = dnn_rl(x).detach().cpu().numpy() #Q_pred - q-function predicted by DNN-RL [1339, 32]
     wiener_rl = np.zeros((1339, 257))
+
+    #Save selected actions
+    selected_actions = []
     
     #Select template index, predict Wiener filter
     for i, row in enumerate(Q_pred):
         ind = np.argmax(row)
+        selected_actions.append(ind)
         G_k_pred = G[ind]
         wiener_rl[i] = G_k_pred
 
@@ -157,3 +159,10 @@ def q_learning(x_path, y_path, model_path, clean_path,
     E = time_weight(y_pred_rl, pad(clean, maxlen))
     r = reward(z_rl, z_map, E)
     print('Reward:', r)
+
+    ### UPDATE TARGET Q-FUNCS ###
+    R_ = R(z_rl, z_map)
+    print('R:', R_)
+    for i in range(r.shape[0]):
+        #Q_target[i][selected_actions[i]] =
+        print('test')
