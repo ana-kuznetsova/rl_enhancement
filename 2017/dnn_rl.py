@@ -18,20 +18,20 @@ from metrics import calc_Z
 
 #### REWARD DEFINITION ####
 
-def reward(z_scores, E):
+def reward(z_rl, z_map, E):
     '''
-    z_scores[0]: predicted G from DNN-RL
-    z_scores[1]: predicted G from DNN-map
+    z_rl: predicted G from DNN-RL
+    z_map: predicted G from DNN-map
     '''
-    R_ = R(z_scores)
+    R_ = R(z_rl, z_map)
     if R_ > 0:
         return (1 - E)*R_
     else:
         return E*R_
 
 
-def R(z_scores, alpha=20):
-    return np.tanh(alpha(z_scores[0]- z_scores[1]))
+def R(z_rl, z_map, alpha=20):
+    return np.tanh(alpha(z_rl - z_map))
 
 def time_weight(Y, S):
     '''
