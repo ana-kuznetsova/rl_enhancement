@@ -120,6 +120,8 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
 
         clean = pad(np.load(clean_path+x_name), maxlen)
         clean = torch.tensor(clean).cuda().float()
+        print('X:', clean.size(), 'Y:', y_pred_rl.size())
+
         newLoss = criterion(y_pred_rl.to(device), clean.to(device))
         print('Loss:', newLoss)
 
