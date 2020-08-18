@@ -123,13 +123,12 @@ def q_learning(x_path, y_path, model_path, clean_path,
 
     ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
 
-    Q_pred = dnn_rl(x) #Q_pred - q-function predicted by DNN-RL [1339, 32]
-    print('Qfunc:', Q_pred.size())
+    Q_pred = dnn_rl(x).detach().cpu().numpy() #Q_pred - q-function predicted by DNN-RL [1339, 32]
     wiener_rl = np.zeros((1339, 257))
     
     #Select template index, predict Wiener filter
     for i, row in enumerate(Q_pred):
-        ind = np.argmax(row.detach().cpu().numpy())
+        ind = np.argmax(row)
         G_k_pred = G[ind]
         wiener_rl[i] = G_k_pred
 
@@ -143,7 +142,7 @@ def q_learning(x_path, y_path, model_path, clean_path,
 
     
     ##### Calculate reward ######
-    
+
     x_source_wav = invert(x_source)
     y_map_wav = invert(y_pred_map)[:x_source_wav.shape[0]]
     y_rl_wav = invert(y_pred_map)[:x_source_wav.shape[0]]
