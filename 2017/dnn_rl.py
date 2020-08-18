@@ -65,11 +65,10 @@ class DNN_RL(nn.Module):
         return x 
 
 
-def MMSE_pretrain(x_path, y_path, model_path, clean_path,
-                 imag_path='/nobackup/anakuzne/data/snr0_train_img/',
-                 maxlen=1339, 
-                 win_len=512,
-                 hop_size=256, fs=16000)
+def MMSE_pretrain(x_path, y_path, model_path, clean_path, imag_path='/nobackup/anakuzne/data/snr0_train_img/',
+                maxlen=1339, 
+                win_len=512,
+                hop_size=256, fs=16000)
 
     P=5 #Window size
     G = np.load(y_path) #Cluster centers for wiener masks
