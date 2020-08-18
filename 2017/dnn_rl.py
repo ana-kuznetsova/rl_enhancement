@@ -31,7 +31,7 @@ def reward(z_scores, E):
 
 
 def R(z_scores, alpha=20):
-    return np.tanh(alpha(preds[0]- preds[1]))
+    return np.tanh(alpha(z_scores[0]- z_scores[1]))
 
 def time_weight(Y, S):
     '''
