@@ -11,7 +11,7 @@ from models import Layer1
 from models import Layer_1_2
 from models import DNN_mel
 
-from dnn_rl import q_learning
+#from dnn_rl import q_learning
 from dnn_rl import MMSE_pretrain
 
 '''
