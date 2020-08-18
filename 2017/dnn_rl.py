@@ -162,7 +162,12 @@ def q_learning(x_path, y_path, model_path, clean_path,
 
     ### UPDATE TARGET Q-FUNCS ###
     R_ = R(z_rl, z_map)
-    print('R:', R_)
+
     for i in range(r.shape[0]):
-        #Q_target[i][selected_actions[i]] =
-        print('R', R_)
+        print('Before upd:', Q_target[i][selected_actions[i]])
+        if R_ > 0:
+            Q_target[i][selected_actions[i]] = r[i] + max(Q_pred[i])
+        else:
+            Q_target[i][selected_actions[i]] = Q_pred[i]selected_actions[i]
+        print('After upd:', Q_target[i][selected_actions[i]])
+
