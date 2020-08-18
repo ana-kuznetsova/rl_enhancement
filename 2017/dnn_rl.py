@@ -31,7 +31,7 @@ def reward(z_rl, z_map, E):
 
 
 def R(z_rl, z_map, alpha=20):
-    return np.tanh(alpha(z_rl - z_map))
+    return np.tanh(alpha*(z_rl - z_map))
 
 def time_weight(Y, S):
     '''
