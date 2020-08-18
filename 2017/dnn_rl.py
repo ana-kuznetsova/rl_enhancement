@@ -143,6 +143,7 @@ def q_learning(x_path, y_path, model_path, clean_path,
 
     clean = np.load(clean_path+x_name)
     E = time_weight(y_pred_rl, pad(clean, maxlen))
-    r = reward([z_rl, z_map], E)
+    print('E:', E.shape)
+    r = reward(z_rl, z_map, E)
 
     print('R:', r)
