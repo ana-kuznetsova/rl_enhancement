@@ -39,8 +39,9 @@ def time_weight(Y, S):
     Y: predicted spectrogram
     S: true spectrogram
     '''
-    print('LOG VALUE:', np.nan_to_num(np.log(np.abs(Y))))
-    E_approx = np.sum(np.log(np.abs(Y)) - np.log(np.abs(S))**2, axis=0)
+    Y = np.nan_to_num(np.log(np.abs(Y))))
+    S = np.nan_to_num(np.log(np.abs(S)))
+    E_approx = np.sum(Y - S)**2, axis=0)
     E = E_approx/np.max(E_approx)
     return E
 
