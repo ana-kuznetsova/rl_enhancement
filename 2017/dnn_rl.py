@@ -133,10 +133,9 @@ def q_learning(x_path, y_path, model_path, clean_path,
         G_k_pred = G[ind]
         wiener_rl[i] = G_k_pred
 
-    print('Wiener shape:', wiener_rl.shape)
-
     wiener_rl = wiener_rl.T
     y_pred_rl = np.multiply(pad(x_source, maxlen), wiener_rl) + phase  
+    print('Pred shape:', y_pred_rl.shape)
 
     map_out = dnn_map(x)
     wiener_map = map_out.detach().cpu().numpy().T
