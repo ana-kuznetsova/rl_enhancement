@@ -80,6 +80,11 @@ def q_learning(x_path, y_path, model_path, clean_path,
         clean_path: path to clean reference (stft)
     '''
     ### Initialization ###
+
+    # Q-functions, zero initialization
+    Q_target = np.zeros((1339, 32))
+    Q_MMSE = np.zeros((1339, 32))
+
     P=5 #Window size
     G = np.load(y_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
@@ -118,10 +123,7 @@ def q_learning(x_path, y_path, model_path, clean_path,
 
     ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
 
-    Q_target = np.zeros((1339, 257))
-    Q_MMSE = np.zeros((1339, 257))
-
-    Q_pred = dnn_rl(x) #Q_pred - q-function predicted by DNN-RL
+    Q_pred = dnn_rl(x) #Q_pred - q-function predicted by DNN-RL [1339, 32]
     print('Qfunc:', Q_pred.size())
     wiener_rl = np.zeros((1339, 257))
     
@@ -131,25 +133,25 @@ def q_learning(x_path, y_path, model_path, clean_path,
         G_k_pred = G[ind]
         wiener_rl[i] = G_k_pred
 
-    wiener_rl = wiener_rl.T
-    y_pred_rl = np.multiply(pad(x_source, maxlen), wiener_rl) + phase  
+        wiener_rl = wiener_rl.T
+        y_pred_rl = np.multiply(pad(x_source, maxlen), wiener_rl) + phase  
 
-    map_out = dnn_map(x)
-    wiener_map = map_out.detach().cpu().numpy().T
-    y_pred_map = np.multiply(pad(x_source, maxlen), wiener_map) + phase  
+        map_out = dnn_map(x)
+        wiener_map = map_out.detach().cpu().numpy().T
+        y_pred_map = np.multiply(pad(x_source, maxlen), wiener_map) + phase  
 
     
-    ##### Calculate reward ######
-    
-    x_source_wav = invert(x_source)
-    y_map_wav = invert(y_pred_map)[:x_source_wav.shape[0]]
-    y_rl_wav = invert(y_pred_map)[:x_source_wav.shape[0]]
-    
-    z_rl = calc_Z(x_source_wav, y_rl_wav)
-    z_map = calc_Z(x_source_wav, y_map_wav)
-    print('Z-scores:', z_rl, z_map)
+        ##### Calculate reward ######
+        
+        x_source_wav = invert(x_source)
+        y_map_wav = invert(y_pred_map)[:x_source_wav.shape[0]]
+        y_rl_wav = invert(y_pred_map)[:x_source_wav.shape[0]]
+        
+        z_rl = calc_Z(x_source_wav, y_rl_wav)
+        z_map = calc_Z(x_source_wav, y_map_wav)
+        print('Z-scores:', z_rl, z_map)
 
-    clean = np.load(clean_path+x_name)
-    E = time_weight(y_pred_rl, pad(clean, maxlen))
-    r = reward(z_rl, z_map, E)
-    print('Reward:', r)
+        clean = np.load(clean_path+x_name)
+        E = time_weight(y_pred_rl, pad(clean, maxlen))
+        r = reward(z_rl, z_map, E)
+        print('Reward:', r)
