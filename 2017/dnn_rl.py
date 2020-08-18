@@ -132,7 +132,7 @@ def q_learning(x_path, y_path, model_path, clean_path,
 
     
     ##### Calculate reward ######
-    print('X shape:', x_source.shape)
+    
     x_source_wav = invert(x_source)
     y_map_wav = invert(y_pred_map)[:x_source_wav.shape[0]]
     y_rl_wav = invert(y_pred_map)[:x_source_wav.shape[0]]
@@ -141,8 +141,6 @@ def q_learning(x_path, y_path, model_path, clean_path,
     z_map = calc_Z(x_source_wav, y_map_wav)
     print('Z-scores:', z_rl, z_map)
 
-    '''
     clean = np.load(clean_path+x_name)
     E = time_weight(y_pred_rl, pad(clean, maxlen))
     r = reward([z_rl, z_map], E)
-    '''
