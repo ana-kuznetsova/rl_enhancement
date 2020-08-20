@@ -10,6 +10,8 @@ import torch.utils.data as data
 
 from models import weights
 from models import DNN_mel
+from models import trainDataLoader
+
 from data import mel_spec
 from data import pad
 from data import get_X_batch
@@ -108,6 +110,7 @@ def time_weight(Y, S):
 
 
 def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
+                clean_path,
                 imag_path='/nobackup/anakuzne/data/snr0_train_img/',
                 maxlen=1339, 
                 win_len=512,
@@ -162,6 +165,23 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
                                          [start, end], 5, 
                                          maxlen, win_len, 
                                          hop_size, feat_type, fs, names=True)
+            
+            trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 128)
+
+            for step, (audio, target) in enumerate(trainData): 
+                audio = audio.to(device)
+                print('Aud:', audio.size())
+                target = target.to(device)
+                print('Target:', target.size())
+                output = l1(audio)
+                print('Out:', out.size())
+
+                newLoss = criterion(output,target)                
+                chunk_loss += newLoss.data
+                optimizer.zero_grad()
+                newLoss.backward()
+                optimizer.step()
+
         '''
         #Select random
         x_files = os.listdir(x_path)
