@@ -192,7 +192,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
                 print('Phase:', phase.shape)
 
                 x_source = np.load(x_path+fnames[step])
-                x_source = pad(x_source, maxlen).T
+                x_source = pad(x_source, maxlen)
                 y_pred_rl = np.multiply(x_source, wiener_rl) + phase
                 y_pred_rl = torch.tensor(y_pred_rl, requires_grad=True).cuda().float()
 
