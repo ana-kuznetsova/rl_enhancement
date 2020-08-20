@@ -190,50 +190,20 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
                 x_source = pad(x_source, maxlen).T
                 y_pred_rl = np.multiply(x_source, wiener_rl) + phase
                 y_pred_rl = torch.tensor(y_pred_rl, requires_grad=True).cuda().float()
-                
-                print('Pred:', y_pred_rl.size())
 
                 clean = pad(np.load(clean_path+fnames[step]), maxlen).T
                 clean = torch.tensor(clean).cuda().float()
-                print('Clean:', clean.size())
                 newLoss = criterion(y_pred_rl, clean)                
                 chunk_loss += newLoss.data
                 optimizer.zero_grad()
                 newLoss.backward()
                 optimizer.step()
 
-        '''
+            chunk_loss = (chunk_loss.detach().cpu().numpy())/len(trainData)
+            
+            epoch_loss+=chunk_loss
 
-        Q_pred = l1(x).detach().cpu().numpy() #Q_pred - q-function predicted by DNN-RL [1339, 32]
-        wiener_rl = np.zeros((1339, 257))
-
-        #Select template index, predict Wiener filter
-        for i, row in enumerate(Q_pred):
-            ind = np.argmax(row)
-            G_k_pred = G[ind]
-            wiener_rl[i] = G_k_pred
-
-        wiener_rl = wiener_rl.T
-        y_pred_rl = np.multiply(pad(x_source, maxlen), wiener_rl) + phase
-        y_pred_rl = torch.tensor(y_pred_rl, requires_grad=True).cuda().float()
-
-        clean = pad(np.load(clean_path+x_name), maxlen)
-        clean = torch.tensor(clean).cuda().float()
-        newLoss = criterion(y_pred_rl.to(device), clean.to(device))
-        mid_losses.append(newLoss.detach().cpu().numpy())
-
-        if ep%100==0:
-            curr_loss = np.mean(np.asarray(mid_losses))
-            mid_losses = []
-            print('Epoch:', ep, 'Loss:', curr_loss)
-            l1_losses.append(curr_loss)
-            np.save(model_path+'rl_l1_losses.npy', np.asarray(l1_losses))
-
-        optimizer.zero_grad()
-        newLoss.backward()
-        optimizer.step()
-
-        '''
+            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
 
 ########################################################
 
