@@ -112,24 +112,41 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
                 win_len=512,
                 hop_size=256, fs=16000):
 
-    episodes = 50000
+    num_epochs = 50000
     P=5 #Window size
     G = np.load(y_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
+
+    ##### EARLY STOPPING #####
+
+    min_delta = 0.01 #Min change in loss which can be considered as improvement
+    stop_epoch = 10 #Number of epochs without improvement
+    no_improv = 0
+    prev_loss = 0
+
+    losses_l1 = []
+    losses_l2 = []
    
     device = torch.device('cuda:2')
     torch.cuda.set_device(2)
 
-    dnn_rl = DNN_RL()
-    dnn_rl.apply(weights)
-    dnn_rl = dnn_rl.to(device)
+    ######## PRETRAIN FIRST RL-LAYER #########
 
+    l1 = RL_L1()
+    l1.apply(weights)
     criterion = nn.MSELoss()
+    optimizer = optim.SGD(l1.parameters(), lr=0.01, momentum=0.9)
+    
+    l1.cuda()
+    l1 = l1.to(device)
     criterion.cuda()
-    optimizer = optim.SGD(dnn_rl.parameters(), lr=0.01, momentum=0.9)
 
+    l1_losses = []
 
-    for episode in range(1, episodes):
+    print('###### Pretraining RL_L1 #######')
+
+    for ep in range(1, num_epochs+1):
+        print('Epoch {}/{}'.format(ep, num_epochs))
         #Select random
         x_files = os.listdir(x_path)
         x_name = np.random.choice(x_files)
@@ -145,9 +162,6 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
         Q_pred = dnn_rl(x).detach().cpu().numpy() #Q_pred - q-function predicted by DNN-RL [1339, 32]
         wiener_rl = np.zeros((1339, 257))
 
-        #Save selected actions
-        selected_actions = []
-        
         #Select template index, predict Wiener filter
         for i, row in enumerate(Q_pred):
             ind = np.argmax(row)
@@ -157,16 +171,21 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
 
         wiener_rl = wiener_rl.T
         y_pred_rl = np.multiply(pad(x_source, maxlen), wiener_rl) + phase
-
         y_pred_rl = torch.tensor(y_pred_rl, requires_grad=True).cuda().float()
 
         clean = pad(np.load(clean_path+x_name), maxlen)
         clean = torch.tensor(clean).cuda().float()
         newLoss = criterion(y_pred_rl.to(device), clean.to(device))
+        
         print('Epoch:', epoch, 'Loss:', newLoss.data)
+
         optimizer.zero_grad()
         newLoss.backward()
         optimizer.step()
+
+
+
+########################################################
 
 
 def q_learning(x_path, y_path, model_path, clean_path,
