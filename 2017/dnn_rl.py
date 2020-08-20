@@ -174,7 +174,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
                 target = target.to(device)
                 print('Target:', target.size())
                 output = l1(audio)
-                print('Out:', out.size())
+                print('Out:', output.size())
 
                 newLoss = criterion(output,target)                
                 chunk_loss += newLoss.data
