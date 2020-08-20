@@ -159,7 +159,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, clean_path,
             X_chunk, y_chunk, fnames = make_batch(x_path, y_path, 
                                          [start, end], 5, 
                                          maxlen, win_len, 
-                                         hop_size, feat_type, fs, names=True)
+                                         hop_size, feat_type='mel', fs, names=True)
         '''
         #Select random
         x_files = os.listdir(x_path)
