@@ -142,6 +142,7 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
     criterion.cuda()
 
     l1_losses = []
+    mid_losses = []
 
     print('###### Pretraining RL_L1 #######')
 
@@ -175,9 +176,11 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
         clean = pad(np.load(clean_path+x_name), maxlen)
         clean = torch.tensor(clean).cuda().float()
         newLoss = criterion(y_pred_rl.to(device), clean.to(device))
+        mid_losses.append(newLoss.detach().cpu().numpy())
 
         if ep%100==0:
-            curr_loss = newLoss.detach().cpu().numpy()
+            curr_loss = np.mean(np.asarray(mid_losses))
+            mid_losses = []
             print('Epoch:', ep, 'Loss:', curr_loss)
             l1_losses.append(curr_loss)
             np.save(model_path+'rl_l1_losses.npy', np.asarray(l1_losses))
