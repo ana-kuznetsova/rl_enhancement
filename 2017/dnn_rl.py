@@ -165,7 +165,6 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
         #Select template index, predict Wiener filter
         for i, row in enumerate(Q_pred):
             ind = np.argmax(row)
-            selected_actions.append(ind)
             G_k_pred = G[ind]
             wiener_rl[i] = G_k_pred
 
