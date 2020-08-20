@@ -112,7 +112,7 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
                 win_len=512,
                 hop_size=256, fs=16000):
 
-    num_epochs = 50000
+    num_epochs = 100
     P=5 #Window size
     G = np.load(y_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
@@ -141,13 +141,25 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
     l1 = l1.to(device)
     criterion.cuda()
 
-    l1_losses = []
-    mid_losses = []
-
     print('###### Pretraining RL_L1 #######')
 
-    for ep in range(1, num_epochs+1):
+    for epoch in range(1, num_epochs+1):
+        print('Epoch {}/{}'.format(epoch, num_epochs))
+        epoch_loss = 0.0
 
+        num_chunk = (4620//chunk_size) + 1
+        for chunk in range(num_chunk):
+            chunk_loss = 0
+            start = chunk*chunk_size
+            end = min(start+chunk_size, 4620)
+            print(start, end)
+
+            # Y is a clean speech spectrogram
+            X_chunk, y_chunk, fnames = make_batch(x_path, y_path, 
+                                         [start, end], 5, 
+                                         maxlen, win_len, 
+                                         hop_size, feat_type, fs, names=True)
+        '''
         #Select random
         x_files = os.listdir(x_path)
         x_name = np.random.choice(x_files)
@@ -189,7 +201,7 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
         newLoss.backward()
         optimizer.step()
 
-
+        '''
 
 ########################################################
 

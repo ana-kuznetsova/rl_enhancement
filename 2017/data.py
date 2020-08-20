@@ -145,11 +145,10 @@ def get_X_batch(stft, P):
     return np.asarray(windows)
 
 
-def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, feat_type, fs):
+def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, feat_type, fs, names=False):
     X = []
     y = []
     chunk_x = os.listdir(x_path)[ind[0]:ind[1]]
-
     print('Loading training examples...')
 
     for path in chunk_x:
@@ -168,6 +167,8 @@ def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, feat_type, fs)
         y.extend(arr)
     X = np.asarray(X)
     y = np.asarray(y)
+    if names:
+        return X, y, chunk_x      
     return X, y 
 
 def make_batch_test(x_list, ind, P, feat_type, maxlen=1339, win_len=512, hop_size=256, fs=16000):
