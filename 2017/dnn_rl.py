@@ -253,7 +253,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
                     break
             else:
                 epoch_loss += chunk_loss/(num_chunk+1)
-                torch.save(best_l1, model_path+'dnn_l1.pth')
+                torch.save(best_l1, model_path+'qfunc_l1.pth')
                 continue
 
 ########################################################
