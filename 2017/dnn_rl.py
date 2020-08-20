@@ -176,24 +176,32 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
                 output = l1(audio)
                 print('Out:', output.size())
 
-                newLoss = criterion(output,target)                
+                phase = pad(np.load(imag_path+fnames[step]), maxlen)
+
+                Q_pred = output.detach().cpu().numpy()
+
+                wiener_rl = np.zeros((1339, 257))
+
+                #Select template index, predict Wiener filter
+                for i, row in enumerate(Q_pred):
+                    ind = np.argmax(row)
+                    G_k_pred = G[ind]
+                    wiener_rl[i] = G_k_pred
+
+                wiener_rl = wiener_rl.T
+
+                y_pred_rl = np.multiply(audio.detach().cpu().numpy(), wiener_rl) + phase
+                y_pred_rl = torch.tensor(y_pred_rl, requires_grad=True).cuda().float()
+
+                clean = pad(np.load(clean_path+fnames[step]), maxlen)
+                clean = torch.tensor(clean).cuda().float()
+                newLoss = criterion(y_pred_rl, clean)                
                 chunk_loss += newLoss.data
                 optimizer.zero_grad()
                 newLoss.backward()
                 optimizer.step()
 
         '''
-        #Select random
-        x_files = os.listdir(x_path)
-        x_name = np.random.choice(x_files)
-
-        phase = pad(np.load(imag_path+x_name), maxlen)
-
-        x_source = np.load(x_path+x_name)
-        x = mel_spec(x_source, win_len, hop_size, fs)
-        x = np.abs(get_X_batch(x, P)).T
-        x = pad(x, maxlen).T
-        x = torch.tensor(x).cuda().float()
 
         Q_pred = l1(x).detach().cpu().numpy() #Q_pred - q-function predicted by DNN-RL [1339, 32]
         wiener_rl = np.zeros((1339, 257))
