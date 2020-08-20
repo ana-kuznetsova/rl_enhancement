@@ -159,7 +159,7 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
         x = pad(x, maxlen).T
         x = torch.tensor(x).cuda().float()
 
-        Q_pred = dnn_rl(x).detach().cpu().numpy() #Q_pred - q-function predicted by DNN-RL [1339, 32]
+        Q_pred = l1(x).detach().cpu().numpy() #Q_pred - q-function predicted by DNN-RL [1339, 32]
         wiener_rl = np.zeros((1339, 257))
 
         #Select template index, predict Wiener filter
@@ -176,7 +176,7 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
         clean = pad(np.load(clean_path+x_name), maxlen)
         clean = torch.tensor(clean).cuda().float()
         newLoss = criterion(y_pred_rl.to(device), clean.to(device))
-        
+
         print('Epoch:', epoch, 'Loss:', newLoss.data)
 
         optimizer.zero_grad()
