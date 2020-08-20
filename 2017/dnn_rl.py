@@ -54,10 +54,11 @@ class RL_L2(nn.Module):
         x = self.drop(x)
         return self.soft(x)
 
-def q_training_step(output, x_path, clean_path, imag_path, fnames):
+def q_training_step(output, step, x_path, clean_path, imag_path, fnames):
     '''
     Params:
         output: NN predictions
+        step: step index
         x_path
         clean_path
         imag_path
@@ -204,7 +205,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
                 target = target.to(device)
                 output = l1(audio)
                 
-                newLoss = q_training_step(output, x_path, clean_path, imag_path, fnames)               
+                newLoss = q_training_step(output, step, x_path, clean_path, imag_path, fnames)               
                 chunk_loss += newLoss.data
                 optimizer.zero_grad()
                 newLoss.backward()
