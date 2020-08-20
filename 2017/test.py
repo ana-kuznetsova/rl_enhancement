@@ -49,7 +49,7 @@ q_learning(x_path='/nobackup/anakuzne/data/snr0_train/',
            clean_path='/nobackup/anakuzne/data/snr0_train_clean/')
 '''
 
-MMSE_pretrain(x_path='/nobackup/anakuzne/data/snr0_train/', 
+MMSE_pretrain(hunk_size=1000, x_path='/nobackup/anakuzne/data/snr0_train/', 
            y_path='/nobackup/anakuzne/data/kmeans_centers.npy', 
            model_path='/nobackup/anakuzne/data/model_wiener_50/',
            clean_path='/nobackup/anakuzne/data/snr0_train_clean/')
