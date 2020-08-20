@@ -176,7 +176,8 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
         clean = torch.tensor(clean).cuda().float()
         newLoss = criterion(y_pred_rl.to(device), clean.to(device))
 
-        print('Epoch:', ep, 'Loss:', newLoss.detach().cpu().numpy())
+        if (ep//1000)==0:
+            print('Epoch:', ep, 'Loss:', newLoss.detach().cpu().numpy())
 
         optimizer.zero_grad()
         newLoss.backward()
