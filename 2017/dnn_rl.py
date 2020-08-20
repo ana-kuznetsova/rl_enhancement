@@ -194,8 +194,8 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
                 print('Pred:', y_pred_rl.size())
 
                 clean = pad(np.load(clean_path+fnames[step]), maxlen).T
-                print('Clean:', clean.size())
                 clean = torch.tensor(clean).cuda().float()
+                print('Clean:', clean.size())
                 newLoss = criterion(y_pred_rl, clean)                
                 chunk_loss += newLoss.data
                 optimizer.zero_grad()
