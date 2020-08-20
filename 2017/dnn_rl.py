@@ -185,16 +185,16 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
                     G_k_pred = G[ind]
                     wiener_rl[i] = G_k_pred
 
-                print('Wiener:', wiener_rl.shape)
-                print('Phase:', phase.shape)
 
                 x_source = np.load(x_path+fnames[step])
                 x_source = pad(x_source, maxlen).T
-                print('X_source:', x_source.shape)
                 y_pred_rl = np.multiply(x_source, wiener_rl) + phase
                 y_pred_rl = torch.tensor(y_pred_rl, requires_grad=True).cuda().float()
+                
+                print('Pred:', y_pred_rl.size())
 
-                clean = pad(np.load(clean_path+fnames[step]), maxlen)
+                clean = pad(np.load(clean_path+fnames[step]), maxlen).T
+                print('Clean:', clean.size())
                 clean = torch.tensor(clean).cuda().float()
                 newLoss = criterion(y_pred_rl, clean)                
                 chunk_loss += newLoss.data
