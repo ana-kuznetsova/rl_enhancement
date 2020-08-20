@@ -54,7 +54,7 @@ class RL_L2(nn.Module):
         x = self.drop(x)
         return self.soft(x)
 
-def q_training_step(output, step, x_path, clean_path, imag_path, fnames):
+def q_training_step(output, step, x_path, clean_path, imag_path, fnames, maxlen=1339):
     '''
     Params:
         output: NN predictions
