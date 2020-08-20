@@ -170,13 +170,10 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
 
             for step, (audio, target) in enumerate(trainData): 
                 audio = audio.to(device)
-                print('Aud:', audio.size())
                 target = target.to(device)
-                print('Target:', target.size())
                 output = l1(audio)
-                print('Out:', output.size())
 
-                phase = pad(np.load(imag_path+fnames[step]), maxlen)
+                phase = pad(np.load(imag_path+fnames[step]), maxlen).T
 
                 Q_pred = output.detach().cpu().numpy()
 
@@ -188,11 +185,12 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
                     G_k_pred = G[ind]
                     wiener_rl[i] = G_k_pred
 
-                wiener_rl = wiener_rl.T
+                print('Wiener:', wiener_rl.shape)
                 print('Phase:', phase.shape)
 
                 x_source = np.load(x_path+fnames[step])
-                x_source = pad(x_source, maxlen)
+                x_source = pad(x_source, maxlen).T
+                print('X_source:', x_source.shape)
                 y_pred_rl = np.multiply(x_source, wiener_rl) + phase
                 y_pred_rl = torch.tensor(y_pred_rl, requires_grad=True).cuda().float()
 
