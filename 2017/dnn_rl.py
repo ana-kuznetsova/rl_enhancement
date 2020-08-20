@@ -13,6 +13,7 @@ from models import DNN_mel
 from data import mel_spec
 from data import pad
 from data import get_X_batch
+from data import make_batch
 from utils import invert
 from metrics import calc_Z
 
