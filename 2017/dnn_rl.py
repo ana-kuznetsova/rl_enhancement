@@ -107,7 +107,7 @@ def time_weight(Y, S):
 ##### TRAINING FUNCTIONS #####
 
 
-def MMSE_pretrain(chunk_size, x_path, y_path, model_path, clean_path, 
+def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
                 imag_path='/nobackup/anakuzne/data/snr0_train_img/',
                 maxlen=1339, 
                 win_len=512,
@@ -117,7 +117,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, clean_path,
 
     num_epochs = 100
     P=5 #Window size
-    G = np.load(y_path) #Cluster centers for wiener masks
+    G = np.load(cluster_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
 
     ##### EARLY STOPPING #####
