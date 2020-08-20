@@ -146,7 +146,7 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
     print('###### Pretraining RL_L1 #######')
 
     for ep in range(1, num_epochs+1):
-        print('Epoch {}/{}'.format(ep, num_epochs))
+
         #Select random
         x_files = os.listdir(x_path)
         x_name = np.random.choice(x_files)
