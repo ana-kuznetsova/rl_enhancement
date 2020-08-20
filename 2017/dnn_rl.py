@@ -181,6 +181,8 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
     l1 = l1.to(device)
     criterion.cuda()
 
+    best_l1 = copy.deepcopy(l1.state_dict())
+
     print('###### Pretraining RL_L1 #######')
 
     for epoch in range(1, num_epochs+1):
@@ -219,6 +221,40 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
             epoch_loss+=chunk_loss
 
             print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
+
+            #Check for early stopping
+            losses_l1.append(epoch_loss/num_chunk)
+            pickle.dump(losses_l1, open(loss_path+"losses_l1.p", "wb" ) )
+            print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
+
+            if epoch==1:
+                prev_loss = epoch_loss/num_chunk
+                epoch_loss += chunk_loss/(num_chunk+1)
+                torch.save(best_l1, model_path+'dnn_l1.pth')
+                continue
+            else:
+                delta = prev_loss - (epoch_loss/num_chunk)
+                prev_loss = epoch_loss/num_chunk
+
+                print('Current delta:', delta, 'Min delta:', min_delta)
+            
+                if delta <= min_delta:
+                    no_improv+=1
+                    print('No improvement for ', no_improv, ' epochs.')
+                    if no_improv < stop_epoch:
+                        epoch_loss += chunk_loss/(num_chunk+1)
+                        torch.save(best_l1, model_path+'dnn_l1.pth')
+                        continue
+                    else:
+                        prev_loss = 1
+                        no_improv = 0
+                        torch.save(best_l1, model_path+'dnn_l1.pth')
+                        print('Finished pretraining Layer 1...')
+                        break
+                else:
+                    epoch_loss += chunk_loss/(num_chunk+1)
+                    torch.save(best_l1, model_path+'dnn_l1.pth')
+                    continue
 
 ########################################################
 
