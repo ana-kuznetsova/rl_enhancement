@@ -88,6 +88,7 @@ class Layer_1_2(nn.Module):
     def forward(self, x):
         x = self.bnorm(x)
         x = torch.sigmoid(self.fc1(x))
+        x = self.drop(x)
         x = torch.sigmoid(self.fc2(x))
         x = self.drop(x)
         return self.out(x)

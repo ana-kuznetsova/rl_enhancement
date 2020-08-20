@@ -16,6 +16,62 @@ from data import get_X_batch
 from utils import invert
 from metrics import calc_Z
 
+
+#### LAYERS FOR RL PRETRAINING ###
+
+class RL_L1(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.fc1 = nn.Linear(704, 64)
+        self.drop = nn.Dropout(0.3)
+        self.soft = nn.Softmax(dim=1)
+        self.out = nn.Linear(64, 32)
+
+    def forward(self, x):
+        x = torch.sigmoid(self.fc1(x))
+        x = self.drop(x)
+        x = self.out(x)
+        return self.soft(x)
+
+
+class RL_L2(nn.Module):
+    def __init__(self, l1=None):
+        super().__init__()
+        if l1:
+            self.fc1 = l1.fc1
+        self.fc1 = nn.Linear(704, 64)
+        self.fc2 = nn.Linear(64, 32)
+        self.drop = nn.Dropout(0.3)
+        self.soft = nn.Softmax(dim=1)
+
+    def forward(self, x):
+        x = torch.sigmoid(self.fc1(x))
+        x = self.drop(x)
+        x = torch.sigmoid(self.fc2(x))
+        x = self.drop(x)
+        return self.soft(x)
+
+
+class DNN_RL(nn.Module):
+    def __init__(self, l1_2=None):
+        super().__init__()
+        if l1_2:
+            self.fc1 = l1_2.fc1
+            self.fc2 = l1_2.fc2
+        else:
+            self.fc1 = nn.Linear(704, 64)
+            self.fc2 = nn.Linear(64, 32)
+        self.soft = nn.Softmax(dim=1)
+        self.drop = nn.Dropout(0.3)
+        
+    def forward(self, x):
+        x = torch.sigmoid(self.fc1(x))
+        x = self.drop(x)
+        x = torch.sigmoid(self.fc2(x))
+        x = self.drop(x)
+        x = self.soft(x)
+        return x 
+
 #### REWARD DEFINITION ####
 
 def reward(z_rl, z_map, E):
@@ -47,22 +103,7 @@ def time_weight(Y, S):
     return E
 
 
-
-class DNN_RL(nn.Module):
-    def __init__(self, l1_2=None):
-        super().__init__()
-        self.fc1 = nn.Linear(704, 64)
-        self.fc2 = nn.Linear(64, 32)
-        self.soft = nn.Softmax(dim=1)
-        self.drop = nn.Dropout(0.3)
-        
-    def forward(self, x):
-        x = torch.sigmoid(self.fc1(x))
-        x = self.drop(x)
-        x = torch.sigmoid(self.fc2(x))
-        x = self.drop(x)
-        x = self.soft(x)
-        return x 
+##### TRAINING FUNCTIONS #####
 
 
 def MMSE_pretrain(x_path, y_path, model_path, clean_path, 
@@ -70,11 +111,12 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
                 maxlen=1339, 
                 win_len=512,
                 hop_size=256, fs=16000):
-    epochs = 100
+
+    episodes = 50000
     P=5 #Window size
     G = np.load(y_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
-    ###Load DNN-mapping model
+   
     device = torch.device('cuda:2')
     torch.cuda.set_device(2)
 
@@ -87,7 +129,7 @@ def MMSE_pretrain(x_path, y_path, model_path, clean_path,
     optimizer = optim.SGD(dnn_rl.parameters(), lr=0.01, momentum=0.9)
 
 
-    for epoch in range(1, epochs):
+    for episode in range(1, episodes):
         #Select random
         x_files = os.listdir(x_path)
         x_name = np.random.choice(x_files)
