@@ -230,10 +230,10 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
         if epoch==1:
             prev_loss = epoch_loss/num_chunk
             epoch_loss += chunk_loss/(num_chunk+1)
-            torch.save(best_l1, model_path+'dnn_l1.pth')
+            torch.save(best_l1, model_path+'dnn_rl_l1.pth')
             continue
         else:
-            delta = prev_loss - (epoch_loss/num_chunk)
+            delta = np.abs(prev_loss - (epoch_loss/num_chunk))
             prev_loss = epoch_loss/num_chunk
 
             print('Current delta:', delta, 'Min delta:', min_delta)
@@ -243,18 +243,104 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
                 print('No improvement for ', no_improv, ' epochs.')
                 if no_improv < stop_epoch:
                     epoch_loss += chunk_loss/(num_chunk+1)
-                    torch.save(best_l1, model_path+'dnn_l1.pth')
+                    torch.save(best_l1, model_path+'rl_dnn_l1.pth')
                     continue
                 else:
                     prev_loss = 1
                     no_improv = 0
-                    torch.save(best_l1, model_path+'dnn_l1.pth')
+                    torch.save(best_l1, model_path+'rl_dnn_l1.pth')
                     print('Finished pretraining Layer 1...')
                     break
             else:
                 epoch_loss += chunk_loss/(num_chunk+1)
                 torch.save(best_l1, model_path+'qfunc_l1.pth')
                 continue
+
+
+    ######## PRETRAIN SECOND LAYER ############
+
+    l1 = RL_L1()
+
+    l1.load_state_dict(torch.load(model_path+'rl_dnn_l1.pth'))
+
+    l2 = RL_L12()
+    optimizer = optim.SGD(l2.parameters(), lr=0.01, momentum=0.9)
+    l2.cuda()
+    best_l2 = copy.deepcopy(l2.state_dict())
+
+    print('###### Pretraining RL_L2 #######')
+
+    for epoch in range(1, num_epochs+1):
+        print('Epoch {}/{}'.format(epoch, num_epochs))
+        epoch_loss = 0.0
+
+        num_chunk = (4620//chunk_size) + 1
+        for chunk in range(num_chunk):
+            chunk_loss = 0
+            start = chunk*chunk_size
+            end = min(start+chunk_size, 4620)
+            print(start, end)
+
+            # Y is a clean speech spectrogram
+            X_chunk, y_chunk, fnames = make_batch(x_path, y_path, 
+                                         [start, end], 5, 
+                                         maxlen, win_len, 
+                                         hop_size, feat_type, fs, names=True)
+            
+            trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 1339)
+
+            for step, (audio, target) in enumerate(trainData): 
+                audio = audio.to(device)
+                target = target.to(device)
+                output = l2(audio)
+                
+                newLoss = q_training_step(output, step, G, criterion, 
+                                          x_path, clean_path, imag_path, fnames)               
+                chunk_loss += newLoss.data
+                optimizer.zero_grad()
+                newLoss.backward()
+                optimizer.step()
+
+            chunk_loss = (chunk_loss.detach().cpu().numpy())/len(trainData)
+            
+            epoch_loss+=chunk_loss
+
+            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
+
+        #Check for early stopping
+        losses_l2.append(epoch_loss/num_chunk)
+        pickle.dump(model_path, open(model_path+"losses_l2.p", "wb" ) )
+        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
+
+        if epoch==1:
+            prev_loss = epoch_loss/num_chunk
+            epoch_loss += chunk_loss/(num_chunk+1)
+            torch.save(best_l1, model_path+'dnn_rl_l2.pth')
+            continue
+        else:
+            delta = np.abs(prev_loss - (epoch_loss/num_chunk))
+            prev_loss = epoch_loss/num_chunk
+
+            print('Current delta:', delta, 'Min delta:', min_delta)
+            
+            if delta <= min_delta:
+                no_improv+=1
+                print('No improvement for ', no_improv, ' epochs.')
+                if no_improv < stop_epoch:
+                    epoch_loss += chunk_loss/(num_chunk+1)
+                    torch.save(best_l2, model_path+'rl_dnn_l2.pth')
+                    continue
+                else:
+                    prev_loss = 1
+                    no_improv = 0
+                    torch.save(best_l1, model_path+'rl_dnn_l2.pth')
+                    print('Finished pretraining Layer 2...')
+                    break
+            else:
+                epoch_loss += chunk_loss/(num_chunk+1)
+                torch.save(best_l1, model_path+'qfunc_l2.pth')
+                continue
+    
 
 ########################################################
 
