@@ -233,7 +233,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
             torch.save(best_l1, model_path+'dnn_rl_l1.pth')
             continue
         else:
-            delta = np.abs(prev_loss - (epoch_loss/num_chunk))
+            delta = prev_loss - (epoch_loss/num_chunk)
             prev_loss = epoch_loss/num_chunk
 
             print('Current delta:', delta, 'Min delta:', min_delta)
@@ -318,7 +318,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
             torch.save(best_l1, model_path+'dnn_rl_l2.pth')
             continue
         else:
-            delta = np.abs(prev_loss - (epoch_loss/num_chunk))
+            delta = prev_loss - (epoch_loss/num_chunk)
             prev_loss = epoch_loss/num_chunk
 
             print('Current delta:', delta, 'Min delta:', min_delta)
@@ -427,7 +427,7 @@ def MMSE_train(chunk_size, x_path, y_path, model_path, cluster_path,
             torch.save(best_l1, model_path+'q_func.pth')
             continue
         else:
-            delta = np.abs(prev_loss - (epoch_loss/num_chunk))
+            delta = prev_loss - (epoch_loss/num_chunk)
             prev_loss = epoch_loss/num_chunk
 
             print('Current delta:', delta, 'Min delta:', min_delta)
