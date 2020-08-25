@@ -263,7 +263,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
 
     l1.load_state_dict(torch.load(model_path+'rl_dnn_l1.pth'))
 
-    l2 = RL_L12()
+    l2 = RL_L2()
     optimizer = optim.SGD(l2.parameters(), lr=0.01, momentum=0.9)
     l2.cuda()
     best_l2 = copy.deepcopy(l2.state_dict())
