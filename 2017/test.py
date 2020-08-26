@@ -13,6 +13,7 @@ from models import DNN_mel
 
 #from dnn_rl import q_learning
 from dnn_rl import MMSE_pretrain
+from dnn_rl import MMSE_train
 
 '''
 pretrain_path = '/u/anakuzne/data/pretrain_sig/dnn_l1.pth'
