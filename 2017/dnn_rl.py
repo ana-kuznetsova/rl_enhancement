@@ -224,7 +224,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
 
         #Check for early stopping
         losses_l1.append(epoch_loss/num_chunk)
-        pickle.dump(model_path, open(model_path+"losses_l1.p", "wb" ) )
+        pickle.dump(losses_l1, open(model_path+"losses_l1.p", "wb" ) )
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
 
         if epoch==1:
@@ -309,7 +309,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
 
         #Check for early stopping
         losses_l2.append(epoch_loss/num_chunk)
-        pickle.dump(model_path, open(model_path+"losses_l2.p", "wb" ) )
+        pickle.dump(losses_l2, open(model_path+"losses_l2.p", "wb" ) )
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
 
         if epoch==1:
@@ -418,7 +418,7 @@ def MMSE_train(chunk_size, x_path, y_path, model_path, cluster_path,
 
         #Check for early stopping
         losses.append(epoch_loss/num_chunk)
-        pickle.dump(model_path, open(model_path+"losses_q.p", "wb" ) )
+        pickle.dump(losses, open(model_path+"losses_q.p", "wb" ) )
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
 
         if epoch==1:
