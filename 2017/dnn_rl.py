@@ -338,7 +338,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
                     break
             else:
                 epoch_loss += chunk_loss/(num_chunk+1)
-                torch.save(best_l1, model_path+'qfunc_l2.pth')
+                torch.save(best_l2, model_path+'qfunc_l2.pth')
                 continue
     
 
@@ -370,7 +370,7 @@ def MMSE_train(chunk_size, x_path, y_path, model_path, cluster_path,
     torch.cuda.set_device(2)
 
     layers = RL_L2()
-    layers.load_state_dict(model_path+'rl_dnn_l2.pth')
+    layers.load_state_dict(model_path+'qfunc_l2.pth')
 
     q_func_MMSE = DNN_RL(layers)
 
