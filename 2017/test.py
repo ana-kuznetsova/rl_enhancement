@@ -48,7 +48,7 @@ q_learning(x_path='/nobackup/anakuzne/data/snr0_train/',
            y_path='/nobackup/anakuzne/data/kmeans_centers.npy', 
            model_path='/nobackup/anakuzne/data/model_wiener_50/',
            clean_path='/nobackup/anakuzne/data/snr0_train_clean/')
-
+'''
 
 MMSE_pretrain(chunk_size=1000, x_path='/nobackup/anakuzne/data/snr0_train/', 
            y_path='/nobackup/anakuzne/data/snr0_w_target/', 
@@ -61,3 +61,4 @@ MMSE_train(chunk_size=1000, x_path='/nobackup/anakuzne/data/snr0_train/',
            model_path='/nobackup/anakuzne/data/qfunc_pretrain/',
            cluster_path = '/nobackup/anakuzne/data/kmeans_centers.npy',
            clean_path = '/nobackup/anakuzne/data/snr0_train_clean/')
+'''
