@@ -315,7 +315,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
         if epoch==1:
             prev_loss = epoch_loss/num_chunk
             epoch_loss += chunk_loss/(num_chunk+1)
-            torch.save(best_l1, model_path+'dnn_rl_l2.pth')
+            torch.save(best_l2, model_path+'dnn_rl_l2.pth')
             continue
         else:
             delta = prev_loss - (epoch_loss/num_chunk)
@@ -333,7 +333,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
                 else:
                     prev_loss = 1
                     no_improv = 0
-                    torch.save(best_l1, model_path+'rl_dnn_l2.pth')
+                    torch.save(best_l2, model_path+'rl_dnn_l2.pth')
                     print('Finished pretraining Layer 2...')
                     break
             else:
