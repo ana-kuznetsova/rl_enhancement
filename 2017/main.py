@@ -53,17 +53,16 @@ def main(args):
 
         create_noisy_data(test_files, out_path, noise_path, 0, WIN_LEN, HOP_SIZE, FS)
 
-
-        print('Generate TARGET data...')
         '''
+        print('Generate TARGET data...')
+        
         target_files = collect_paths('/N/project/aspire_research_cs/Data/Corpora/Speech/TIMIT/corpus/')
         calc_masks(target_files, noise_path, FS, WIN_LEN, HOP_SIZE,
                    mask_dir='/N/slate/anakuzne/se_data/snr0_w_target/',
                    mask_type='Wiener')
-        '''
+    
         print('Saving phase information')
-        save_imag('/nobackup/anakuzne/data/snr0_train/', '/nobackup/anakuzne/data/snr0_train_img/')
-        '''
+        save_imag('/N/slate/anakuzne/se_data/snr0_train/', '/N/slate/anakuzne/se_data/snr0_train_img/')
 
     elif args.mode=='pretrain':
         pretrain(args.chunk_size, args.model_path, args.x_path, args.y_path, args.loss_path)
