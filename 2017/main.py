@@ -37,7 +37,7 @@ def main(args):
         WIN_LEN = 512
         HOP_SIZE = 256
         FS = 16000
-        noise_path = '/nobackup/anakuzne/data/cafe_16k.wav'
+        noise_path = '/N/project/aspire_research_cs/Data/Corpora/Noise/cafe_16k.wav'
         ## Generate stfts of noisy data
         '''
         print('Generating TRAINING data...')
@@ -56,9 +56,9 @@ def main(args):
 
         print('Generate TARGET data...')
         '''
-        target_files = collect_paths('/nobackup/anakuzne/data/train/')
+        target_files = collect_paths('/N/project/aspire_research_cs/Data/Corpora/Speech/TIMIT/corpus/')
         calc_masks(target_files, noise_path, FS, WIN_LEN, HOP_SIZE,
-                   mask_dir='/nobackup/anakuzne/data/snr0_train_clean/',
+                   mask_dir='/N/slate/anakuzne/se_data/snr0_train_clean/',
                    mask_type='stft')
         '''
         print('Saving phase information')
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     parser.add_argument('--preds_path', type=str, help='Path to the predicted output')
     parser.add_argument('--pre_path', type=str, help='paths to pretrained model')
     parser.add_argument('--mask', type=str, help='mask type')
-    parser.add_argument('--clean_path', type=str, help='path to clean stfts')
+    parser.add_argument('--clean_path', type=str, help='path to clean')
 
     args = parser.parse_args()
     main(args)
