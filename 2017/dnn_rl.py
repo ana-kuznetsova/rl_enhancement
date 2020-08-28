@@ -76,7 +76,7 @@ def q_training_step(output, step, G, criterion, x_path, clean_path, imag_path, f
         G_k_pred = G[ind]
         wiener_rl[i] = G_k_pred
 
-    x_source = np.load(x_path+fnames[step])
+    x_source = np.abs(np.load(x_path+fnames[step]))
     x_source = pad(x_source, maxlen).T
     print('X source:', x_source)
                 
