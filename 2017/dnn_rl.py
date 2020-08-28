@@ -167,8 +167,8 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
     losses_l1 = []
     losses_l2 = []
    
-    device = torch.device('cuda:2')
-    torch.cuda.set_device(2)
+    device = torch.device('cuda:0') #change to 2 if on Ada
+    torch.cuda.set_device(0) #change to 2 if on Ada
 
     ######## PRETRAIN FIRST RL-LAYER #########
 
