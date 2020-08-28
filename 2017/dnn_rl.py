@@ -175,7 +175,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
     l1 = RL_L1()
     l1.apply(weights)
     criterion = nn.MSELoss()
-    optimizer = optim.SGD(l1.parameters(), lr=0.01, momentum=0.9)
+    optimizer = optim.SGD(l1.parameters(), lr=0.001, momentum=0.9)
     
     l1.cuda()
     l1 = l1.to(device)
@@ -226,7 +226,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
         losses_l1.append(epoch_loss/num_chunk)
         pickle.dump(losses_l1, open(model_path+"losses_l1.p", "wb" ) )
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
-
+        '''
         if epoch==1:
             prev_loss = epoch_loss/num_chunk
             epoch_loss += chunk_loss/(num_chunk+1)
@@ -255,7 +255,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
                 epoch_loss += chunk_loss/(num_chunk+1)
                 torch.save(best_l1, model_path+'qfunc_l1.pth')
                 continue
-
+    '''
 
     ######## PRETRAIN SECOND LAYER ############
 
