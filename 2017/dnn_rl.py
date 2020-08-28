@@ -79,7 +79,7 @@ def q_training_step(output, step, G, criterion, x_path, clean_path, imag_path, f
     x_source = np.load(x_path+fnames[step])
     x_source = pad(x_source, maxlen).T
                 
-    y_pred_rl = np.multiply(x_source, wiener_rl) + phase
+    y_pred_rl = np.multiply(x_source, wiener_rl) #+ phase
     y_pred_rl = torch.tensor(y_pred_rl, requires_grad=True).cuda().float()
 
     clean = pad(np.load(clean_path+fnames[step]), maxlen).T
@@ -175,7 +175,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
     l1 = RL_L1()
     l1.apply(weights)
     criterion = nn.MSELoss()
-    optimizer = optim.SGD(l1.parameters(), lr=0.001, momentum=0.9)
+    optimizer = optim.SGD(l1.parameters(), lr=0.001, momentum=0.9) #Changed lr for test
     
     l1.cuda()
     l1 = l1.to(device)
