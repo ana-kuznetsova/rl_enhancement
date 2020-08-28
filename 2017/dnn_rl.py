@@ -255,7 +255,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
                 epoch_loss += chunk_loss/(num_chunk+1)
                 torch.save(best_l1, model_path+'qfunc_l1.pth')
                 continue
-    '''
+    
 
     ######## PRETRAIN SECOND LAYER ############
 
@@ -340,7 +340,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
                 epoch_loss += chunk_loss/(num_chunk+1)
                 torch.save(best_l2, model_path+'qfunc_l2.pth')
                 continue
-    
+    '''
 
 ########################################################
 
