@@ -68,7 +68,8 @@ def q_training_step(output, step, G, criterion, x_path, clean_path, imag_path, f
     '''
     phase = pad(np.load(imag_path+fnames[step]), maxlen).T
     Q_pred = output.detach().cpu().numpy()
-    wiener_rl = np.zeros((1339, 257))
+    wiener_rl = np.zeros((257, 1339))
+    print('G', G.shape)
 
     #Select template index, predict Wiener filter
     for i, row in enumerate(Q_pred):
