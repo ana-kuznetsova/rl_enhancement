@@ -149,6 +149,7 @@ def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, feat_type, fs,
     X = []
     y = []
     chunk_x = os.listdir(x_path)[ind[0]:ind[1]]
+    print('X chunk fnames:', chunk_x)
     print('Loading training examples...')
 
     for path in tqdm(chunk_x):
