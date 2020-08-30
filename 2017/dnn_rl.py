@@ -78,11 +78,14 @@ def q_training_step(output, step, G, criterion, x_path, clean_path, imag_path, f
 
     x_source = np.abs(np.load(x_path+fnames[step]))
     x_source = pad(x_source, maxlen).T
+    print('X size:', x_source.shape)
                 
     y_pred_rl = np.multiply(x_source, wiener_rl) #+ phase
+    print('Pred size:', y_pred_rl.shape)
     y_pred_rl = torch.tensor(y_pred_rl, requires_grad=True).cuda().float()
 
     clean = np.abs(pad(np.load(clean_path+fnames[step]), maxlen).T)
+    print("Clean:", clean.shape)
     clean = torch.tensor(clean).cuda().float()
     #Loss input x_out, x_source, x_clean
     x_source = torch.tensor(x_source).cuda().float()
@@ -160,7 +163,6 @@ class MMSE_loss(torch.nn.Module):
     def forward(self, x_out, x_source, x_clean):
         A_t = []
         for timestep in range(x_out.size()[1]):
-            print(x_out.size())
             sums = []
             for a in range(self.G_mat.size()[0]):
                 print(self.G_mat.size())
