@@ -158,7 +158,7 @@ class MMSE_loss(torch.nn.Module):
     '''
     def __init__(self, G_mat):
         super().__init__()
-        self.G_mat = torch.tensor(G_mat).cuda().float()
+        self.G_mat = torch.tensor(G_mat.T).cuda().float()
 
     def forward(self, x_out, x_source, x_clean):
         A_t = []
