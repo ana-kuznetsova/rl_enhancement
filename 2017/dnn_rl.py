@@ -162,7 +162,8 @@ class MMSE_loss(torch.nn.Module):
         for timestep in range(x_out.size()[1]):
             sums = []
             for a in range(self.G_mat.size()[0]):
-                diff = torch.sum(x_clean[:,t] - torch.mul(self.G_mat[:,a], x_source[:, t]))
+                diff = torch.sum(x_clean[:,timestep] - torch.mul(self.G_mat[:,a], x_source[:, timestep]))
+                print(diff)
                 sums.append(diff)
             A_t.append(sums.index(torch.min(sums)))
 
