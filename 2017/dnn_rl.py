@@ -159,7 +159,7 @@ class MMSE_loss(torch.nn.Module):
 
     def forward(self, x_out, x_source, x_clean):
         A_t = []
-        for timestep in x_out.size()[1]:
+        for timestep in range(x_out.size()[1]):
             sums = []
             for a in range(self.G_mat.size()[0]):
                 diff = torch.sum(x_clean[:,t] - torch.mul(self.G_mat[:,a], x_source[:, t]))
