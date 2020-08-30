@@ -84,7 +84,7 @@ def q_training_step(output, step, G, criterion, x_path, clean_path, imag_path, f
 
     clean = np.abs(pad(np.load(clean_path+fnames[step]), maxlen).T)
     clean = torch.tensor(clean).cuda().float()
-    #x_out, x_source, x_clean
+    #Loss input x_out, x_source, x_clean
     x_source = torch.tensor(x_source).cuda().float()
     newLoss = criterion(y_pred_rl, x_source, clean)
     
@@ -229,7 +229,6 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
                                          [start, end], 5, 
                                          maxlen, win_len, 
                                          hop_size, feat_type, fs, names=True)
-            print('Fnames:', fnames)
             
             trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 1339)
 
