@@ -149,7 +149,6 @@ def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, feat_type, fs,
     X = []
     y = []
     chunk_x = os.listdir(x_path)[ind[0]:ind[1]]
-    print('X chunk fnames:', chunk_x)
     print('Loading training examples...')
 
     for path in tqdm(chunk_x):
@@ -230,7 +229,6 @@ def KMeans(chunk_size, train_path, out_path):
         end = min(start+chunk_size, 4620)
         print(start, end)
         X = get_freq_bins(paths, [start, end])
-        print('Shape:', X.shape)
         kmeans = kmeans.partial_fit(np.abs(X))
 
     centers = kmeans.cluster_centers_
