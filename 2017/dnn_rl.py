@@ -84,7 +84,9 @@ def q_training_step(output, step, G, criterion, x_path, clean_path, imag_path, f
 
     clean = np.abs(pad(np.load(clean_path+fnames[step]), maxlen).T)
     clean = torch.tensor(clean).cuda().float()
-    newLoss = criterion(y_pred_rl, clean)
+    #x_out, x_source, x_clean
+    x_source = torch.tensor(x_source).cuda().float()
+    newLoss = criterion(y_pred_rl, x_source, clean)
     
     return newLoss
     
@@ -139,6 +141,32 @@ def time_weight(Y, S):
     E = E_approx/np.max(E_approx)
     return E
 
+##### MMSE loss ####
+class MMSE_loss(torch.nn.Module):
+    '''
+        Params:
+            x_out (tensor): the output predicted by the extracted from q_func
+                            Wiener filter
+            x_source (tensor): noisy mixture of the signal
+            x_clean (tensor): clean speech
+            G_mat: cluster centers
+        We are trying to fit the template s.t. minimizes error in q-func
+        by calculating the ground truth labels of actions
+    '''
+    def __init__(self, G_mat):
+        super().__init__()
+        self.G_mat = torch.tensor(G_mat).cuda().float()
+
+    def forward(self, x_out, x_source, x_clean):
+        A_t = []
+        for timestep in x_out.size()[1]:
+            sums = []
+            for a in range(self.G_mat.size()[0]):
+                diff = torch.sum(x_clean[:,t] - torch.mul(self.G_mat[:,a], x_source[:, t]))
+                sums.append(diff)
+            A_t.append(sums.index(torch.min(sums)))
+
+
 
 ##### TRAINING FUNCTIONS #####
 
@@ -174,7 +202,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
 
     l1 = RL_L1()
     l1.apply(weights)
-    criterion = nn.MSELoss()
+    criterion = MMSE_loss(G)
     optimizer = optim.SGD(l1.parameters(), lr=0.001, momentum=0.9) #Changed lr for test
     
     l1.cuda()
