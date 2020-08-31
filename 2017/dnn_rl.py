@@ -122,7 +122,6 @@ class MMSE_loss(torch.nn.Module):
 
     def forward(self, x_out, x_source, x_clean):
         #Generate the ground truth labels
-        print(self.G_mat)
         A_t = []
         for timestep in range(x_source.size()[1]):
             sums = []
@@ -134,6 +133,8 @@ class MMSE_loss(torch.nn.Module):
         # Calculate the output with ground truth labels
         wiener_true = torch.zeros([x_source.size()[0], x_source.size()[1]], dtype=torch.int64)
         for a in A_t:
+            print('G size:', self.G_mat.size())
+            print('G a size:', self.G_mat[:, a])
             wiener_true[:,a] = self.G_mat[:, a]
         print('Wiener true:', wiener_true)
         true_out = torch.mul(wiener_true, x_source)
