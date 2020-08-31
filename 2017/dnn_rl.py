@@ -134,7 +134,7 @@ class MMSE_loss(torch.nn.Module):
         wiener_true = torch.zeros([x_source.size()[0], x_source.size()[1]], dtype=torch.int64).cuda()
         for a in A_t:
             wiener_true[:,a] = self.G_mat[:, a]
-        print('Wiener true:', wiener_true)
+        print('Wiener true:', wiener_true[0])
         true_out = torch.mul(wiener_true, x_source)
 
 
