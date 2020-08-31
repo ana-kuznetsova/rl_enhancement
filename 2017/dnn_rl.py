@@ -129,8 +129,8 @@ class MMSE_loss(torch.nn.Module):
                 diff = torch.sum(x_clean[:,timestep] - torch.mul(self.G_mat[:,a], x_source[:, timestep]))
                 sums.append(diff)
             sums = torch.tensor(sums).cuda()
-            print(sums)
             A_t.append(torch.argmin(sums))
+        print(A_t)
 
 
 
