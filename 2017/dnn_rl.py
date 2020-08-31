@@ -137,8 +137,8 @@ class MMSE_loss(torch.nn.Module):
             wiener_true[:,a] = self.G_mat[:, a]
         true_out = np.multiply(wiener_true, x_source).T
         true_out = torch.tensor(true_out).cuda().float()
-        x_out = torch.tensor(x_out.T).cuda().float()
-        loss =  nn.MSELoss()(true_out, x_out)
+        x_out = torch.tensor(x_out.T, requires_grad=True).cuda().float()
+        loss =  nn.MSELoss()(x_out, true_out)
         return loss
 
 
