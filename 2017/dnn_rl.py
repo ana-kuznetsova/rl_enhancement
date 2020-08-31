@@ -140,7 +140,7 @@ class MMSE_loss(torch.nn.Module):
         print(true_out.size())
         x_out = torch.tensor(x_out.T).cuda().float()
         print(x_out.size())
-        loss =  nn.MSELoss(true_out, x_out)
+        loss =  nn.MSELoss()(true_out, x_out)
         print('Loss:', loss)
 
 
