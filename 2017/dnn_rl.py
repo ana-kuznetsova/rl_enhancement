@@ -168,12 +168,12 @@ def q_training_step(output, step, G, criterion, x_path, clean_path, imag_path, f
         wiener_rl[i] = G_k_pred
 
     x_source = np.abs(np.load(x_path+fnames[step]))
-    x_source = pad(x_source, maxlen).T
+    x_source = pad(x_source, maxlen)
   
     y_pred_rl = np.multiply(x_source, wiener_rl).T #+ phase
     #y_pred_rl = torch.tensor(y_pred_rl.T, requires_grad=True).cuda().float()
 
-    clean = np.abs(pad(np.load(clean_path+fnames[step]), maxlen).T)
+    clean = np.abs(pad(np.load(clean_path+fnames[step]), maxlen))
     #clean = torch.tensor(clean.T).cuda().float()
     #Loss input x_out, x_source, x_clean
     #x_source = torch.tensor(x_source.T).cuda().float()
