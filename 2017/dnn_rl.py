@@ -179,8 +179,6 @@ def q_training_step(output, step, G, criterion, x_path, clean_path, imag_path, f
     #Loss input x_out, x_source, x_clean
     #x_source = torch.tensor(x_source.T).cuda().float()
     newLoss = criterion(y_pred_rl, x_source.T, clean)
-    print(newLoss)
-    
     return newLoss
 
 
