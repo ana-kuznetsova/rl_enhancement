@@ -122,6 +122,7 @@ class MMSE_loss(torch.nn.Module):
 
     def forward(self, x_out, x_source, x_clean):
         #Generate the ground truth labels
+        print(self.G_mat)
         A_t = []
         for timestep in range(x_source.size()[1]):
             sums = []
