@@ -130,7 +130,7 @@ class MMSE_loss(torch.nn.Module):
                 sums.append(diff)
             sums = torch.tensor(sums).cuda()
             A_t.append(torch.argmin(sums))
-        print(A_t)
+        print(len(A_t))
 
 
 
