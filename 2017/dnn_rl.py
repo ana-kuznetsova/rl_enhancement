@@ -139,8 +139,11 @@ class MMSE_loss(torch.nn.Module):
         wiener_true = np.zeros((x_source.shape[0], x_source.shape[1]))
         for a in A_t:
             wiener_true[:,a] = self.G_mat[:, a]
-        print('Wiener true:', wiener_true[0])
         true_out = np.multiply(wiener_true, x_source)
+        true_out = torch.tensor(true_out).cuda().float()
+        
+        x_out = torch.tensor()
+
 
 
 
@@ -159,6 +162,7 @@ def q_training_step(output, step, G, criterion, x_path, clean_path, imag_path, f
         fnames
     '''
     phase = pad(np.load(imag_path+fnames[step]), maxlen).T
+    print('Out size:', output.size())
     Q_pred = output.detach().cpu().numpy()
     wiener_rl = np.zeros((1339, 257))
 
