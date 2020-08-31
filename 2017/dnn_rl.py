@@ -127,6 +127,7 @@ class MMSE_loss(torch.nn.Module):
         print('x out:', x_out.shape)
         print('x source:', x_source.shape)
         print('x clean:', x_clean.shape)
+        print('g mat:', self.G_mat.shape)
         for timestep in range(x_source.shape[1]):
             sums = []
             for a in range(self.G_mat.shape[1]):
