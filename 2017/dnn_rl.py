@@ -118,24 +118,24 @@ class MMSE_loss(torch.nn.Module):
     '''
     def __init__(self, G_mat):
         super().__init__()
-        self.G_mat = torch.tensor(G_mat.T).cuda().float()
+        #self.G_mat = torch.tensor(G_mat.T).cuda().float()
+        self.G_mat = G_mat.T
 
     def forward(self, x_out, x_source, x_clean):
         #Generate the ground truth labels
         A_t = []
-        for timestep in range(x_source.size()[1]):
+        for timestep in range(x_source.shape[1]):
             sums = []
-            for a in range(self.G_mat.size()[1]):
-                diff = torch.sum(x_clean[:,timestep] - torch.mul(self.G_mat[:,a], x_source[:, timestep]))
+            for a in range(self.G_mat.shape[1]):
+                diff = torch.sum(x_clean[:,timestep] - np.multiply(self.G_mat[:,a], x_source[:, timestep]))
                 sums.append(diff)
-            sums = torch.tensor(sums).cuda()
-            A_t.append(torch.argmin(sums))
+            sums = np.asarray(sums)
+            A_t.append(np.argmin(sums))
         # Calculate the output with ground truth labels
-        wiener_true = torch.zeros([x_source.size()[0], x_source.size()[1]], dtype=torch.int64).cuda()
-        for a in A_t:
-            wiener_true[:,a] = self.G_mat[:, a].clone()
+        wiener_true = np.zeros((x_source.shape[0], x_source.shape[1]))
+            wiener_true[:,a] = self.G_mat[:, a]
         print('Wiener true:', wiener_true[0])
-        true_out = torch.mul(wiener_true, x_source)
+        true_out = np.multiply(wiener_true, x_source)
 
 
 
@@ -166,13 +166,13 @@ def q_training_step(output, step, G, criterion, x_path, clean_path, imag_path, f
     x_source = np.abs(np.load(x_path+fnames[step]))
     x_source = pad(x_source, maxlen).T
   
-    y_pred_rl = np.multiply(x_source, wiener_rl) #+ phase
-    y_pred_rl = torch.tensor(y_pred_rl.T, requires_grad=True).cuda().float()
+    y_pred_rl = np.multiply(x_source, wiener_rl).T #+ phase
+    #y_pred_rl = torch.tensor(y_pred_rl.T, requires_grad=True).cuda().float()
 
     clean = np.abs(pad(np.load(clean_path+fnames[step]), maxlen).T)
-    clean = torch.tensor(clean.T).cuda().float()
+    #clean = torch.tensor(clean.T).cuda().float()
     #Loss input x_out, x_source, x_clean
-    x_source = torch.tensor(x_source.T).cuda().float()
+    #x_source = torch.tensor(x_source.T).cuda().float()
     newLoss = criterion(y_pred_rl, x_source, clean)
     
     return newLoss
