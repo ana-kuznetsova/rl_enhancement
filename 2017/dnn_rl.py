@@ -131,10 +131,8 @@ class MMSE_loss(torch.nn.Module):
             sums = torch.tensor(sums).cuda()
             A_t.append(torch.argmin(sums))
         # Calculate the output with ground truth labels
-        wiener_true = torch.zeros([x_source.size()[0], x_source.size()[1]], dtype=torch.int64)
+        wiener_true = torch.zeros([x_source.size()[0], x_source.size()[1]], dtype=torch.int64).cuda()
         for a in A_t:
-            print('G size:', self.G_mat.size())
-            print('G a size:', self.G_mat[:, a].size())
             wiener_true[:,a] = self.G_mat[:, a]
         print('Wiener true:', wiener_true)
         true_out = torch.mul(wiener_true, x_source)
