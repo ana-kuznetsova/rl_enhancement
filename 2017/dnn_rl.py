@@ -133,6 +133,7 @@ class MMSE_loss(torch.nn.Module):
             A_t.append(np.argmin(sums))
         # Calculate the output with ground truth labels
         wiener_true = np.zeros((x_source.shape[0], x_source.shape[1]))
+        for a in A_t:
             wiener_true[:,a] = self.G_mat[:, a]
         print('Wiener true:', wiener_true[0])
         true_out = np.multiply(wiener_true, x_source)
