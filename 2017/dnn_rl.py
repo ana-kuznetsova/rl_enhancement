@@ -141,6 +141,7 @@ class MMSE_loss(torch.nn.Module):
 
         loss = nn.CrossEntropyLoss()
         new_loss = loss(q_pred, q_target)
+        print('New loss:', new_loss)
         return new_loss
 
 
