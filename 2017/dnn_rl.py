@@ -136,7 +136,7 @@ class MMSE_loss(torch.nn.Module):
 
         q_pred = torch.tensor(x_out).cuda()
         q_target = torch.tensor(A_t).cuda()
-        print('NN out:', x_out.size())
+        print('NN out:', q_pred.size())
         print('Q-pred:', q_target.size())
 
         loss = nn.CrossEntropyLoss()
@@ -177,7 +177,6 @@ def q_training_step(output, step, G, criterion, x_path, clean_path, imag_path,
     for row in output:
         Q_pred.append(np.argmax(row))
     Q_pred=np.asarray(Q_pred)
-    print(Q_pred.shape)
 
     x_source = np.abs(np.load(x_path+fnames[step]))
     x_source = pad(x_source, maxlen).T
