@@ -233,3 +233,25 @@ def KMeans(chunk_size, train_path, out_path):
 
     centers = kmeans.cluster_centers_
     np.save(out_path+'kmeans_centers.npy', centers)
+
+def calc_MMSE_labels(x_path, a_path, clean_path, cluster_path):
+    '''
+    a_path: dir where ground truth mmse actions will be stored
+    '''
+    fnames = os.listdir(x_path)
+    G_mat = np.load(cluster_path)
+
+    for f in tqdm(fnames):
+        A_t = []
+        x_source = np.load(x_path+f)
+        x_clean = np.load(clean_path+f)
+        
+        for timestep in range(x_source.shape[1]):
+            sums = []
+            for a in range(G_mat.shape[1]):
+                diff = np.sum(x_clean[:,timestep] - np.multiply(G_mat[:,a], x_source[:, timestep]))
+                sums.append(diff)
+            sums = np.asarray(sums)
+            A_t.append(np.argmin(sums))
+        A_t = np.asarray(A_t)
+        np.save(a_path, A_t)
