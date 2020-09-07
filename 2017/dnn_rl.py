@@ -130,7 +130,7 @@ class MMSE_loss(torch.nn.Module):
                 sums.append(diff)
             sums = np.asarray(sums)
             A_t.append(np.argmin(sums))
-        A_t = np.asarray(A_t).reshape(-1, 1)
+        A_t = np.asarray(A_t)
 
         #Generate predicted q_func
 
