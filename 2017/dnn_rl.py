@@ -134,7 +134,7 @@ class MMSE_loss(torch.nn.Module):
 
         #Generate predicted q_func
 
-        q_pred = torch.tensor(x_out).cuda()
+        q_pred = torch.tensor(x_out, 32, requires_grad=True).cuda()
         q_target = torch.tensor(A_t).cuda()
         print('NN out:', q_pred.size())
         print('Q-pred:', q_target.size())
