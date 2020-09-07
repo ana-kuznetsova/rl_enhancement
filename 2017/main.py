@@ -12,6 +12,7 @@ from utils import collect_paths
 from data import create_noisy_data
 from data import calc_masks
 from data import KMeans
+from data import calc_MMSE_labels
 from metrics import eval_pesq
 
 def main(args):
@@ -38,7 +39,14 @@ def main(args):
         HOP_SIZE = 256
         FS = 16000
         noise_path = '/N/project/aspire_research_cs/Data/Corpora/Noise/cafe_16k.wav'
-        ## Generate stfts of noisy data
+        
+        calc_MMSE_labels(
+            x_path='/N/slate/anakuzne/se_data/snr0_train/',
+            a_path='/N/slate/anakuzne/se_data/action_labels/',
+            clean_path = '/N/slate/anakuzne/se_data/snr0_train_clean/',
+            cluster_path = '/N/slate/anakuzne/se_data/kmeans_centers.npy'
+        )
+
         '''
         print('Generating TRAINING data...')
         train_files = collect_paths('/u/anakuzne/data/TIMIT_full/train/')
@@ -53,7 +61,7 @@ def main(args):
 
         create_noisy_data(test_files, out_path, noise_path, 0, WIN_LEN, HOP_SIZE, FS)
 
-        '''
+        
         print('Generate TARGET data...')
         
         target_files = collect_paths('/N/project/aspire_research_cs/Data/Corpora/Speech/TIMIT/corpus/')
@@ -63,6 +71,7 @@ def main(args):
     
         print('Saving phase information')
         save_imag('/N/slate/anakuzne/se_data/snr0_train/', '/N/slate/anakuzne/se_data/snr0_train_img/')
+        '''
 
     elif args.mode=='pretrain':
         pretrain(args.chunk_size, args.model_path, args.x_path, args.y_path, args.loss_path)
