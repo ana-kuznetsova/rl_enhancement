@@ -239,14 +239,12 @@ def calc_MMSE_labels(x_path, a_path, clean_path, cluster_path):
     a_path: dir where ground truth mmse actions will be stored
     '''
     fnames = os.listdir(x_path)
-    G_mat = np.load(cluster_path)
+    G_mat = np.load(cluster_path).T
 
     for f in tqdm(fnames):
         A_t = []
         x_source = np.abs(pad(np.load(x_path+f), 1339))
         x_clean = pad(np.abs(np.load(clean_path+f)), 1339)
-        print(x_source.shape)
-        print(x_clean.shape)
         
         for timestep in range(x_source.shape[1]):
             sums = []
