@@ -174,7 +174,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
 
     feat_type='mel'
 
-    num_epochs = 20
+    num_epochs = 200
     P=5 #Window size
     G = np.load(cluster_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
