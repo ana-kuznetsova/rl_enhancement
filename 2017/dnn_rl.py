@@ -173,7 +173,7 @@ def q_training_step(output, step, G, criterion, x_path, clean_path, imag_path,
         G_k_pred = G[ind]
         wiener_rl[i] = G_k_pred
     '''
-    output = output.detach().cpu().numpy()
+    #output = output.detach().cpu().numpy()
     print('Output:', output.size())
 
     x_source = np.abs(np.load(x_path+fnames[step]))
