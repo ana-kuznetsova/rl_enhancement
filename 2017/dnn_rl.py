@@ -134,8 +134,7 @@ class MMSE_loss(torch.nn.Module):
 
         #Generate predicted q_func
 
-        q_pred = torch.tensor(x_out.reshape(-1, 1), dtype=torch.int64).cuda()
-        q_target = torch.tensor(A_t, dtype=torch.int64).cuda()
+        q_target = torch.tensor(A_t).cuda()
         
         print('NN out:', q_pred.type())
         print('Q-pred:', q_target.type())
@@ -175,10 +174,7 @@ def q_training_step(output, step, G, criterion, x_path, clean_path, imag_path,
         wiener_rl[i] = G_k_pred
     '''
     output = output.detach().cpu().numpy()
-    Q_pred = []
-    for row in output:
-        Q_pred.append(np.argmax(row))
-    Q_pred=np.asarray(Q_pred)
+    print('Output:', output.size())
 
     x_source = np.abs(np.load(x_path+fnames[step]))
     x_source = pad(x_source, maxlen).T
