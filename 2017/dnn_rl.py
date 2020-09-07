@@ -135,13 +135,8 @@ class MMSE_loss(torch.nn.Module):
         #Generate predicted q_func
 
         q_target = torch.tensor(A_t).cuda()
-        
-        print('NN out:', x_out.size())
-        print('Q-pred:', q_target.size())
-
         loss = nn.CrossEntropyLoss()
         new_loss = loss(x_out, q_target)
-        print('New loss:', new_loss)
         return new_loss
 
 
