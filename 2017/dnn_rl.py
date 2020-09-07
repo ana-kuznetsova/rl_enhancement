@@ -130,11 +130,11 @@ class MMSE_loss(torch.nn.Module):
                 sums.append(diff)
             sums = np.asarray(sums)
             A_t.append(np.argmin(sums))
-        A_t = np.asarray(A_t)
+        A_t = np.asarray(A_t).reshape(1, -1)
 
         #Generate predicted q_func
 
-        q_pred = torch.tensor(x_out).cuda()
+        q_pred = torch.tensor(x_out.reshape(1, -1)).cuda()
         q_target = torch.tensor(A_t).cuda()
         print('NN out:', q_pred.size())
         print('Q-pred:', q_target.size())
