@@ -131,12 +131,11 @@ class MMSE_loss(torch.nn.Module):
             sums = np.asarray(sums)
             A_t.append(np.argmin(sums))
         A_t = np.asarray(A_t).reshape(-1, 1)
-        print('At', A_t)
 
         #Generate predicted q_func
 
-        q_pred = torch.tensor(x_out.reshape(-1, 1)).cuda().long()
-        q_target = torch.tensor(A_t).cuda().long()
+        q_pred = torch.tensor(x_out.reshape(-1, 1), dtype=torch.int64).cuda()
+        q_target = torch.tensor(A_t, dtype=torch.int64).cuda()
         
         print('NN out:', q_pred.type())
         print('Q-pred:', q_target.type())
