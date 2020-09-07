@@ -108,8 +108,7 @@ def time_weight(Y, S):
 class MMSE_loss(torch.nn.Module):
     '''
         Params:
-            x_out (tensor): the output predicted by the extracted from q_func
-                            Wiener filter
+            x_out (tensor): predicted q-function
             x_source (tensor): noisy mixture of the signal
             x_clean (tensor): clean speech
             G_mat: cluster centers
@@ -131,21 +130,21 @@ class MMSE_loss(torch.nn.Module):
                 sums.append(diff)
             sums = np.asarray(sums)
             A_t.append(np.argmin(sums))
-        # Calculate the output with ground truth labels
-        wiener_true = np.zeros((x_source.shape[0], x_source.shape[1]))
-        for a in A_t:
-            wiener_true[:,a] = self.G_mat[:, a]
-        true_out = np.multiply(wiener_true, x_source).T
-        true_out = torch.tensor(true_out).cuda().float()
-        x_out = torch.tensor(x_out.T, requires_grad=True).cuda().float()
-        loss =  nn.MSELoss()(x_out, true_out)
-        return loss
+        A_t = np.asarray(A_t)
+
+        q_target = torch.tensor(A_t, requires_grad=True).cuda()
+        print('Q-pred:', q_target.size())
+
+        loss = nn.CrossEntropyLoss()
+        new_loss = loss(x_out, q_target)
+        return new_loss
 
 
 
 ##### TRAINING FUNCTIONS #####
 
-def q_training_step(output, step, G, criterion, x_path, clean_path, imag_path, fnames, maxlen=1339):
+def q_training_step(output, step, G, criterion, x_path, clean_path, imag_path, 
+                    fnames, maxlen=1339):
     '''
     Params:
         output: NN predictions
@@ -157,8 +156,9 @@ def q_training_step(output, step, G, criterion, x_path, clean_path, imag_path, f
         imag_path
         fnames
     '''
-    phase = pad(np.load(imag_path+fnames[step]), maxlen).T
    
+    '''
+    phase = pad(np.load(imag_path+fnames[step]), maxlen).T
     Q_pred = output.detach().cpu().numpy()
     wiener_rl = np.zeros((1339, 257))
 
@@ -167,19 +167,14 @@ def q_training_step(output, step, G, criterion, x_path, clean_path, imag_path, f
         ind = np.argmax(row)
         G_k_pred = G[ind]
         wiener_rl[i] = G_k_pred
+    '''
 
     x_source = np.abs(np.load(x_path+fnames[step]))
     x_source = pad(x_source, maxlen).T
-  
-    y_pred_rl = np.multiply(x_source, wiener_rl).T #+ phase
-    #y_pred_rl = torch.tensor(y_pred_rl.T, requires_grad=True).cuda().float()
-
+    
     clean = np.abs(pad(np.load(clean_path+fnames[step]), maxlen))
-    #clean = torch.tensor(clean.T).cuda().float()
-    #Loss input x_out, x_source, x_clean
-    #x_source = torch.tensor(x_source.T).cuda().float()
-    newLoss = criterion(y_pred_rl, x_source.T, clean)
-    return newLoss
+    new_loss = criterion(output, x_source.T, clean)
+    return new_loss
 
 
 def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
