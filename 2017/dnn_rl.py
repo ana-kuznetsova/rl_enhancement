@@ -136,8 +136,8 @@ class MMSE_loss(torch.nn.Module):
 
         q_target = torch.tensor(A_t).cuda()
         
-        print('NN out:', x_out.type())
-        print('Q-pred:', q_target.type())
+        print('NN out:', x_out.size())
+        print('Q-pred:', q_target.size())
 
         loss = nn.CrossEntropyLoss()
         new_loss = loss(x_out, q_target)
