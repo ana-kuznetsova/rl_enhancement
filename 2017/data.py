@@ -254,4 +254,4 @@ def calc_MMSE_labels(x_path, a_path, clean_path, cluster_path):
             sums = np.asarray(sums)
             A_t.append(np.argmin(sums))
         A_t = np.asarray(A_t)
-        np.save(a_path, A_t)
+        np.save(a_path+f, A_t)
