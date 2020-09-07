@@ -120,21 +120,8 @@ class MMSE_loss(torch.nn.Module):
         #self.G_mat = torch.tensor(G_mat.T).cuda().float()
         self.G_mat = G_mat.T
 
-    def forward(self, x_out, x_source, x_clean):
-        #Generate the ground truth labels
-        A_t = []
-        for timestep in range(x_source.shape[1]):
-            sums = []
-            for a in range(self.G_mat.shape[1]):
-                diff = np.sum(x_clean[:,timestep] - np.multiply(self.G_mat[:,a], x_source[:, timestep]))
-                sums.append(diff)
-            sums = np.asarray(sums)
-            A_t.append(np.argmin(sums))
-        A_t = np.asarray(A_t)
-
-        #Generate predicted q_func
-
-        q_target = torch.tensor(A_t).cuda()
+    def forward(self, x_out, x_source, x_clean, action_labels):
+        q_target = torch.tensor(action_labels).cuda()
         loss = nn.CrossEntropyLoss()
         new_loss = loss(x_out, q_target)
         return new_loss
@@ -143,7 +130,7 @@ class MMSE_loss(torch.nn.Module):
 
 ##### TRAINING FUNCTIONS #####
 
-def q_training_step(output, step, G, criterion, x_path, clean_path, imag_path, 
+def q_training_step(output, step, G, criterion, x_path, a_path, clean_path, imag_path, 
                     fnames, maxlen=1339):
     '''
     Params:
@@ -173,11 +160,12 @@ def q_training_step(output, step, G, criterion, x_path, clean_path, imag_path,
     x_source = pad(x_source, maxlen).T
     
     clean = np.abs(pad(np.load(clean_path+fnames[step]), maxlen))
-    new_loss = criterion(output, x_source.T, clean)
+    action_labels = np.load(a_path+fnames[step])
+    new_loss = criterion(output, x_source.T, clean, action_labels)
     return new_loss
 
 
-def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
+def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
                 clean_path,
                 imag_path='/nobackup/anakuzne/data/snr0_train_img/',
                 maxlen=1339, 
@@ -244,7 +232,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, model_path, cluster_path,
                 output = l1(audio)
                 
                 newLoss = q_training_step(output, step, G, criterion, 
-                                          x_path, clean_path, imag_path, fnames)               
+                                          x_path, a_path, clean_path, imag_path, fnames)               
                 chunk_loss += newLoss.data
                 optimizer.zero_grad()
                 newLoss.backward()
