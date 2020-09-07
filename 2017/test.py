@@ -64,7 +64,7 @@ MMSE_train(chunk_size=1000, x_path='/nobackup/anakuzne/data/snr0_train/',
            clean_path = '/nobackup/anakuzne/data/snr0_train_clean/')
 '''
 
-MMSE_pretrain(chunk_size=1000, x_path='/N/slate/anakuzne/se_data/snr0_train/', 
+MMSE_pretrain(chunk_size=100, x_path='/N/slate/anakuzne/se_data/snr0_train/', 
            y_path='/N/slate/anakuzne/se_data/snr0_w_target/', 
            model_path='/N/slate/anakuzne/se_data/qfunc_pretrain/',
            cluster_path = '/N/slate/anakuzne/se_data/kmeans_centers.npy',
