@@ -291,7 +291,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
 
 ########################################################
 
-def MMSE_train(chunk_size, x_path, y_path, model_path, cluster_path,
+def MMSE_train(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
                 clean_path,
                 imag_path='/nobackup/anakuzne/data/snr0_train_img/',
                 maxlen=1339, 
@@ -300,31 +300,26 @@ def MMSE_train(chunk_size, x_path, y_path, model_path, cluster_path,
 
     feat_type='mel'
 
-    num_epochs = 100
+    num_epochs = 10
     P=5 #Window size
     G = np.load(cluster_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
 
-    ##### EARLY STOPPING #####
-
-    min_delta = 0.01 #Min change in loss which can be considered as improvement
-    stop_epoch = 10 #Number of epochs without improvement
-    no_improv = 0
-    prev_loss = 0
-
     losses = []
-    device = torch.device('cuda:2')
-    torch.cuda.set_device(2)
+    device = torch.device('cuda:0')
+    torch.cuda.set_device(0)
 
     layers = RL_L2()
     layers.load_state_dict(model_path+'qfunc_l2.pth')
 
-    q_func_MMSE = DNN_RL(layers)
+    q_func_pretrained = DNN_RL(layers)
 
-    optimizer = optim.SGD(q_func_MMSE.parameters(), lr=0.01, momentum=0.9)
-    q_func_MMSE.cuda()
-    best_q = copy.deepcopy(q_func_MMSE.state_dict())
+    criterion = MMSE_loss(G)
+    criterion.cuda()
 
+    optimizer = optim.SGD(q_func_pretrained.parameters(), lr=0.0001, momentum=0.8)
+    q_func_pretrained.cuda()
+    best_q = copy.deepcopy(q_func_pretrained.state_dict())
 
     for epoch in range(1, num_epochs+1):
         print('Epoch {}/{}'.format(epoch, num_epochs))
@@ -348,10 +343,10 @@ def MMSE_train(chunk_size, x_path, y_path, model_path, cluster_path,
             for step, (audio, target) in enumerate(trainData): 
                 audio = audio.to(device)
                 target = target.to(device)
-                output = q_func(audio)
+                output = q_func_pretrained(audio)
                 
                 newLoss = q_training_step(output, step, G, criterion, 
-                                          x_path, clean_path, imag_path, fnames)               
+                                          x_path, a_path, clean_path, imag_path, fnames)               
                 chunk_loss += newLoss.data
                 optimizer.zero_grad()
                 newLoss.backward()
@@ -363,38 +358,13 @@ def MMSE_train(chunk_size, x_path, y_path, model_path, cluster_path,
 
             print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
 
-        #Check for early stopping
+       
         losses.append(epoch_loss/num_chunk)
-        pickle.dump(losses, open(model_path+"losses_q.p", "wb" ) )
+        pickle.dump(losses, open(model_path+"losses_pre.p", "wb" ) )
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
+    print('Saved best model...')
+    torch.save(best_q, model_path+'qfunc_pretrained.pth')
 
-        if epoch==1:
-            prev_loss = epoch_loss/num_chunk
-            epoch_loss += chunk_loss/(num_chunk+1)
-            torch.save(best_l1, model_path+'q_func.pth')
-            continue
-        else:
-            delta = prev_loss - (epoch_loss/num_chunk)
-            prev_loss = epoch_loss/num_chunk
-
-            print('Current delta:', delta, 'Min delta:', min_delta)
-            
-            if delta <= min_delta:
-                no_improv+=1
-                print('No improvement for ', no_improv, ' epochs.')
-                if no_improv < stop_epoch:
-                    epoch_loss += chunk_loss/(num_chunk+1)
-                    torch.save(best_l2, model_path+'q_func.pth')
-                    continue
-                else:
-                    prev_loss = 1
-                    no_improv = 0
-                    torch.save(best_l1, model_path+'q_func.pth')
-                    break
-            else:
-                epoch_loss += chunk_loss/(num_chunk+1)
-                torch.save(best_l1, model_path+'q_func.pth')
-                continue
 
 def q_learning(x_path, y_path, model_path, clean_path,
                imag_path='/nobackup/anakuzne/data/snr0_train_img/',
