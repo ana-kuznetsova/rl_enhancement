@@ -197,7 +197,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
     l1 = RL_L1()
     l1.apply(weights)
     criterion = MMSE_loss(G)
-    optimizer = optim.SGD(l1.parameters(), lr=0.0001, momentum=0.6) #Changed lr for test
+    optimizer = optim.SGD(l1.parameters(), lr=0.0001, momentum=0.3) #Changed lr for test
     
     l1.cuda()
     l1 = l1.to(device)
