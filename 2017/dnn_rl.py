@@ -174,17 +174,10 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
 
     feat_type='mel'
 
-    num_epochs = 20
+    num_epochs = 10
     P=5 #Window size
     G = np.load(cluster_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
-
-    ##### EARLY STOPPING #####
-
-    min_delta = 0.01 #Min change in loss which can be considered as improvement
-    stop_epoch = 10 #Number of epochs without improvement
-    no_improv = 0
-    prev_loss = 0
 
     losses_l1 = []
     losses_l2 = []
@@ -197,7 +190,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
     l1 = RL_L1()
     l1.apply(weights)
     criterion = MMSE_loss(G)
-    optimizer = optim.SGD(l1.parameters(), lr=0.0001, momentum=0.3) #Changed lr for test
+    optimizer = optim.SGD(l1.parameters(), lr=0.0001, momentum=0.8) #Changed lr for test
     
     l1.cuda()
     l1 = l1.to(device)
@@ -244,40 +237,12 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
 
             print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
 
-        #Check for early stopping
+        
         losses_l1.append(epoch_loss/num_chunk)
         pickle.dump(losses_l1, open(model_path+"losses_l1.p", "wb" ) )
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
-        '''
-        if epoch==1:
-            prev_loss = epoch_loss/num_chunk
-            epoch_loss += chunk_loss/(num_chunk+1)
-            torch.save(best_l1, model_path+'dnn_rl_l1.pth')
-            continue
-        else:
-            delta = prev_loss - (epoch_loss/num_chunk)
-            prev_loss = epoch_loss/num_chunk
-
-            print('Current delta:', delta, 'Min delta:', min_delta)
-            
-            if delta <= min_delta:
-                no_improv+=1
-                print('No improvement for ', no_improv, ' epochs.')
-                if no_improv < stop_epoch:
-                    epoch_loss += chunk_loss/(num_chunk+1)
-                    torch.save(best_l1, model_path+'rl_dnn_l1.pth')
-                    continue
-                else:
-                    prev_loss = 1
-                    no_improv = 0
-                    torch.save(best_l1, model_path+'rl_dnn_l1.pth')
-                    print('Finished pretraining Layer 1...')
-                    break
-            else:
-                epoch_loss += chunk_loss/(num_chunk+1)
-                torch.save(best_l1, model_path+'qfunc_l1.pth')
-                continue
-    
+    print('Saved pre-trained L1...')
+    torch.save(best_l1, model_path+'dnn_rl_l1.pth')
 
     ######## PRETRAIN SECOND LAYER ############
 
@@ -333,35 +298,8 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
         losses_l2.append(epoch_loss/num_chunk)
         pickle.dump(losses_l2, open(model_path+"losses_l2.p", "wb" ) )
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
-
-        if epoch==1:
-            prev_loss = epoch_loss/num_chunk
-            epoch_loss += chunk_loss/(num_chunk+1)
-            torch.save(best_l2, model_path+'dnn_rl_l2.pth')
-            continue
-        else:
-            delta = prev_loss - (epoch_loss/num_chunk)
-            prev_loss = epoch_loss/num_chunk
-
-            print('Current delta:', delta, 'Min delta:', min_delta)
-            
-            if delta <= min_delta:
-                no_improv+=1
-                print('No improvement for ', no_improv, ' epochs.')
-                if no_improv < stop_epoch:
-                    epoch_loss += chunk_loss/(num_chunk+1)
-                    torch.save(best_l2, model_path+'rl_dnn_l2.pth')
-                    continue
-                else:
-                    prev_loss = 1
-                    no_improv = 0
-                    torch.save(best_l2, model_path+'rl_dnn_l2.pth')
-                    print('Finished pretraining Layer 2...')
-                    break
-            else:
-                epoch_loss += chunk_loss/(num_chunk+1)
-                torch.save(best_l2, model_path+'qfunc_l2.pth')
-                continue
+    print('Saved best L2...')
+    torch.save(best_l2, model_path+'dnn_rl_l2.pth')
     '''
 
 ########################################################
