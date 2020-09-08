@@ -229,7 +229,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
         pickle.dump(losses_l1, open(model_path+"losses_l1.p", "wb" ) )
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
     print('Saved pre-trained L1...')
-    torch.save(best_l1, model_path+'dnn_rl_l1.pth')
+    torch.save(best_l1, model_path+'rl_dnn_l1.pth')
 
     ######## PRETRAIN SECOND LAYER ############
 
