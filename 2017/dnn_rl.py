@@ -143,19 +143,6 @@ def q_training_step(output, step, G, criterion, x_path, a_path, clean_path, imag
         imag_path
         fnames
     '''
-   
-    '''
-    phase = pad(np.load(imag_path+fnames[step]), maxlen).T
-    Q_pred = output.detach().cpu().numpy()
-    wiener_rl = np.zeros((1339, 257))
-
-    #Select template index, predict Wiener filter
-    for i, row in enumerate(Q_pred):
-        ind = np.argmax(row)
-        G_k_pred = G[ind]
-        wiener_rl[i] = G_k_pred
-    '''
-
     x_source = np.abs(np.load(x_path+fnames[step]))
     x_source = pad(x_source, maxlen).T
     
@@ -300,7 +287,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
     print('Saved best L2...')
     torch.save(best_l2, model_path+'dnn_rl_l2.pth')
-    '''
+   
 
 ########################################################
 
