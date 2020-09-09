@@ -435,7 +435,6 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
         Q_pred_rl = dnn_rl(x).detach().cpu().numpy() #for target Qfunc. Shape (1339, 32)
         Q_pred_mmse = q_func_mmse(x).detach().cpu().numpy() #for pretrained Qfunc
-        print('Pred MMSE:', Q_pred_mmse.shape)
         wiener_rl = np.zeros((1339, 257))
 
         #Save selected actions
@@ -485,11 +484,11 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
             a_m = selected_actions_mmse[i]
             if a_t==a_m:
                 if R_ > 0:
-                    qfunc_target[i][a_t] = r + np.max(qfunc_target[i]) #qfunc shape (1339, 32)
+                    qfunc_target[i][a_t] = r[i] + np.max(qfunc_target[i]) #qfunc shape (1339, 32)
                 else:
                     qfunc_target[i][a_t] = Q_pred_rl[i][a_t]
             else:
                 if R_ > 0:
                     qfunc_pretrained[i][a_m] = Q_pred_mmse[i][a_m]
                 else:
-                    qfunc_pretrained[i][a_m] = Q_pred_mmse[i][a_m] - r
+                    qfunc_pretrained[i][a_m] = Q_pred_mmse[i][a_m] - r[i]
