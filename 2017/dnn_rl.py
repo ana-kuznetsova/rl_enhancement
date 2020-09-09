@@ -390,8 +390,8 @@ def q_learning(x_path, y_path, model_path, clean_path,
     G = np.load(y_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
     ###Load DNN-mapping model
-    device = torch.device('cuda:2')
-    torch.cuda.set_device(2)
+    device = torch.device('cuda:0')
+    torch.cuda.set_device(0)
     
     dnn_map = DNN_mel()
     dnn_map.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
