@@ -412,8 +412,8 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
     dnn_rl = dnn_rl.to(device)
 
     ## Initialize qfunc matrices
-    qfunc_target = np.zeros((32, 1339)) 
-    qfunc_pretrained = np.zeros((32, 1339))
+    qfunc_target = np.zeros((1339, 32)) 
+    qfunc_pretrained = np.zeros((1339, 32))
 
     for ep in range(num_episodes):
         if ep//100:
@@ -433,8 +433,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
     ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
 
-        Q_pred_rl = dnn_rl(x).detach().cpu().numpy() #for target Qfunc
-        print('Q_pred:', Q_pred_rl.shape)
+        Q_pred_rl = dnn_rl(x).detach().cpu().numpy() #for target Qfunc. Shape (1339, 32)
         Q_pred_mmse = q_func_mmse(x).detach().cpu().numpy() #for pretrained Qfunc
         wiener_rl = np.zeros((1339, 257))
 
@@ -453,7 +452,6 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
         wiener_rl = wiener_rl.T
         y_pred_rl = np.multiply(pad(x_source, maxlen), wiener_rl) + phase  
-        print('Pred shape:', y_pred_rl.shape)
 
         map_out = dnn_map(x)
         wiener_map = map_out.detach().cpu().numpy().T
@@ -473,7 +471,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         clean = np.load(clean_path+x_name)
         E = time_weight(y_pred_rl, pad(clean, maxlen))
         r = reward(z_rl, z_map, E)
-        print('Reward:', r.shape)
+        print('Reward:', r)
         
         R_ = R(z_rl, z_map)
         print('R_cal:', R_)
@@ -483,11 +481,11 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
             a_m = selected_actions_mmse[i]
             if a_t==a_m:
                 if R_ > 0:
-                    qfunc_target[a_t][i] = r + np.max(qfunc_target[:,i])
+                    qfunc_target[i][a_t] = r + np.max(qfunc_target[i]) #qfunc shape (1339, 32)
                 else:
-                    qfunc_target[a_t][i] = Q_pred_rl[a_t,i]
+                    qfunc_target[i][a_t] = Q_pred_rl[i][a_t]
             else:
                 if R_ > 0:
-                    q_func_pretrained[a_m][i] = Q_pred_mmse[a_m][i]
+                    qfunc_pretrained[i][a_m] = Q_pred_mmse[i][a_m]
                 else:
-                    q_func_pretrained[a_m][i] = Q_pred_mmse[a_m][i] - r
+                    qfunc_pretrained[i][a_m] = Q_pred_mmse[i][a_m] - r
