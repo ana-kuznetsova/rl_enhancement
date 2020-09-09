@@ -402,7 +402,8 @@ def q_learning(num_episodes, x_path, y_path, a_path, model_path, clean_path,
 
     #Load MMSE reference Q-function
     q_func_mmse = DNN_RL()
-    q_func_mmse.load_state_dict(torch.load(model_path+'qfunc_pretrained.pth'))
+    q_func_mmse.load_state_dict(torch.load(model_path+'qfunc_pretrained.pth'),
+                                           inference=True )
     q_func_mmse.cuda()
     q_func_mmse.to(device)
     
