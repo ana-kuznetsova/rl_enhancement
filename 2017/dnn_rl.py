@@ -411,6 +411,10 @@ def q_learning(num_episodes, x_path, cluster_path, a_path, model_path, clean_pat
     dnn_rl.cuda()
     dnn_rl = dnn_rl.to(device)
 
+    ## Initialize qfunc matrices
+    qfunc_target = np.zeros((32, 1339)) 
+    qfunc_pretrained = np.zeros((32, 1339))
+
     for ep in range(num_episodes):
         if ep//100:
             print('Episode:{}/{}'.format(ep, num_episodes))
@@ -429,17 +433,21 @@ def q_learning(num_episodes, x_path, cluster_path, a_path, model_path, clean_pat
 
     ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
 
-        Q_pred = dnn_rl(x).detach().cpu().numpy() #Q_pred - q-function predicted by DNN-RL [1339, 32]
+        Q_pred_rl = dnn_rl(x).detach().cpu().numpy() #for target Qfunc
+        Q_pred_mmse = q_func_mmse(x).detach().cpu().numpy() #for pretrained Qfunc
         wiener_rl = np.zeros((1339, 257))
 
         #Save selected actions
-        selected_actions = []
+        selected_actions_target = []
+        selected_actions_mmse = []
     
         #Select template index, predict Wiener filter
-        for i, row in enumerate(Q_pred):
-            ind = np.argmax(row)
-            selected_actions.append(ind)
-            G_k_pred = G[ind]
+        for i, row in enumerate(Q_pred_rl):
+            ind_t = np.argmax(row)
+            ind_m = np.argmax(Q_pred_mmse[row])
+            selected_actions_target.append(ind_t)
+            selected_actions_mmse.append(ind_m)
+            G_k_pred = G[ind_t]
             wiener_rl[i] = G_k_pred
 
         wiener_rl = wiener_rl.T
@@ -469,3 +477,15 @@ def q_learning(num_episodes, x_path, cluster_path, a_path, model_path, clean_pat
         R_ = R(z_rl, z_map)
 
         #### UPDATE Q-FUNCS ####
+        for i, a_t in enumerate(selected_actions_target):
+            a_m = selected_actions_mmse[i]
+            if a_t==a_m:
+                if R > 0:
+                    qfunc_target[a_t][i] = r + np.max(qfunc_target[:,i])
+                else:
+                    qfunc_target[a_t][i] = Q_pred_rl[a_t,i]
+            else:
+                if R > 0:
+                    q_func_mmse[a_m][i] = Q_pred_mmse[a_m][i]
+                else:
+                    q_func_mmse[a_m][i] = Q_pred_mmse[a_m][i] - r
