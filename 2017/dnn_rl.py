@@ -445,7 +445,7 @@ def q_learning(num_episodes, x_path, cluster_path, a_path, model_path, clean_pat
         #Select template index, predict Wiener filter
         for i, row in enumerate(Q_pred_rl):
             ind_t = np.argmax(row)
-            ind_m = np.argmax(Q_pred_mmse[row])
+            ind_m = np.argmax(Q_pred_mmse[i])
             selected_actions_target.append(ind_t)
             selected_actions_mmse.append(ind_m)
             G_k_pred = G[ind_t]
@@ -488,6 +488,6 @@ def q_learning(num_episodes, x_path, cluster_path, a_path, model_path, clean_pat
                     qfunc_target[a_t][i] = Q_pred_rl[a_t,i]
             else:
                 if R_ > 0:
-                    q_func_mmse[a_m][i] = Q_pred_mmse[a_m][i]
+                    q_func_pretrained[a_m][i] = Q_pred_mmse[a_m][i]
                 else:
-                    q_func_mmse[a_m][i] = Q_pred_mmse[a_m][i] - r
+                    q_func_pretrained[a_m][i] = Q_pred_mmse[a_m][i] - r

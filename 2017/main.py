@@ -92,7 +92,6 @@ def main(args):
         q_learning(args.num_epochs,
                    args.x_path,
                    args.cluster_path,
-                   args.a_path,
                    args.model_path,
                    args.clean_path,
                    args.imag)
