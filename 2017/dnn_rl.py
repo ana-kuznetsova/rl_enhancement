@@ -412,8 +412,8 @@ def q_learning(num_episodes, x_path, cluster_path, a_path, model_path, clean_pat
     dnn_rl = dnn_rl.to(device)
 
     for ep in range(num_episodes):
-
-        print('Episode:{}/{}'.format(ep, num_episodes))
+        if ep//100:
+            print('Episode:{}/{}'.format(ep, num_episodes))
 
         #Select random
         x_files = os.listdir(x_path)
@@ -464,7 +464,7 @@ def q_learning(num_episodes, x_path, cluster_path, a_path, model_path, clean_pat
         clean = np.load(clean_path+x_name)
         E = time_weight(y_pred_rl, pad(clean, maxlen))
         r = reward(z_rl, z_map, E)
-        print('Reward:', r)
+        print('Reward:', r.shape)
         
         R_ = R(z_rl, z_map)
 
