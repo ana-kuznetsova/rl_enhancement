@@ -301,7 +301,7 @@ def MMSE_train(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
 
     feat_type='mel'
 
-    num_epochs = 50
+    num_epochs = 100
     P=5 #Window size
     G = np.load(cluster_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
@@ -411,6 +411,9 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
     dnn_rl.cuda()
     dnn_rl = dnn_rl.to(device)
 
+    ##Loss
+
+
     ## Initialize qfunc matrices
     qfunc_target = np.zeros((1339, 32)) 
     qfunc_pretrained = np.zeros((1339, 32))
@@ -477,8 +480,6 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         print('R_cal:', R_)
 
         #### UPDATE Q-FUNCS ####
-        print('Actions_t:', selected_actions_target[:10])
-        print('Actions_m:', selected_actions_mmse[:10])
 
         for i, a_t in enumerate(selected_actions_target):
             a_m = selected_actions_mmse[i]
@@ -492,3 +493,5 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
                     qfunc_pretrained[i][a_m] = Q_pred_mmse[i][a_m]
                 else:
                     qfunc_pretrained[i][a_m] = Q_pred_mmse[i][a_m] - r[i]
+
+        
