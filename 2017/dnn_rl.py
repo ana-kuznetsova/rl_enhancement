@@ -310,7 +310,7 @@ def MMSE_train(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
     torch.cuda.set_device(0)
 
     layers = RL_L2()
-    layers.load_state_dict(model_path+'dnn_rl_l2.pth')
+    layers.load_state_dict(torch.load(model_path+'dnn_rl_l2.pth'))
 
     q_func_pretrained = DNN_RL(layers)
 
