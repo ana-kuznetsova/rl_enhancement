@@ -55,7 +55,7 @@ class RL_L2(nn.Module):
         return self.soft(x)
     
 class DNN_RL(nn.Module):
-    def __init__(self, l1_2=None, inference=False):
+    def __init__(self, l1_2=None):
         super().__init__()
         if l1_2:
             self.fc1 = l1_2.fc1
@@ -63,10 +63,8 @@ class DNN_RL(nn.Module):
         else:
             self.fc1 = nn.Linear(704, 64)
             self.fc2 = nn.Linear(64, 32)
-        if inference:
-            self.soft = l1_2.soft
-        else:
-            self.soft = nn.Softmax(dim=1)
+        
+        self.soft = nn.Softmax(dim=1)
         self.drop = nn.Dropout(0.3)
         
     def forward(self, x):
@@ -402,8 +400,7 @@ def q_learning(num_episodes, x_path, cluster_path, a_path, model_path, clean_pat
 
     #Load MMSE reference Q-function
     q_func_mmse = DNN_RL()
-    q_func_mmse.load_state_dict(torch.load(model_path+'qfunc_pretrained.pth'),
-                                           inference=True )
+    q_func_mmse.load_state_dict(torch.load(model_path+'qfunc_pretrained.pth'))
     q_func_mmse.cuda()
     q_func_mmse.to(device)
     
