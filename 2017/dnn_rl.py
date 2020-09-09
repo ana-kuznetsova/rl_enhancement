@@ -55,7 +55,7 @@ class RL_L2(nn.Module):
         return self.soft(x)
     
 class DNN_RL(nn.Module):
-    def __init__(self, l1_2=None):
+    def __init__(self, l1_2=None, inference=False):
         super().__init__()
         if l1_2:
             self.fc1 = l1_2.fc1
@@ -63,7 +63,10 @@ class DNN_RL(nn.Module):
         else:
             self.fc1 = nn.Linear(704, 64)
             self.fc2 = nn.Linear(64, 32)
-        self.soft = nn.Softmax(dim=1)
+        if inference:
+            self.soft = l1_2.soft
+        else:
+            self.soft = nn.Softmax(dim=1)
         self.drop = nn.Dropout(0.3)
         
     def forward(self, x):
@@ -368,7 +371,7 @@ def MMSE_train(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
 
 def q_learning(num_episodes, x_path, y_path, a_path, model_path, clean_path,
                imag_path='/nobackup/anakuzne/data/snr0_train_img/',
-               num_episodes=50000, epsilon=0.01, maxlen=1339, 
+               epsilon=0.01, maxlen=1339, 
                win_len=512,
                hop_size=256,
                fs=16000,
@@ -384,13 +387,10 @@ def q_learning(num_episodes, x_path, y_path, a_path, model_path, clean_path,
     '''
     ### Initialization ###
 
-    # Q-functions, zero initialization
-    Q_target = np.zeros((1339, 32))
-    Q_MMSE = np.zeros((1339, 32))
-
     P=5 #Window size
     G = np.load(y_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
+
     ###Load DNN-mapping model
     device = torch.device('cuda:0')
     torch.cuda.set_device(0)
@@ -399,6 +399,12 @@ def q_learning(num_episodes, x_path, y_path, a_path, model_path, clean_path,
     dnn_map.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
     dnn_map.cuda()
     dnn_map = dnn_map.to(device)
+
+    #Load MMSE reference Q-function
+    q_func_mmse = DNN_RL()
+    q_func_mmse.load_state_dict(torch.load(model_path+'qfunc_pretrained.pth'))
+    q_func_mmse.cuda()
+    q_func_mmse.to(device)
     
     #Initialize DNN_RL with pretrained weights
     
@@ -408,6 +414,8 @@ def q_learning(num_episodes, x_path, y_path, a_path, model_path, clean_path,
     dnn_rl = dnn_rl.to(device)
 
     for ep in range(num_episodes):
+
+        print('Episode:{}/{}'.format(ep, num_episodes))
 
         #Select random
         x_files = os.listdir(x_path)
@@ -462,4 +470,4 @@ def q_learning(num_episodes, x_path, y_path, a_path, model_path, clean_path,
         
         R_ = R(z_rl, z_map)
 
-
+        #### UPDATE Q-FUNCS ####

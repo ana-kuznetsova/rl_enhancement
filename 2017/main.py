@@ -14,6 +14,7 @@ from data import calc_masks
 from data import KMeans
 from data import calc_MMSE_labels
 from metrics import eval_pesq
+from dnn_rl import q_learning
 
 def main(args):
     if args.mode=='train':
@@ -87,6 +88,16 @@ def main(args):
     elif args.mode=='cluster':
         KMeans(args.chunk_size, args.x_path, args.test_out)
 
+    elif args.mode=='qlearn':
+        q_learning(args.num_epochs,
+                   args.x_path,
+                   args.y_path,
+                   args.a_path,
+                   args.model_path,
+                   args.clean_path,
+                   args.imag)
+
+
 
 
 if __name__ == '__main__':
@@ -108,6 +119,6 @@ if __name__ == '__main__':
     parser.add_argument('--pre_path', type=str, help='paths to pretrained model')
     parser.add_argument('--mask', type=str, help='mask type')
     parser.add_argument('--clean_path', type=str, help='path to clean')
-
+    parser.add_argument('--a_path', type=str, help='path to the ground truth actions')
     args = parser.parse_args()
     main(args)
