@@ -477,6 +477,9 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         print('R_cal:', R_)
 
         #### UPDATE Q-FUNCS ####
+        print('Actions_t:', selected_actions_target[:10])
+        print('Actions_m:', selected_actions_mmse[:10])
+
         for i, a_t in enumerate(selected_actions_target):
             a_m = selected_actions_mmse[i]
             if a_t==a_m:
