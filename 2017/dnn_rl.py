@@ -300,7 +300,7 @@ def MMSE_train(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
 
     feat_type='mel'
 
-    num_epochs = 30
+    num_epochs = 50
     P=5 #Window size
     G = np.load(cluster_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
@@ -366,7 +366,7 @@ def MMSE_train(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
     torch.save(best_q, model_path+'qfunc_pretrained.pth')
 
 
-def q_learning(x_path, y_path, model_path, clean_path,
+def q_learning(num_episodes, x_path, y_path, a_path, model_path, clean_path,
                imag_path='/nobackup/anakuzne/data/snr0_train_img/',
                num_episodes=50000, epsilon=0.01, maxlen=1339, 
                win_len=512,
@@ -375,9 +375,11 @@ def q_learning(x_path, y_path, model_path, clean_path,
                from_pretrained=False):
     '''
     Params:
+        num_episodes: num of updates to the target q function
         x_path: path to the training examples
         y_path: path to the cluster centers
-        model_path: path to dir where DNN-mapping model is stored
+        a_path: path where ground truth actions are stored
+        model_path: path where the models are stored
         clean_path: path to clean reference (stft)
     '''
     ### Initialization ###
@@ -395,79 +397,69 @@ def q_learning(x_path, y_path, model_path, clean_path,
     
     dnn_map = DNN_mel()
     dnn_map.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
+    dnn_map.cuda()
     dnn_map = dnn_map.to(device)
     
+    #Initialize DNN_RL with pretrained weights
     
     dnn_rl = DNN_RL()
-    dnn_rl.apply(weights)
+    dnn_rl.load_state_dict(torch.load(model_path+'qfunc_pretrained.pth'))
+    dnn_rl.cuda()
     dnn_rl = dnn_rl.to(device)
 
-    #criterion = nn.MSELoss()
-    #optimizer = optim.SGD(dnn_rl.parameters(), lr=0.01, momentum=0.9)
-    #device = torch.device('cuda:3')
-    #device2 = torch.device('cuda:1')
-    #dnn_rl.cuda()
-    #dnn_rl = dnn_rl.to(device)
-    #criterion.cuda()
+    for ep in range(num_episodes):
 
-    #Select random
-    x_files = os.listdir(x_path)
-    x_name = np.random.choice(x_files)
+        #Select random
+        x_files = os.listdir(x_path)
+        x_name = np.random.choice(x_files)
 
-    phase = pad(np.load(imag_path+x_name), maxlen)
+        phase = pad(np.load(imag_path+x_name), maxlen)
 
-    x_source = np.load(x_path+x_name)
-    x = mel_spec(x_source, win_len, hop_size, fs)
-    x = np.abs(get_X_batch(x, P)).T
-    x = pad(x, maxlen).T
-    x = torch.tensor(x).cuda().float()
+        x_source = np.load(x_path+x_name)
+        x = mel_spec(x_source, win_len, hop_size, fs)
+        x = np.abs(get_X_batch(x, P)).T
+        x = pad(x, maxlen).T
+        x = torch.tensor(x).cuda().float()
 
     ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
 
-    Q_pred = dnn_rl(x).detach().cpu().numpy() #Q_pred - q-function predicted by DNN-RL [1339, 32]
-    wiener_rl = np.zeros((1339, 257))
+        Q_pred = dnn_rl(x).detach().cpu().numpy() #Q_pred - q-function predicted by DNN-RL [1339, 32]
+        wiener_rl = np.zeros((1339, 257))
 
-    #Save selected actions
-    selected_actions = []
+        #Save selected actions
+        selected_actions = []
     
-    #Select template index, predict Wiener filter
-    for i, row in enumerate(Q_pred):
-        ind = np.argmax(row)
-        selected_actions.append(ind)
-        G_k_pred = G[ind]
-        wiener_rl[i] = G_k_pred
+        #Select template index, predict Wiener filter
+        for i, row in enumerate(Q_pred):
+            ind = np.argmax(row)
+            selected_actions.append(ind)
+            G_k_pred = G[ind]
+            wiener_rl[i] = G_k_pred
 
-    wiener_rl = wiener_rl.T
-    y_pred_rl = np.multiply(pad(x_source, maxlen), wiener_rl) + phase  
-    print('Pred shape:', y_pred_rl.shape)
+        wiener_rl = wiener_rl.T
+        y_pred_rl = np.multiply(pad(x_source, maxlen), wiener_rl) + phase  
+        print('Pred shape:', y_pred_rl.shape)
 
-    map_out = dnn_map(x)
-    wiener_map = map_out.detach().cpu().numpy().T
-    y_pred_map = np.multiply(pad(x_source, maxlen), wiener_map) + phase  
+        map_out = dnn_map(x)
+        wiener_map = map_out.detach().cpu().numpy().T
+        y_pred_map = np.multiply(pad(x_source, maxlen), wiener_map) + phase  
 
     
-    ##### Calculate reward ######
+        ##### Calculate reward ######
 
-    x_source_wav = invert(x_source)
-    y_map_wav = invert(y_pred_map)[:x_source_wav.shape[0]]
-    y_rl_wav = invert(y_pred_map)[:x_source_wav.shape[0]]
-    
-    z_rl = calc_Z(x_source_wav, y_rl_wav)
-    z_map = calc_Z(x_source_wav, y_map_wav)
-    print('Z-scores:', z_rl, z_map)
+        x_source_wav = invert(x_source)
+        y_map_wav = invert(y_pred_map)[:x_source_wav.shape[0]]
+        y_rl_wav = invert(y_pred_map)[:x_source_wav.shape[0]]
+        
+        z_rl = calc_Z(x_source_wav, y_rl_wav)
+        z_map = calc_Z(x_source_wav, y_map_wav)
+        print('Z-scores:', z_rl, z_map)
 
-    clean = np.load(clean_path+x_name)
-    E = time_weight(y_pred_rl, pad(clean, maxlen))
-    r = reward(z_rl, z_map, E)
-    print('Reward:', r)
-
-    ### UPDATE TARGET Q-FUNCS ###
-    R_ = R(z_rl, z_map)
-
-    for i in range(r.shape[0]):
-        if R_ > 0:
-            Q_target[i][selected_actions[i]] = r[i] + max(Q_pred[i])
-        else:
-            Q_target[i][selected_actions[i]] = Q_pred[i][selected_actions[i]]
+        clean = np.load(clean_path+x_name)
+        E = time_weight(y_pred_rl, pad(clean, maxlen))
+        r = reward(z_rl, z_map, E)
+        print('Reward:', r)
+        
+        R_ = R(z_rl, z_map)
 
 
