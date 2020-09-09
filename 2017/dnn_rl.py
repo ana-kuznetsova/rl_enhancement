@@ -369,7 +369,7 @@ def MMSE_train(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
     torch.save(best_q, model_path+'qfunc_pretrained.pth')
 
 
-def q_learning(num_episodes, x_path, y_path, a_path, model_path, clean_path,
+def q_learning(num_episodes, x_path, cluster_path, a_path, model_path, clean_path,
                imag_path='/nobackup/anakuzne/data/snr0_train_img/',
                epsilon=0.01, maxlen=1339, 
                win_len=512,
@@ -388,7 +388,7 @@ def q_learning(num_episodes, x_path, y_path, a_path, model_path, clean_path,
     ### Initialization ###
 
     P=5 #Window size
-    G = np.load(y_path) #Cluster centers for wiener masks
+    G = np.load(cluster_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
 
     ###Load DNN-mapping model

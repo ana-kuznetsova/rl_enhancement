@@ -91,7 +91,7 @@ def main(args):
     elif args.mode=='qlearn':
         q_learning(args.num_epochs,
                    args.x_path,
-                   args.y_path,
+                   args.cluster_path,
                    args.a_path,
                    args.model_path,
                    args.clean_path,
@@ -120,5 +120,6 @@ if __name__ == '__main__':
     parser.add_argument('--mask', type=str, help='mask type')
     parser.add_argument('--clean_path', type=str, help='path to clean')
     parser.add_argument('--a_path', type=str, help='path to the ground truth actions')
+    parser.add_argument('--cluster_path', type=str, help='path to the k-means clusters')
     args = parser.parse_args()
     main(args)
