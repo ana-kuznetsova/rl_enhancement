@@ -519,7 +519,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         q_losses.append(curr_loss.detach().cpu().numpy())
         np.save(model_path+'q_losses.npy', q_losses)
 
-        print('Episode {}, Training loss:{:>4f}'.format(ep, q_losses[ep]))
+        print('Episode {}, Training loss:{:>4f}'.format(ep, curr_loss.detach().cpu().numpy()))
         opt_RMSprop.zero_grad()
         curr_loss.backward()
         opt_RMSprop.step()
