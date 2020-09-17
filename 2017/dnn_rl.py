@@ -486,7 +486,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         clean = np.load(clean_path+x_name)
         E = time_weight(y_pred_rl, pad(clean, maxlen))
         r = reward(z_rl, z_map, E)
-        #print('Reward:', r)
+        print('Reward:', r)
         
         R_ = R(z_rl, z_map)
         #print('R_cal:', R_)
