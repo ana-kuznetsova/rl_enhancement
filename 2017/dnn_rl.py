@@ -450,12 +450,10 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
             a = np.array([0,1])
             probs = np.array([epsilon, 1-epsilon])
             strategy = np.random.choice(a, p=probs)
-            print('Strategy:', strategy)
             if strategy==0:
                 ind_t = np.random.choice(np.arange(32))
             else:
                 ind_t = np.argmax(row)
-            print('Selection:', ind_t)
             ind_m = np.argmax(Q_pred_mmse[i])
             selected_actions_target.append(ind_t)
             selected_actions_mmse.append(ind_m)
@@ -503,4 +501,4 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
                 else:
                     qfunc_pretrained[i][a_m] = Q_pred_mmse[i][a_m] - r[i]
 
-        
+        print('Target:', qfunc_target.shape)
