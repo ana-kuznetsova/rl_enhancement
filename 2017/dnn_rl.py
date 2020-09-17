@@ -422,7 +422,8 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
     qfunc_pretrained = np.zeros((1339, 32))
 
     q_losses = []
-
+    reward_sums = []
+    
     for ep in range(num_episodes):
         if ep//100:
             print('Episode:{}/{}'.format(ep, num_episodes))
@@ -486,7 +487,12 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         clean = np.load(clean_path+x_name)
         E = time_weight(y_pred_rl, pad(clean, maxlen))
         r = reward(z_rl, z_map, E)
-        print('Reward:', r.shape)
+        #If inf in reward, skip iter
+        if np.isnan(np.sum(r)):
+            continue
+        reward_sums.append(np.sum(r))
+        np.save(model_path+'reward_sum.npy', np.asarray(reward_sums))
+        print('Reward sum:', np.sum(r))
         
         R_ = R(z_rl, z_map)
         #print('R_cal:', R_)
@@ -511,6 +517,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         dnn_rl.train()
         curr_loss = criterion(target_tensor, pretrained_tensor)
         q_losses.append(curr_loss.detach().cpu().numpy())
+        np.save(model_path+'q_losses.npy', q_losses)
 
         print('Episode {}, Training loss:{:>4f}'.format(ep, q_losses[ep]))
         opt_RMSprop.zero_grad()
