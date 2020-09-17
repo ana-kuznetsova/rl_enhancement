@@ -412,11 +412,16 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
     dnn_rl = dnn_rl.to(device)
 
     ##Loss
-
+    criterion = nn.MSELoss()
+    opt_RMSprop = optim.RMSprop(dnn_rl.parameters(), lr = 0.001, alpha = 0.9)
+    #optimizer = optim.SGD(l1.parameters(), lr=0.01, momentum=0.9)
+    criterion.cuda()
 
     ## Initialize qfunc matrices
     qfunc_target = np.zeros((1339, 32)) 
     qfunc_pretrained = np.zeros((1339, 32))
+
+    q_losses = []
 
     for ep in range(num_episodes):
         if ep//100:
@@ -501,4 +506,13 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
                 else:
                     qfunc_pretrained[i][a_m] = Q_pred_mmse[i][a_m] - r[i]
 
-        print('Target:', qfunc_target.shape)
+        target_tensor = torch.tensor(qfunc_target, requires_grad=True).cuda().float()
+        pretrained_tensor = torch.tensor(qfunc_pretrained).cuda().float()
+        dnn_rl.train()
+        curr_loss = criterion(target_tensor, pretrained_tensor)
+        q_losses.append(curr_loss.detach().cpu().numpy())
+
+        print('Episode {}, Training loss:{:>4f}'.format(ep, q_losses[ep]))
+        opt_RMSprop.zero_grad()
+        curr_loss.backward()
+        opt_RMSprop.step()
