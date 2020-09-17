@@ -446,7 +446,16 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
     
         #Select template index, predict Wiener filter
         for i, row in enumerate(Q_pred_rl):
-            ind_t = np.argmax(row)
+        #E-greedy selection for target
+            a = np.array([0,1])
+            probs = np.array([epsilon, 1-epsilon])
+            strategy = np.random.choice(a, p=probs)
+            print('Strategy:', strategy)
+            if strategy==0:
+                ind_t = np.random.choice(np.arange(32))
+            else:
+                ind_t = np.argmax(row)
+            print('Selection:', ind_t)
             ind_m = np.argmax(Q_pred_mmse[i])
             selected_actions_target.append(ind_t)
             selected_actions_mmse.append(ind_m)
@@ -469,15 +478,15 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         
         z_rl = calc_Z(x_source_wav, y_rl_wav)
         z_map = calc_Z(x_source_wav, y_map_wav)
-        print('Z-scores:', z_rl, z_map)
+        #print('Z-scores:', z_rl, z_map)
 
         clean = np.load(clean_path+x_name)
         E = time_weight(y_pred_rl, pad(clean, maxlen))
         r = reward(z_rl, z_map, E)
-        print('Reward:', r)
+        #print('Reward:', r)
         
         R_ = R(z_rl, z_map)
-        print('R_cal:', R_)
+        #print('R_cal:', R_)
 
         #### UPDATE Q-FUNCS ####
 
