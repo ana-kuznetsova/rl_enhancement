@@ -171,7 +171,10 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
     torch.cuda.empty_cache() 
 
     losses_l1 = []
-    losses_l2 = []
+    val_losses = []
+    true_actions = []
+    pred_actions = []
+    #losses_l2 = []
    
     device = torch.device('cuda:0') #change to 2 if on Ada
     torch.cuda.set_device(0) #change to 2 if on Ada
@@ -195,16 +198,17 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
         print('Epoch {}/{}'.format(epoch, num_epochs))
         epoch_loss = 0.0
 
-        num_chunk = (4620//chunk_size) + 1
+        ##Training 
+        num_chunk = (3234//chunk_size) + 1
         for chunk in range(num_chunk):
             chunk_loss = 0
             start = chunk*chunk_size
-            end = min(start+chunk_size, 4620)
+            end = min(start+chunk_size, 3234)
             print(start, end)
 
             # Y is a clean speech spectrogram
             X_chunk, y_chunk, fnames = make_batch(x_path, y_path, 
-                                         [start, end], 5, 
+                                         [start, end], P, 
                                          maxlen, win_len, 
                                          hop_size, feat_type, fs, names=True)
             
@@ -216,11 +220,12 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
                 output = l1(audio)
                 
                 newLoss = q_training_step(output, step, G, criterion, 
-                                          x_path, a_path, clean_path, imag_path, fnames)               
+                                          x_path, a_path, clean_path, imag_path, fnames, proc='train')               
                 chunk_loss += newLoss.data
                 optimizer.zero_grad()
                 newLoss.backward()
                 optimizer.step()
+
 
             chunk_loss = (chunk_loss.detach().cpu().numpy())/len(trainData)
             
@@ -232,9 +237,43 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
         losses_l1.append(epoch_loss/num_chunk)
         pickle.dump(losses_l1, open(model_path+"losses_l1.p", "wb" ) )
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
-    print('Saved pre-trained L1...')
-    torch.save(best_l1, model_path+'rl_dnn_l1.pth')
 
+        ##Validation
+        print('Starting validation...')
+        # Y is a clean speech spectrogram
+        start = 3234
+        end = 4620
+        X_val, y_val, fnames = make_batch(x_path, y_path, 
+                                         [start, end], 5, 
+                                         maxlen, win_len, 
+                                         hop_size, feat_type, fs, names=True)
+            
+        valData = data.DataLoader(trainDataLoader(X_val, y_val), batch_size = 1339)
+
+        overall_val_loss=0
+
+        for step, (audio, target) in enumerate(valData): 
+            audio = audio.to(device)
+            target = target.to(device)
+            output = l1(audio)
+            
+            valLoss, labels = q_training_step(output, step, G, criterion, 
+                                     x_path, a_path, clean_path, imag_path, fnames, proc='val') 
+            overall_val_loss+=valLoss.detach().cpu().numpy()
+            
+        val_losses.append(overall_val_loss/len(valData))
+        print('Validation loss: ', overall_val_loss/len(valData))
+        np.save(model_path+'val_losses_l1.npy', np.asarray(val_losses))
+        true_actions.append(labels)
+        np.save(model_path+'true_actions_l1.npy', np.asarray(true_actions))
+        pred_actions.append(output.detach().cpu().numpy())
+        np.save(model_path+'pred_actions_l1.npy', np.asarray(pred_actions))
+
+
+        print('Saing model...')
+        torch.save(best_l1, model_path+'rl_dnn_l1.pth')
+
+    '''
     ######## PRETRAIN SECOND LAYER ############
 
     l1 = RL_L1()
@@ -291,7 +330,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
     print('Saved best L2...')
     torch.save(best_l2, model_path+'dnn_rl_l2.pth')
-   
+   '''
 
 ########################################################
 
@@ -335,7 +374,6 @@ def MMSE_train(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
 
         ##Training 
         num_chunk = (3234//chunk_size) + 1
-        print(num_chunk)
         for chunk in range(num_chunk):
             chunk_loss = 0
             start = chunk*chunk_size
@@ -344,7 +382,7 @@ def MMSE_train(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
 
             # Y is a clean speech spectrogram
             X_chunk, y_chunk, fnames = make_batch(x_path, y_path, 
-                                         [start, end], 5, 
+                                         [start, end], P, 
                                          maxlen, win_len, 
                                          hop_size, feat_type, fs, names=True)
             
