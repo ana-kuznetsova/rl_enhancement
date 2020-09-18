@@ -15,7 +15,7 @@ from models import DNN_mel
 from dnn_rl import MMSE_pretrain
 from dnn_rl import MMSE_train
 
-'''
+
 MMSE_pretrain(chunk_size=1000, x_path='/N/slate/anakuzne/se_data/snr0_train/', 
            y_path='/N/slate/anakuzne/se_data/snr0_w_target/',
            a_path='/N/slate/anakuzne/se_data/action_labels/',
@@ -31,3 +31,5 @@ MMSE_train(chunk_size=1000, x_path='/N/slate/anakuzne/se_data/snr0_train/',
            cluster_path = '/N/slate/anakuzne/se_data/kmeans_centers.npy',
            clean_path = '/N/slate/anakuzne/se_data/snr0_train_clean/',
            imag_path= '/N/slate/anakuzne/se_data/snr0_train_img/')
+
+'''
