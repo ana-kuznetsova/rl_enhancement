@@ -335,10 +335,11 @@ def MMSE_train(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
 
         ##Training 
         num_chunk = (3234//chunk_size) + 1
+        print(num_chunk)
         for chunk in range(num_chunk):
             chunk_loss = 0
             start = chunk*chunk_size
-            end = min(start+chunk_size, 4620)
+            end = min(start+chunk_size, 3234)
             print(start, end)
 
             # Y is a clean speech spectrogram
