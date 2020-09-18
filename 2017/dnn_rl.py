@@ -165,7 +165,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
 
     feat_type='mel'
 
-    num_epochs = 10
+    num_epochs = 50
     P=5 #Window size
     G = np.load(cluster_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
@@ -184,7 +184,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
     l1 = RL_L1()
     l1.apply(weights)
     criterion = MMSE_loss(G)
-    optimizer = optim.SGD(l1.parameters(), lr=0.0001, momentum=0.8) #Changed lr for test
+    optimizer = optim.SGD(l1.parameters(), lr=0.001, momentum=0.8) #Changed lr for test
     
     l1.cuda()
     l1 = l1.to(device)
@@ -260,7 +260,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
             valLoss, labels = q_training_step(output, step, G, criterion, 
                                      x_path, a_path, clean_path, imag_path, fnames, proc='val') 
             overall_val_loss+=valLoss.detach().cpu().numpy()
-            
+
         val_losses.append(overall_val_loss/len(valData))
         print('Validation loss: ', overall_val_loss/len(valData))
         np.save(model_path+'val_losses_l1.npy', np.asarray(val_losses))
