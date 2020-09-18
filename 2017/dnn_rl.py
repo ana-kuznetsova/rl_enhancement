@@ -132,7 +132,7 @@ class MMSE_loss(torch.nn.Module):
 ##### TRAINING FUNCTIONS #####
 
 def q_training_step(output, step, G, criterion, x_path, a_path, clean_path, imag_path, 
-                    fnames, maxlen=1339):
+                    fnames, maxlen=1339, proc='train'):
     '''
     Params:
         output: NN predictions
@@ -150,7 +150,10 @@ def q_training_step(output, step, G, criterion, x_path, a_path, clean_path, imag
     clean = np.abs(pad(np.load(clean_path+fnames[step]), maxlen))
     action_labels = np.load(a_path+fnames[step])
     new_loss = criterion(output, x_source.T, clean, action_labels)
-    return new_loss
+    if proc=='train':
+        return new_loss
+    elif proc=='val':
+        return new_loss, action_labels
 
 
 def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
@@ -307,6 +310,10 @@ def MMSE_train(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
     torch.cuda.empty_cache() 
 
     losses = []
+    val_losses = []
+    pred_actions = []
+    true_actions = []
+
     device = torch.device('cuda:0')
     torch.cuda.set_device(0)
 
@@ -326,7 +333,8 @@ def MMSE_train(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
         print('Epoch {}/{}'.format(epoch, num_epochs))
         epoch_loss = 0.0
 
-        num_chunk = (4620//chunk_size) + 1
+        ##Training 
+        num_chunk = (3234//chunk_size) + 1
         for chunk in range(num_chunk):
             chunk_loss = 0
             start = chunk*chunk_size
@@ -347,7 +355,7 @@ def MMSE_train(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
                 output = q_func_pretrained(audio)
                 
                 newLoss = q_training_step(output, step, G, criterion, 
-                                          x_path, a_path, clean_path, imag_path, fnames)               
+                                          x_path, a_path, clean_path, imag_path, fnames, proc='train')               
                 chunk_loss += newLoss.data
                 optimizer.zero_grad()
                 newLoss.backward()
@@ -363,7 +371,38 @@ def MMSE_train(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
         losses.append(epoch_loss/num_chunk)
         pickle.dump(losses, open(model_path+"losses_pre.p", "wb" ) )
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
-    print('Saved best model...')
+
+        ##Validation
+        print('Starting validation...')
+        # Y is a clean speech spectrogram
+        start = 3234
+        end = 4620
+        X_val, y_val, fnames = make_batch(x_path, y_path, 
+                                         [start, end], 5, 
+                                         maxlen, win_len, 
+                                         hop_size, feat_type, fs, names=True)
+            
+        valData = data.DataLoader(trainDataLoader(X_val, y_val), batch_size = 1339)
+
+        overall_val_loss=0
+        for step, (audio, target) in enumerate(valData): 
+            audio = audio.to(device)
+            target = target.to(device)
+            output = q_func_pretrained(audio)
+            
+            valLoss, labels = q_training_step(output, step, G, criterion, 
+                                     x_path, a_path, clean_path, imag_path, fnames, proc='val') 
+            overall_val_loss+=valLoss.detach().cpu().numpy()
+        val_losses.append(overall_val_loss/len(valData))
+        print('Validation loss: ', overall_val_loss/len(valData))
+        np.save(model_path+'val_losses.npy', np.asarray(val_losses))
+        true_actions.append(labels)
+        np.save(model_path+'true_actions.npy', np.asarray(true_actions))
+        pred_actions.append(output.detach().cpu().numpy())
+        np.save(model_path+'pred_actions.npy', np.asarray(pred_actions))
+        
+
+    print('Saving model...')
     torch.save(best_q, model_path+'qfunc_pretrained.pth')
 
 
