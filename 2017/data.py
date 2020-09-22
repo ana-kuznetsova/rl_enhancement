@@ -146,12 +146,14 @@ def get_X_batch(stft, P):
 
 def make_windows(x_path, ind, P, win_len, hop_size, fs, names=False):
     chunk_x = os.listdir(x_path)[ind[0]:ind[1]]
+    X = []
     print('Loading training examples...')
     for path in tqdm(chunk_x):
         arr = np.load(x_path+path)
         arr = mel_spec(arr, win_len, hop_size, fs)
         arr = np.abs(get_X_batch(arr, P))
-        print('Ex shape:', arr.shape)
+        X.append(arr)
+    return np.asarray(X)
 
 def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, feat_type, fs, names=False):
     X = []

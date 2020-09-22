@@ -210,14 +210,10 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                                           [start, end], P, 
                                            win_len, 
                                            hop_size, fs, names=True)
-            
-            #trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 1339)
 
-            for step, (audio, target) in enumerate(trainData): 
-                audio = audio.to(device)
-                target = target.to(device)
-                output = l1(audio)
-
+            for step, batch in enumerate(X_chunk): 
+                batch = torch.tensor(batch).to(device)
+                output = l1(batch)
                 newLoss = q_training_step(output, step, G, criterion, 
                                           x_path, a_path, clean_path, imag_path, fnames, proc='train')
                                
