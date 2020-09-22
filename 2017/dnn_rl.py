@@ -149,8 +149,8 @@ def q_training_step(output, step, G, criterion, x_path, a_path, clean_path, imag
     
     clean = np.abs(pad(np.load(clean_path+fnames[step]), maxlen))
     action_labels = np.load(a_path+fnames[step])
-    print('Output:', output)
-    print('Actions:', action_labels)
+    print('Output:', output.size())
+    print('Actions:', action_labels.shape)
     new_loss = criterion(output, x_source.T, clean, action_labels)
     if proc=='train':
         return new_loss
