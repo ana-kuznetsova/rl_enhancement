@@ -208,11 +208,10 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             start = chunk*chunk_size
             end = min(start+chunk_size, 3234)
             print(start, end)
-
-            # Y is a clean speech spectrogram
             X_chunk, fnames = make_windows(x_path,
-                                         [start, end], P=5, win_len=win_len, 
-                                         hop_size=hop_size, fs=16000, names=True)
+                                          [start, end], P, 
+                                           win_len, 
+                                           hop_size, fs, names=True)
             
             trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 1339)
 
