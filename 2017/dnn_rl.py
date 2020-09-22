@@ -16,6 +16,7 @@ from data import mel_spec
 from data import pad
 from data import get_X_batch
 from data import make_batch
+from data import make_windows
 from utils import invert
 from metrics import calc_Z
 
@@ -158,7 +159,7 @@ def q_training_step(output, step, G, criterion, x_path, a_path, clean_path, imag
         return new_loss, action_labels
 
 
-def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
+def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 clean_path,
                 imag_path='/nobackup/anakuzne/data/snr0_train_img/',
                 maxlen=1339, 
@@ -209,10 +210,10 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
             print(start, end)
 
             # Y is a clean speech spectrogram
-            X_chunk, y_chunk, fnames = make_batch(x_path, y_path, 
+            X_chunk, fnames = make_windows(x_path,
                                          [start, end], P, 
                                          maxlen, win_len, 
-                                         hop_size, feat_type, fs, names=True)
+                                         hop_size, fs=16000, names=True)
             
             trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 1339)
 
