@@ -222,7 +222,8 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
                 output = l1(audio)
 
                 newLoss = q_training_step(output, step, G, criterion, 
-                                          x_path, a_path, clean_path, imag_path, fnames, proc='train')               
+                                          x_path, a_path, clean_path, imag_path, fnames, proc='train')
+                print('NewLoss:', newLoss, newLoss.size())               
                 chunk_loss += newLoss.data
                 optimizer.zero_grad()
                 newLoss.backward()
