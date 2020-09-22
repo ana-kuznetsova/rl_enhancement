@@ -166,8 +166,6 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 win_len=512,
                 hop_size=256, fs=16000):
 
-    feat_type='mel'
-
     num_epochs = 50
     P=5 #Window size
     G = np.load(cluster_path) #Cluster centers for wiener masks
@@ -213,7 +211,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                                            win_len, 
                                            hop_size, fs, names=True)
             
-            trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 1339)
+            #trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 1339)
 
             for step, (audio, target) in enumerate(trainData): 
                 audio = audio.to(device)
