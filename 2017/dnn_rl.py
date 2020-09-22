@@ -151,7 +151,7 @@ def q_training_step(output, step, G, criterion, x_path, a_path, clean_path, imag
     action_labels = np.load(a_path+fnames[step])
     print('Output:', output.size())
     print('Actions:', action_labels.shape)
-    new_loss = criterion(output, x_source.T, clean, action_labels)
+    new_loss = criterion(torch.argmax(output), x_source.T, clean, action_labels)
     if proc=='train':
         return new_loss
     elif proc=='val':
