@@ -213,7 +213,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             X_chunk, fnames = make_windows(x_path,
                                          [start, end], P, 
                                          maxlen, win_len, 
-                                         hop_size, fs=16000, names=True)
+                                         hop_size=hop_size, fs=16000, names=True)
             
             trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 1339)
 
