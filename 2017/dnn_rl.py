@@ -220,9 +220,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
                 audio = audio.to(device)
                 target = target.to(device)
                 output = l1(audio)
-                ##Add to predicted actions
-                print("Pred actions:", torch.argmax(output, dim=1).size())
-                
+
                 newLoss = q_training_step(output, step, G, criterion, 
                                           x_path, a_path, clean_path, imag_path, fnames, proc='train')               
                 chunk_loss += newLoss.data
@@ -270,7 +268,7 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
         np.save(model_path+'val_losses_l1.npy', np.asarray(val_losses))
         true_actions.append(labels)
         np.save(model_path+'true_actions_l1.npy', np.asarray(true_actions))
-        pred_actions.append(output.detach().cpu().numpy())
+        pred_actions.append(torch.argmax(output, dim=1).detach().cpu().numpy())
         np.save(model_path+'pred_actions_l1.npy', np.asarray(pred_actions))
 
 
