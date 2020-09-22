@@ -149,9 +149,9 @@ def q_training_step(output, step, G, criterion, x_path, a_path, clean_path, imag
     
     clean = np.abs(pad(np.load(clean_path+fnames[step]), maxlen))
     action_labels = np.load(a_path+fnames[step])
-    print('Output:', output.size())
-    print('Actions:', action_labels.shape)
-    new_loss = criterion(torch.argmax(output), x_source.T, clean, action_labels)
+    #print('Output:', output.size())
+    #print('Actions:', action_labels.shape)
+    new_loss = criterion(output, x_source.T, clean, action_labels)
     if proc=='train':
         return new_loss
     elif proc=='val':
@@ -220,6 +220,8 @@ def MMSE_pretrain(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
                 audio = audio.to(device)
                 target = target.to(device)
                 output = l1(audio)
+                ##Add to predicted actions
+                print("Pred actions:", torch.argmax(output, dim=1))
                 
                 newLoss = q_training_step(output, step, G, criterion, 
                                           x_path, a_path, clean_path, imag_path, fnames, proc='train')               
