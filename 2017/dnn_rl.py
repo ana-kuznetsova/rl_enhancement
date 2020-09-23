@@ -202,7 +202,9 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
 
             for step, (x, target) in enumerate(trainData):
                 x = x.to(device)
+                print('X:', x)
                 target = target.to(device)
+                print('T:', target)
                 output = l1(x)
                 newLoss = criterion(x, target)              
                 chunk_loss += newLoss.data
