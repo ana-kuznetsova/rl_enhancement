@@ -20,17 +20,6 @@ from data import make_windows
 from utils import invert
 from metrics import calc_Z
 
-##### DATA LOADERS ###
-class QDataLoader(data.Dataset):
-    def __init__(self, X_chunk):
-        self.x = X_chunk
-    def __getitem__(self, index):
-        return torch.from_numpy(self.x[index]).float()
-    def __len__(self):
-        #Number of examples
-        return self.x.shape[0]
-
-
 #### LAYERS FOR RL PRETRAINING ###
 
 class RL_L1(nn.Module):
@@ -204,19 +193,18 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             end = min(start+chunk_size, 3234)
             print(start, end)
             #returns both training examples and true labels 
-            X_chunk = make_windows(x_path, a_path,
+            X_chunk, A_chunk = make_windows(x_path, a_path,
                                           [start, end], P, 
                                            win_len, 
                                            hop_size, fs)
 
-            X_chunk = data.DataLoader(QDataLoader(X_chunk), batch_size = 128)
+            trainData = data.DataLoader(trainDataLoader(X_chunk, A_chunk), batch_size = 128)
 
-            for step, batch in enumerate(X_chunk):     
-                batch = batch.to(device)
-                output = l1(batch)
-                newLoss = q_training_step(output, step, G, criterion, 
-                                          x_path, a_path, clean_path, imag_path, fnames, proc='train')
-                               
+            for step, (x, target) in enumerate(trainData):
+                x = x.to(device)
+                target = target.to(device)
+                output = l1(x)
+                newLoss = criterion(x, target)              
                 chunk_loss += newLoss.data
                 optimizer.zero_grad()
                 newLoss.backward()
