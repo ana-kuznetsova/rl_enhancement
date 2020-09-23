@@ -151,8 +151,8 @@ def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, names=False):
     for i, path in enumerate(tqdm(chunk_x)):
         arr = np.load(x_path+path)
         true_a = np.load(a_path+path).reshape(-1,1)
-        arr = mel_spec(arr, win_len, hop_size, fs)
-        arr = np.abs(get_X_batch(arr, P))
+        #arr = mel_spec(arr, win_len, hop_size, fs)
+        #arr = np.abs(get_X_batch(arr, P))
         if i ==0:
             X = arr
             A = true_a
