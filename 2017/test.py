@@ -16,7 +16,7 @@ from dnn_rl import MMSE_pretrain
 from dnn_rl import MMSE_train
 
 
-MMSE_pretrain(chunk_size=100, x_path='/N/slate/anakuzne/se_data/snr0_train/', 
+MMSE_pretrain(chunk_size=1000, x_path='/N/slate/anakuzne/se_data/snr0_train/', 
            a_path='/N/slate/anakuzne/se_data/action_labels/',
            model_path='/N/slate/anakuzne/se_data/qfunc_pretrain/',
            cluster_path = '/N/slate/anakuzne/se_data/kmeans_centers.npy',
