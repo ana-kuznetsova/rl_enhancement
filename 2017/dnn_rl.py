@@ -20,6 +20,16 @@ from data import make_windows
 from utils import invert
 from metrics import calc_Z
 
+##### DATA LOADERS ###
+class QDataLoader(data.Dataset):
+    def __init__(self, X_chunk):
+        self.x = X_chunk
+    def __getitem__(self, index):
+        return torch.from_numpy(self.x[index]).float()
+    def __len__(self):
+        #Number of examples
+        return self.x.shape[0]
+
 
 #### LAYERS FOR RL PRETRAINING ###
 
@@ -211,8 +221,10 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                                            win_len, 
                                            hop_size, fs, names=True)
 
+            X_chunk = data.DataLoader(QDataLoader(X_chunk), batch_size = 128)
+
             for step, batch in enumerate(X_chunk):     
-                batch = torch.tensor(batch).to(device)
+                batch = batch.to(device)
                 output = l1(batch)
                 newLoss = q_training_step(output, step, G, criterion, 
                                           x_path, a_path, clean_path, imag_path, fnames, proc='train')
@@ -223,7 +235,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 optimizer.step()
 
 
-            chunk_loss = (chunk_loss.detach().cpu().numpy())/len(trainData)
+            chunk_loss = (chunk_loss.detach().cpu().numpy())/len(X_chunk)
             
             epoch_loss+=chunk_loss
 
