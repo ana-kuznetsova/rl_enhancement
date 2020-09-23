@@ -200,12 +200,11 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
 
             trainData = data.DataLoader(trainDataLoader(X_chunk, A_chunk), batch_size = 128)
 
-            for step, (x, target) in enumerate(trainData):
+            for x, target in trainData:
                 x = x.to(device)
                 x.requires_grad=True
                 target = target.to(device).long()
                 target = torch.flatten(target)
-                print("X:", x.size(), "t:", target.size())
                 output = l1(x)
                 newLoss = criterion(x, target)              
                 chunk_loss += newLoss.data
@@ -230,22 +229,21 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
         # Y is a clean speech spectrogram
         start = 3234
         end = 4620
-        X_val, y_val, fnames = make_batch(x_path, y_path, 
-                                         [start, end], 5, 
-                                         maxlen, win_len, 
-                                         hop_size, feat_type, fs, names=True)
-            
-        valData = data.DataLoader(trainDataLoader(X_val, y_val), batch_size = 1339)
+        X_val, A_val = make_windows(x_path, a_path,
+                                          [start, end], P, 
+                                           win_len, 
+                                           hop_size, fs)
 
+        valData = data.DataLoader(trainDataLoader(X_val, A_val), batch_size = 128)
         overall_val_loss=0
 
-        for step, (audio, target) in enumerate(valData): 
-            audio = audio.to(device)
-            target = target.to(device)
-            output = l1(audio)
-            
-            valLoss, labels = q_training_step(output, step, G, criterion, 
-                                     x_path, a_path, clean_path, imag_path, fnames, proc='val') 
+        for x, target in trainData:
+            x = x.to(device)
+            x.requires_grad=True
+            target = target.to(device).long()
+            target = torch.flatten(target)
+            output = l1(x)
+            valLoss = criterion(x, target)
             overall_val_loss+=valLoss.detach().cpu().numpy()
 
         val_losses.append(overall_val_loss/len(valData))
