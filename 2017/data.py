@@ -156,6 +156,7 @@ def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, names=False):
         if i ==0:
             X = arr
             A = true_a
+            print(A)
         else:
             X = np.vstack((X, arr))
             A = np.vstack((A, true_a))
