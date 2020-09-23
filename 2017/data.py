@@ -144,20 +144,22 @@ def get_X_batch(stft, P):
         
     return np.asarray(windows)
 
-def make_windows(x_path, ind, P, win_len, hop_size, fs, names=False):
+def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, names=False):
     chunk_x = os.listdir(x_path)[ind[0]:ind[1]]
     X = 0
+    A = 0
     for i, path in enumerate(tqdm(chunk_x)):
         arr = np.load(x_path+path)
+        true_a = np.load(a_path+path)
         arr = mel_spec(arr, win_len, hop_size, fs)
         arr = np.abs(get_X_batch(arr, P))
         if i ==0:
             X = arr
+            A = true_a
         else:
             X = np.vstack((X, arr))
-    if names:
-        return X, chunk_x
-    return X
+            A = np.vstack((A, true_a))
+    return X, A
 
 def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, feat_type, fs, names=False):
     X = []

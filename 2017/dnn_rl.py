@@ -121,21 +121,14 @@ class MMSE_loss(torch.nn.Module):
     '''
         Params:
             x_out (tensor): predicted q-function
-            x_source (tensor): noisy mixture of the signal
-            x_clean (tensor): clean speech
-            G_mat: cluster centers
-        We are trying to fit the template s.t. minimizes error in q-func
-        by calculating the ground truth labels of actions
+            a_target (tensor): true action labels
     '''
-    def __init__(self, G_mat):
+    def __init__(self):
         super().__init__()
-        #self.G_mat = torch.tensor(G_mat.T).cuda().float()
-        self.G_mat = G_mat.T
 
-    def forward(self, x_out, x_source, x_clean, action_labels):
-        q_target = torch.tensor(action_labels).cuda()
+    def forward(self, x_out, a_target):
         loss = nn.CrossEntropyLoss()
-        new_loss = loss(x_out, q_target)
+        new_loss = loss(x_out, a_target)
         return new_loss
 
 
@@ -155,14 +148,8 @@ def q_training_step(output, step, G, criterion, x_path, a_path, clean_path, imag
         imag_path
         fnames
     '''
-    x_source = np.abs(np.load(x_path+fnames[step]))
-    #x_source = pad(x_source, maxlen).T
-    
-    clean = np.abs(np.load(clean_path+fnames[step]))
     action_labels = np.load(a_path+fnames[step])
-    #print('Output:', output.size())
-    #print('Actions:', action_labels.shape)
-    new_loss = criterion(output, x_source.T, clean, action_labels)
+    new_loss = criterion(output,)
     if proc=='train':
         return new_loss
     elif proc=='val':
@@ -178,7 +165,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
 
     num_epochs = 50
     P=5 #Window size
-    G = np.load(cluster_path) #Cluster centers for wiener masks
+    #G = np.load(cluster_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
 
     losses_l1 = []
@@ -194,7 +181,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
 
     l1 = RL_L1()
     l1.apply(weights)
-    criterion = MMSE_loss(G)
+    criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(l1.parameters(), lr=0.001, momentum=0.8) #Changed lr for test
     
     l1.cuda()
@@ -216,10 +203,11 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             start = chunk*chunk_size
             end = min(start+chunk_size, 3234)
             print(start, end)
-            X_chunk, fnames = make_windows(x_path,
+            #returns both training examples and true labels 
+            X_chunk = make_windows(x_path, a_path,
                                           [start, end], P, 
                                            win_len, 
-                                           hop_size, fs, names=True)
+                                           hop_size, fs)
 
             X_chunk = data.DataLoader(QDataLoader(X_chunk), batch_size = 128)
 
