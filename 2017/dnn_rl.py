@@ -184,7 +184,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
     for epoch in range(1, num_epochs+1):
         print('Epoch {}/{}'.format(epoch, num_epochs))
         epoch_loss = 0.0
-
+        labels = []
         ##Training 
         num_chunk = (3234//chunk_size) + 1
         for chunk in range(num_chunk):
@@ -197,16 +197,16 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                                           [start, end], P, 
                                            win_len, 
                                            hop_size, fs)
-
+            labels.extend(A_chunk)
             trainData = data.DataLoader(trainDataLoader(X_chunk, A_chunk), batch_size = 128)
 
             for x, target in trainData:
                 x = x.to(device)
-                x.requires_grad=True
                 target = target.to(device).long()
                 target = torch.flatten(target)
                 output = l1(x)
-                newLoss = criterion(x, target)              
+                pred_actions.append(output.detach().cpu().numpy())
+                newLoss = criterion(output, target)              
                 chunk_loss += newLoss.data
                 optimizer.zero_grad()
                 newLoss.backward()
@@ -251,7 +251,6 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
         np.save(model_path+'val_losses_l1.npy', np.asarray(val_losses))
         true_actions.append(labels)
         np.save(model_path+'true_actions_l1.npy', np.asarray(true_actions))
-        pred_actions.append(torch.argmax(output, dim=1).detach().cpu().numpy())
         np.save(model_path+'pred_actions_l1.npy', np.asarray(pred_actions))
 
 
