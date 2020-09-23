@@ -158,7 +158,7 @@ def q_training_step(output, step, G, criterion, x_path, a_path, clean_path, imag
     x_source = np.abs(np.load(x_path+fnames[step]))
     #x_source = pad(x_source, maxlen).T
     
-    clean = np.abs(np.load(clean_path+fnames[step]), maxlen)
+    clean = np.abs(np.load(clean_path+fnames[step]))
     action_labels = np.load(a_path+fnames[step])
     #print('Output:', output.size())
     #print('Actions:', action_labels.shape)
