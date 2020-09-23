@@ -211,7 +211,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                                            win_len, 
                                            hop_size, fs, names=True)
 
-            for step, batch in enumerate(X_chunk): 
+            for step, batch in enumerate(X_chunk):     
                 batch = torch.tensor(batch).to(device)
                 output = l1(batch)
                 newLoss = q_training_step(output, step, G, criterion, 
