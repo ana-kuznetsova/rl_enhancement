@@ -21,7 +21,7 @@ class trainDataLoader(data.Dataset):
         self.x = X_chunk
         self.y = y_chunk
     def __getitem__(self, index):
-        return torch.from_numpy(self.x[index], requires_grad=True).float(), torch.from_numpy(self.y[index]).float()
+        return torch.from_numpy(self.x[index]).float(), torch.from_numpy(self.y[index]).float()
     def __len__(self):
         #Number of files
         return self.x.shape[0]
