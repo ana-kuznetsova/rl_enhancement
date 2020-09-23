@@ -153,6 +153,7 @@ def make_windows(x_path, ind, P, win_len, hop_size, fs, names=False):
         arr = mel_spec(arr, win_len, hop_size, fs)
         arr = np.abs(get_X_batch(arr, P))
         X.append(arr)
+    print(len(X))
     return np.asarray(X)
 
 def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, feat_type, fs, names=False):
