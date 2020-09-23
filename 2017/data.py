@@ -155,7 +155,7 @@ def make_windows(x_path, ind, P, win_len, hop_size, fs, names=False):
             X = arr
         else:
             X = np.vstack((X, arr))
-    print(X[0].shape)
+    print(X.shape)
     if names:
         return X, chunk_x
     return X
