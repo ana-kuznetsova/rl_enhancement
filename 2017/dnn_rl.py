@@ -202,6 +202,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
 
             for step, (x, target) in enumerate(trainData):
                 x = x.to(device)
+                print(x.requires_grad)
                 target = target.to(device).long()
                 target = torch.flatten(target)
                 print("X:", x.size(), "t:", target.size())
