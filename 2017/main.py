@@ -44,7 +44,7 @@ def main(args):
         
         makeMelSpecs(args.x_path, args.out_path)
 
-         '''
+        '''
         calc_MMSE_labels(
             x_path='/N/slate/anakuzne/se_data/snr0_train/',
             a_path='/N/slate/anakuzne/se_data/action_labels/',
