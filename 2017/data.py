@@ -45,7 +45,7 @@ def makeMelSpecs(x_path, out_path):
     x_files = os.listdir(x_path)
     for f in tqdm(x_files):
         waveform, sample_rate = torchaudio.load(x_path+f)
-        mel_spec = transforms.MelSpectrogram(sample_rate, win_length=512,
+        mel_spec = transforms.MelSpectrogram(win_length=512,
                                             hop_length=256, n_mels=64)(waveform)
         mel_spec = mel_spec.detach().cpu().numpy()
         np.save(out_path+f, mel_spec)
