@@ -11,6 +11,7 @@ from utils import pad
 
 import torchaudio
 from torchaudio import transforms
+import torch
 
 def generate_noisy(speech, noise, desired_snr):    
     #calculate energies
@@ -42,11 +43,13 @@ def makeMelSpecs(x_path, out_path, noisy=False):
     '''
     x_path: path to raw audio
     '''
+    noise_path = '/N/project/aspire_research_cs/Data/Corpora/Noise/cafe_16k.wav'
     x_files = os.listdir(x_path)
     for f in tqdm(x_files):
         if ".wav" in f:
             if noisy:
-                speech = read(path, 16000)
+                speech = read(x_path+f, 16000)
+                noise = read(noise_path, 16000)
                 noise = pad_noise(speech, noise)
                 blend = generate_noisy(speech, noise, 0)
                 waveform = torch.tensor(blend)
