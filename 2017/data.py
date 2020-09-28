@@ -257,7 +257,7 @@ def get_freq_bins(train_paths, ind, maxlen=1339):
         try:
             f = np.load(path).T
         except ValueError:
-            print(f)
+            print(path)
         #f = pad(f, maxlen).T
         if first:
             freqs = f
