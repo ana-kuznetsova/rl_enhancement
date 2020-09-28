@@ -38,14 +38,20 @@ def create_noisy_data(data_paths, out_path, noise_path,
 def STFT(x, win_len, hop_size, win_type='hann'):
     return librosa.core.stft(x, win_len, hop_size, win_len, win_type)
 
-def makeMelSpecs(x_path, out_path):
+def makeMelSpecs(x_path, out_path, noisy=False):
     '''
     x_path: path to raw audio
     '''
     x_files = os.listdir(x_path)
     for f in tqdm(x_files):
         if ".wav" in f:
-            waveform, sample_rate = torchaudio.load(x_path+f)
+            if noisy:
+                speech = read(path, 16000)
+                noise = pad_noise(speech, noise)
+                blend = generate_noisy(speech, noise, 0)
+                waveform = torch.tensor(blend)
+            else:
+                waveform, sample_rate = torchaudio.load(x_path+f)
             mel_spec = transforms.MelSpectrogram(n_fft=512, win_length=512,
                                                 hop_length=256, n_mels=64)(waveform)
             mel_spec = mel_spec.detach().cpu().numpy()
