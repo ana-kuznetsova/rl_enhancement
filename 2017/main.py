@@ -46,7 +46,7 @@ def main(args):
 
         '''
         calc_MMSE_labels(
-            x_path='/N/slate/anakuzne/se_data/snr0_train/',
+            x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/',
             a_path='/N/slate/anakuzne/se_data/action_labels/',
             clean_path = '/N/slate/anakuzne/se_data/snr0_train_clean/',
             cluster_path = '/N/slate/anakuzne/se_data/kmeans_centers.npy'
