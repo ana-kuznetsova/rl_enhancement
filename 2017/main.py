@@ -42,7 +42,7 @@ def main(args):
         FS = 16000
         noise_path = '/N/project/aspire_research_cs/Data/Corpora/Noise/cafe_16k.wav'
         
-        makeMelSpecs(args.x_path, args.out_path)
+        makeMelSpecs(args.x_path, args.y_path)
 
         '''
         calc_MMSE_labels(
