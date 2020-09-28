@@ -53,7 +53,7 @@ def makeMelSpecs(x_path, out_path, noisy=False):
                 noise = pad_noise(speech, noise)
                 blend = generate_noisy(speech, noise, 0)
                 waveform = torch.tensor(blend)
-                print('blend', waveform.shape)
+                #print('blend', waveform.shape)
             else:
                 waveform, sample_rate = torchaudio.load(x_path+f)
             mel_spec = transforms.MelSpectrogram(n_fft=512, win_length=512,
