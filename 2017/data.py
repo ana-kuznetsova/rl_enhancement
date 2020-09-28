@@ -49,6 +49,7 @@ def makeMelSpecs(x_path, out_path):
             mel_spec = transforms.MelSpectrogram(n_fft=512, win_length=512,
                                                 hop_length=256, n_mels=64)(waveform)
             mel_spec = mel_spec.detach().cpu().numpy()
+            f = f.split('.')[0]
             np.save(out_path+f, mel_spec)
 
 def mel_spec(stft, win_len, hop_size, fs):
