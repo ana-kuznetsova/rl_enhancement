@@ -62,7 +62,7 @@ def makeMelSpecs(x_path, out_path, noisy=False):
             mel_spec = mel_spec.detach().cpu().numpy()
             #print('shape', mel_spec.shape)
             #mel_spec = mel_spec.reshape(mel_spec.shape[1], mel_spec.shape[2])
-            print('shape', mel_spec[0].shape)
+            print('shape', mel_spec)
             f = f.split('.')[0] + '.npy'
             #print('fname', f)
             np.save(out_path+f, mel_spec)
