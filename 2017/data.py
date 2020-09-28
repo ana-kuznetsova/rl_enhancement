@@ -254,10 +254,7 @@ def get_freq_bins(train_paths, ind, maxlen=1339):
         #f = read(path)
         #f = STFT(f, 512, 256)
         
-        try:
-            f = np.load(path).T
-        except ValueError:
-            print(path)
+        f = np.load(path, allow_pickle=True).T
         #f = pad(f, maxlen).T
         if first:
             freqs = f
