@@ -125,14 +125,7 @@ def weights(m):
 def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
             maxlen=1339, win_len=512, hop_size=256, fs=16000):
     
-    #temp change later
-    feat_type='mel'
-
-    min_delta = 0.01 #Min change in loss which can be considered as improvement
-    stop_epoch = 10 #Number of epochs without improvement
-    no_improv = 0
-    prev_loss = 0
-
+    feat_type='stft'
     losses_l1 = []
     losses_l2 = []
 
@@ -194,34 +187,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
         pickle.dump(losses_l1, open(loss_path+"losses_l1.p", "wb" ) )
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
 
-        if epoch==1:
-            prev_loss = epoch_loss/num_chunk
-            epoch_loss += chunk_loss/(num_chunk+1)
-            torch.save(best_l1, model_path+'dnn_l1.pth')
-            continue
-        else:
-            delta = prev_loss - (epoch_loss/num_chunk)
-            prev_loss = epoch_loss/num_chunk
-
-            print('Current delta:', delta, 'Min delta:', min_delta)
-            
-            if delta <= min_delta:
-                no_improv+=1
-                print('No improvement for ', no_improv, ' epochs.')
-                if no_improv < stop_epoch:
-                    epoch_loss += chunk_loss/(num_chunk+1)
-                    torch.save(best_l1, model_path+'dnn_l1.pth')
-                    continue
-                else:
-                    prev_loss = 1
-                    no_improv = 0
-                    torch.save(best_l1, model_path+'dnn_l1.pth')
-                    print('Finished pretraining Layer 1...')
-                    break
-            else:
-                epoch_loss += chunk_loss/(num_chunk+1)
-                torch.save(best_l1, model_path+'dnn_l1.pth')
-                continue
+        
         
     
     ###### TRAIN SECOND LAYER ##########

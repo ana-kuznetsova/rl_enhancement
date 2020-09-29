@@ -197,7 +197,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                                           [start, end], P, 
                                            win_len, 
                                            hop_size, fs)
-            print('A train:', A_chunk.shape, 'X_train:', X_chunk.shape)
+            
             labels.extend(A_chunk)
             trainData = data.DataLoader(trainDataLoader(X_chunk, A_chunk), batch_size = 128)
 

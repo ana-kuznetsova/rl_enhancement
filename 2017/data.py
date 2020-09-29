@@ -121,6 +121,22 @@ def pad_noise(speech, noise):
         noise = noise[:speech_len]  
     return noise
 
+def calc_mel_wiener(x_path, y_path):
+    '''
+    x_path: path to clean mel specs
+    y_path: path to store Wiener filters for mel specs
+    '''
+    noise = read('/N/project/aspire_research_cs/Data/Corpora/Noise/cafe_16k.wav')
+    noise = librosa.feature.melspectrogram(y=noise, sr=16000,
+                                                    n_fft=512,
+                                                    hop_length=256,
+                                                    n_mels=64)
+    files = os.listdir(x_path)
+    for f in tqdm(files):
+        speech = np.load(x_path+f)
+        w_mel = Wiener(speech, noise)
+        np.save(y_path+f, w_mel)
+    
 
 def calc_masks(speech_paths, noise_path, fs, win_len, hop_size,
                mask_dir,
@@ -196,7 +212,7 @@ def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, feat_type, fs,
             arr = pad(arr, maxlen)
             arr = np.abs(get_X_batch(arr, P))
         elif feat_type=='mel':
-            arr = mel_spec(arr, win_len, hop_size, fs)
+            #arr = mel_spec(arr, win_len, hop_size, fs)
             arr = pad(arr, maxlen)
             arr = np.abs(get_X_batch(arr, P))
         X.extend(arr)
