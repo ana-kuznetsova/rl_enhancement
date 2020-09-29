@@ -10,7 +10,8 @@ from utils import collect_paths
 from utils import pad
 
 import torchaudio
-from torchaudio.transforms import MelSpectrogram
+from torchaudio import transforms
+import torch
 
 def generate_noisy(speech, noise, desired_snr):    
     #calculate energies
@@ -38,6 +39,33 @@ def create_noisy_data(data_paths, out_path, noise_path,
 def STFT(x, win_len, hop_size, win_type='hann'):
     return librosa.core.stft(x, win_len, hop_size, win_len, win_type)
 
+def makeMelSpecs(x_path, out_path, noisy=False):
+    '''
+    x_path: path to raw audio
+    '''
+    noise_path = '/N/project/aspire_research_cs/Data/Corpora/Noise/cafe_16k.wav'
+    x_files = os.listdir(x_path)
+    for f in tqdm(x_files):
+        if ".wav" in f:
+            if noisy:
+                speech = read(x_path+f, 16000)
+                noise = read(noise_path, 16000)
+                noise = pad_noise(speech, noise)
+                blend = generate_noisy(speech, noise, 0)
+                waveform = torch.tensor(blend)
+                #print('blend', waveform.shape)
+            else:
+                waveform, sample_rate = torchaudio.load(x_path+f)
+            mel_spec = transforms.MelSpectrogram(n_fft=512, win_length=512,
+                                                hop_length=256, n_mels=64)(waveform)
+            #print('shape', mel_spec.shape)
+            mel_spec = mel_spec.detach().cpu().numpy()
+            #print('shape', mel_spec.shape)
+            #mel_spec = mel_spec.reshape(mel_spec.shape[1], mel_spec.shape[2])
+            print('shape', mel_spec)
+            f = f.split('.')[0] + '.npy'
+            #print('fname', f)
+            np.save(out_path+f, mel_spec)
 
 def makeMelSpecs(x_path, out_path):
     '''
@@ -239,8 +267,8 @@ def get_freq_bins(train_paths, ind, maxlen=1339):
         #f = read(path)
         #f = STFT(f, 512, 256)
         
-        f = np.load(path)
-        f = pad(f, maxlen).T
+        f = np.load(path).T
+        #f = pad(f, maxlen).T
         if first:
             freqs = f
             first = False

@@ -13,6 +13,7 @@ from data import create_noisy_data
 from data import calc_masks
 from data import KMeans
 from data import calc_MMSE_labels
+from data import makeMelSpecs
 from metrics import eval_pesq
 from dnn_rl import q_learning
 
@@ -41,14 +42,17 @@ def main(args):
         FS = 16000
         noise_path = '/N/project/aspire_research_cs/Data/Corpora/Noise/cafe_16k.wav'
         
+        makeMelSpecs(args.x_path, args.y_path, noisy=True)
+
+        '''
         calc_MMSE_labels(
-            x_path='/N/slate/anakuzne/se_data/snr0_train/',
+            x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/',
             a_path='/N/slate/anakuzne/se_data/action_labels/',
-            clean_path = '/N/slate/anakuzne/se_data/snr0_train_clean/',
+            clean_path = '/N/slate/anakuzne/se_data/clean_melspecs/',
             cluster_path = '/N/slate/anakuzne/se_data/kmeans_centers.npy'
         )
 
-        '''
+        
         print('Generating TRAINING data...')
         train_files = collect_paths('/u/anakuzne/data/TIMIT_full/train/')
         out_path = '/u/anakuzne/data/snr0_train/'
