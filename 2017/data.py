@@ -184,7 +184,7 @@ def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, names=False):
         else:
             X = np.vstack((X, arr))
             A = np.vstack((A, true_a))
-    print(X.shape, A.shape)
+        print(X.shape, A.shape)
     return X, A
 
 def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, feat_type, fs, names=False):
