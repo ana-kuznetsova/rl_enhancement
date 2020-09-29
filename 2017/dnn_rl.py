@@ -197,8 +197,9 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                                           [start, end], P, 
                                            win_len, 
                                            hop_size, fs)
-            
-            labels.extend(A_chunk)
+            if len(labels)==0:
+                labels = A_chunk
+            labels = np.hstack((labels, A_chunk))
             trainData = data.DataLoader(trainDataLoader(X_chunk, A_chunk), batch_size = 128)
 
             for x, target in trainData:
@@ -251,8 +252,8 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
         print('Validation loss: ', overall_val_loss/len(valData))
         np.save(model_path+'val_losses_l1.npy', np.asarray(val_losses))
         true_actions.append(labels)
-        np.save(model_path+'true_actions_l1.npy', np.asarray(true_actions))
-        np.save(model_path+'pred_actions_l1.npy', np.asarray(pred_actions))
+        pickle.dump(true_actions, open(model_path+"true_actions_l1.p", "wb" ))
+        pickle.dump(pred_actions, open(model_path+"pred_actions_l1.p", "wb" ))
 
 
         print('Saing model...')
