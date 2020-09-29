@@ -172,7 +172,8 @@ def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, names=False):
     X = 0
     A = 0
     for i, path in enumerate(tqdm(chunk_x)):
-        arr = np.load(x_path+path).T
+        arr = np.load(x_path+path)
+        print('before:', arr.shape)
         true_a = np.load(a_path+path).reshape(-1,1)
         arr = get_X_batch(arr, P)
         print('shape:', arr.shape)
