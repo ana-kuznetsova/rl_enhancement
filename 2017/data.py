@@ -285,8 +285,8 @@ def calc_MMSE_labels(x_path, a_path, clean_path, cluster_path):
 
     for f in tqdm(fnames):
         A_t = []
-        x_source = np.abs(np.load(x_path+f))
-        x_clean = np.abs(np.load(clean_path+f))
+        x_source = np.load(x_path+f)
+        x_clean = np.load(clean_path+f)
         
         for timestep in range(x_source.shape[1]):
             sums = []
