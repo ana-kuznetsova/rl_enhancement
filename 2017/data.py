@@ -134,7 +134,7 @@ def calc_mel_wiener(x_path, y_path):
     files = os.listdir(x_path)
     for f in tqdm(files):
         speech = np.load(x_path+f)
-        w_mel = Wiener(speech, noise)
+        w_mel = Wiener(speech, noise[,:speech.shape[1]])
         np.save(y_path+f, w_mel)
     
 
