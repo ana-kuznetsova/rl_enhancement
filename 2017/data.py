@@ -175,7 +175,6 @@ def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, names=False):
         arr = np.load(x_path+path)
         true_a = np.load(a_path+path).reshape(-1,1)
         arr = get_X_batch(arr, P)
-        print('shape:', arr.shape)
         if i ==0:
             X = arr
             A = true_a
