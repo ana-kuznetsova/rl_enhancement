@@ -9,6 +9,9 @@ from utils import write_npy
 from utils import collect_paths
 from utils import pad
 
+import torchaudio
+from torchaudio.transforms import MelSpectrogram
+
 def generate_noisy(speech, noise, desired_snr):    
     #calculate energies
     E_speech = np.sum(np.power(speech, 2))
@@ -34,6 +37,18 @@ def create_noisy_data(data_paths, out_path, noise_path,
 
 def STFT(x, win_len, hop_size, win_type='hann'):
     return librosa.core.stft(x, win_len, hop_size, win_len, win_type)
+
+
+def makeMelSpecs(x_path, out_path):
+    '''
+    x_path: raw audios
+    '''
+    x_files = os.listdir(x_path)
+    for f in tqdm(x_files):
+        waveform, sample_rate = torchaudio.load(x_path+f, normalization=True)
+        #Convert to numpy for clustering
+        mel_spec = MelSpectrogram(sample_rate, win_length=512, hop_length=256, n_mels=64)(waveform).cpu().detach().numpy()
+        np.save(out_path+f, mel_spec)
 
 
 def mel_spec(stft, win_len, hop_size, fs):
