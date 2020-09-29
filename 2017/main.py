@@ -45,9 +45,9 @@ def main(args):
         
         #mel_spec(args.x_path, args.y_path)
 
-        calc_mel_wiener(args.x_path, args.y_path)
+        #calc_mel_wiener(args.x_path, args.y_path)
 
-        '''
+        
         calc_MMSE_labels(
             x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/',
             a_path='/N/slate/anakuzne/se_data/action_labels/',
@@ -55,7 +55,7 @@ def main(args):
             cluster_path = '/N/slate/anakuzne/se_data/kmeans_centers.npy'
         )
 
-        
+        '''
         print('Generating TRAINING data...')
         train_files = collect_paths('/u/anakuzne/data/TIMIT_full/train/')
         out_path = '/u/anakuzne/data/snr0_train/'
