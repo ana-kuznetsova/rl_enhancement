@@ -13,7 +13,7 @@ from data import create_noisy_data
 from data import calc_masks
 from data import KMeans
 from data import calc_MMSE_labels
-from data import makeMelSpecs
+from data import mel_spec
 from metrics import eval_pesq
 from dnn_rl import q_learning
 
@@ -42,7 +42,7 @@ def main(args):
         FS = 16000
         noise_path = '/N/project/aspire_research_cs/Data/Corpora/Noise/cafe_16k.wav'
         
-        makeMelSpecs(args.x_path, args.y_path, noisy=True)
+        mel_spec(args.x_path, args.y_path, noisy=True)
 
         '''
         calc_MMSE_labels(

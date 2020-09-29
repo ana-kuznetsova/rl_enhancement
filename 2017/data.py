@@ -39,7 +39,8 @@ def create_noisy_data(data_paths, out_path, noise_path,
 def STFT(x, win_len, hop_size, win_type='hann'):
     return librosa.core.stft(x, win_len, hop_size, win_len, win_type)
 
-def makeMelSpecs(x_path, out_path, noisy=False):
+
+def mel_spec(x_path, out_path, noisy=False):
     '''
     x_path: path to raw audio
     '''
@@ -47,44 +48,23 @@ def makeMelSpecs(x_path, out_path, noisy=False):
     x_files = os.listdir(x_path)
     for f in tqdm(x_files):
         if ".wav" in f:
+            speech = read(x_path+f, 16000)
             if noisy:
-                speech = read(x_path+f, 16000)
                 noise = read(noise_path, 16000)
                 noise = pad_noise(speech, noise)
                 blend = generate_noisy(speech, noise, 0)
-                waveform = torch.tensor(blend)
-                #print('blend', waveform.shape)
+                mel_spec = librosa.feature.melspectrogram(y=blend, sr=16000,
+                                                        n_fft=512,
+                                                        hop_length=256,
+                                                        n_mels=64)
             else:
-                waveform, sample_rate = torchaudio.load(x_path+f)
-            mel_spec = transforms.MelSpectrogram(n_fft=512, win_length=512,
-                                                hop_length=256, n_mels=64)(waveform)
-            #print('shape', mel_spec.shape)
-            mel_spec = mel_spec.detach().cpu().numpy()
-            #print('shape', mel_spec.shape)
-            #mel_spec = mel_spec.reshape(mel_spec.shape[1], mel_spec.shape[2])
-            print('shape', mel_spec)
+                mel_spec = librosa.feature.melspectrogram(y=speech, sr=16000,
+                                                        n_fft=512,
+                                                        hop_length=256,
+                                                        n_mels=64)
+
             f = f.split('.')[0] + '.npy'
-            #print('fname', f)
             np.save(out_path+f, mel_spec)
-
-def makeMelSpecs(x_path, out_path):
-    '''
-    x_path: raw audios
-    '''
-    x_files = os.listdir(x_path)
-    for f in tqdm(x_files):
-        waveform, sample_rate = torchaudio.load(x_path+f, normalization=True)
-        #Convert to numpy for clustering
-        mel_spec = MelSpectrogram(sample_rate, win_length=512, hop_length=256, n_mels=64)(waveform).cpu().detach().numpy()
-        np.save(out_path+f, mel_spec)
-
-
-def mel_spec(stft, win_len, hop_size, fs):
-    mel_spec = librosa.feature.melspectrogram(sr=fs, S=stft,
-                                              n_fft=win_len,
-                                              hop_length=hop_size,
-                                              n_mels=64)
-    return mel_spec
 
 def calc_SNR(speech, noise):        
     E_speech = np.power(speech, 2)
