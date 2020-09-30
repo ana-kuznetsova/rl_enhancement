@@ -200,7 +200,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             print('Shape A:', A_chunk.shape)
             if len(labels)==0:
                 labels = A_chunk
-            labels = np.hstack((labels, A_chunk))
+            labels = np.vstack((labels, A_chunk))
             trainData = data.DataLoader(trainDataLoader(X_chunk, A_chunk), batch_size = 128)
 
             for x, target in trainData:
