@@ -209,7 +209,12 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 target = target.to(device).long()
                 target = torch.flatten(target)
                 output = l1(x)
-                print("pred_actions:", output.detach().cpu().numpy().shape)
+                if epoch==num_epochs+1:
+                    pred_qfunc = output.detach().cpu().numpy()
+                    ##take argmax and save predicted actions
+                    for i in range(pred_qfunc.shape[1]):
+                        pred_actions.append(int(np.argmax(pred_qfunc[:, i])))
+
                 newLoss = criterion(output, target)              
                 chunk_loss += newLoss.data
                 optimizer.zero_grad()
@@ -255,8 +260,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
         np.save(model_path+'val_losses_l1.npy', np.asarray(val_losses))
         if epoch==num_epochs+1:
             np.save(model_path+"true_actions_l1.npy", labels)
-        pickle.dump(pred_actions, open(model_path+"pred_actions_l1.p", "wb" ))
-
+            np.save(model_path+"pred_actions_l1.npy", np.asarray(pred_actions))
 
         print('Saing model...')
         torch.save(best_l1, model_path+'rl_dnn_l1.pth')
