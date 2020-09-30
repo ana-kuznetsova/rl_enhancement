@@ -198,10 +198,10 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                                            win_len, 
                                            hop_size, fs)
             
-            if len(labels)==0:
-                labels = A_chunk
-            labels = np.vstack((labels, A_chunk))
-            print(labels.shape)
+            if epoch==num_epochs+1:
+                if len(labels)==0:
+                    labels = A_chunk
+                labels = np.vstack((labels, A_chunk))
             trainData = data.DataLoader(trainDataLoader(X_chunk, A_chunk), batch_size = 128)
 
             for x, target in trainData:
@@ -209,7 +209,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 target = target.to(device).long()
                 target = torch.flatten(target)
                 output = l1(x)
-                pred_actions.append(output.detach().cpu().numpy())
+                print("pred_actions:", output.detach().cpu().numpy().shape)
                 newLoss = criterion(output, target)              
                 chunk_loss += newLoss.data
                 optimizer.zero_grad()
@@ -253,8 +253,8 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
         val_losses.append(overall_val_loss/len(valData))
         print('Validation loss: ', overall_val_loss/len(valData))
         np.save(model_path+'val_losses_l1.npy', np.asarray(val_losses))
-        true_actions.append(labels)
-        pickle.dump(true_actions, open(model_path+"true_actions_l1.p", "wb" ))
+        if epoch==num_epochs+1:
+            np.save(model_path+"true_actions_l1.npy", labels)
         pickle.dump(pred_actions, open(model_path+"pred_actions_l1.p", "wb" ))
 
 
