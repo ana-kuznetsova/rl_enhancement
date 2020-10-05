@@ -152,7 +152,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 win_len=512,
                 hop_size=256, fs=16000):
 
-    num_epochs = 50
+    num_epochs = 5
     P=5 #Window size
     #G = np.load(cluster_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
@@ -265,7 +265,6 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
         print('Saing model...')
         torch.save(best_l1, model_path+'rl_dnn_l1.pth')
 
-    '''
     ######## PRETRAIN SECOND LAYER ############
 
     l1 = RL_L1()
@@ -282,47 +281,86 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
     for epoch in range(1, num_epochs+1):
         print('Epoch {}/{}'.format(epoch, num_epochs))
         epoch_loss = 0.0
-
-        num_chunk = (4620//chunk_size) + 1
+        labels = []
+        ##Training 
+        num_chunk = (9702//chunk_size) + 1
         for chunk in range(num_chunk):
             chunk_loss = 0
             start = chunk*chunk_size
-            end = min(start+chunk_size, 4620)
+            end = min(start+chunk_size, 9702)
             print(start, end)
-
-            # Y is a clean speech spectrogram
-            X_chunk, y_chunk, fnames = make_batch(x_path, y_path, 
-                                         [start, end], 5, 
-                                         maxlen, win_len, 
-                                         hop_size, feat_type, fs, names=True)
+            #returns both training examples and true labels 
+            X_chunk, A_chunk = make_windows(x_path, a_path,
+                                          [start, end], P, 
+                                           win_len, 
+                                           hop_size, fs)
             
-            trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 1339)
+            if epoch==num_epochs+1:
+                if len(labels)==0:
+                    labels = A_chunk
+                labels = np.vstack((labels, A_chunk))
+            trainData = data.DataLoader(trainDataLoader(X_chunk, A_chunk), batch_size = 128)
 
-            for step, (audio, target) in enumerate(trainData): 
-                audio = audio.to(device)
-                target = target.to(device)
-                output = l2(audio)
-                
-                newLoss = q_training_step(output, step, G, criterion, 
-                                          x_path, a_path, clean_path, imag_path, fnames)               
+            for x, target in trainData:
+                x = x.to(device)
+                target = target.to(device).long()
+                target = torch.flatten(target)
+                output = l2(x)
+                if epoch==num_epochs+1:
+                    pred_qfunc = output.detach().cpu().numpy()
+                    ##take argmax and save predicted actions
+                    for i in range(pred_qfunc.shape[1]):
+                        pred_actions.append(int(np.argmax(pred_qfunc[:, i])))
+
+                newLoss = criterion(output, target)              
                 chunk_loss += newLoss.data
                 optimizer.zero_grad()
                 newLoss.backward()
                 optimizer.step()
 
-            chunk_loss = (chunk_loss.detach().cpu().numpy())/len(trainData)
+
+            chunk_loss = (chunk_loss.detach().cpu().numpy())/len(X_chunk)
             
             epoch_loss+=chunk_loss
 
             print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
 
-        #Check for early stopping
-        losses_l2.append(epoch_loss/num_chunk)
-        pickle.dump(losses_l2, open(model_path+"losses_l2.p", "wb" ) )
+        
+        losses_l1.append(epoch_loss/num_chunk)
+        pickle.dump(losses_l1, open(model_path+"losses_l2.p", "wb" ) )
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
-    print('Saved best L2...')
-    torch.save(best_l2, model_path+'dnn_rl_l2.pth')
-   '''
+
+        ##Validation
+        print('Starting validation...')
+        # Y is a clean speech spectrogram
+        start = 9702
+        end = 13859
+        X_val, A_val = make_windows(x_path, a_path,
+                                          [start, end], P, 
+                                           win_len, 
+                                           hop_size, fs)
+
+        valData = data.DataLoader(trainDataLoader(X_val, A_val), batch_size = 128)
+        overall_val_loss=0
+
+        for x, target in trainData:
+            x = x.to(device)
+            x.requires_grad=True
+            target = target.to(device).long()
+            target = torch.flatten(target)
+            output = l2(x)
+            valLoss = criterion(x, target)
+            overall_val_loss+=valLoss.detach().cpu().numpy()
+
+        val_losses.append(overall_val_loss/len(valData))
+        print('Validation loss: ', overall_val_loss/len(valData))
+        np.save(model_path+'val_losses_l2.npy', np.asarray(val_losses))
+        if epoch==num_epochs+1:
+            np.save(model_path+"true_actions_l2.npy", labels)
+            np.save(model_path+"pred_actions_l2.npy", np.asarray(pred_actions))
+
+        print('Saing model...')
+        torch.save(best_l1, model_path+'rl_dnn_l2.pth')
 
 ########################################################
 
