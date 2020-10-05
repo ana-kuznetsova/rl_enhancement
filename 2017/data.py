@@ -34,7 +34,7 @@ def create_noisy_data(x_path, out_path, noise_path,
     for s in target_SNRs:
         for f in tqdm(fnames):
             if '.wav' in f:
-                speech = read(f, fs)
+                speech = read(x_path+f, fs)
                 noise = pad_noise(speech, noise)
                 blend = generate_noisy(speech, noise, s)
                 mel_spec = librosa.feature.melspectrogram(y=blend, sr=16000,
