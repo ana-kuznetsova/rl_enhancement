@@ -186,11 +186,11 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
         epoch_loss = 0.0
         labels = []
         ##Training 
-        num_chunk = (9702//chunk_size) + 1
+        num_chunk = (12359//chunk_size) + 1
         for chunk in range(num_chunk):
             chunk_loss = 0
             start = chunk*chunk_size
-            end = min(start+chunk_size, 9702)
+            end = min(start+chunk_size, 12359)
             print(start, end)
             #returns both training examples and true labels 
             X_chunk, A_chunk = make_windows(x_path, a_path,
@@ -236,7 +236,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
         ##Validation
         print('Starting validation...')
         # Y is a clean speech spectrogram
-        start = 9702
+        start = 12359
         end = 13859
         X_val, A_val = make_windows(x_path, a_path,
                                           [start, end], P, 
@@ -283,11 +283,11 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
         epoch_loss = 0.0
         labels = []
         ##Training 
-        num_chunk = (9702//chunk_size) + 1
+        num_chunk = (12359//chunk_size) + 1
         for chunk in range(num_chunk):
             chunk_loss = 0
             start = chunk*chunk_size
-            end = min(start+chunk_size, 9702)
+            end = min(start+chunk_size, 12359)
             print(start, end)
             #returns both training examples and true labels 
             X_chunk, A_chunk = make_windows(x_path, a_path,
@@ -333,7 +333,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
         ##Validation
         print('Starting validation...')
         # Y is a clean speech spectrogram
-        start = 9702
+        start = 12359
         end = 13859
         X_val, A_val = make_windows(x_path, a_path,
                                           [start, end], P, 
