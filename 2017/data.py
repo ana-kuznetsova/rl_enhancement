@@ -43,7 +43,7 @@ def create_noisy_data(x_path, out_path, noise_path,
                                                             n_mels=64)
                 #stft = STFT(blend, win_len, hop_size)
 
-                fname = f+"_"+str(s)+'.npy'
+                fname = f.split('.')[0]+"_"+str(s)+'.npy'
                 np.save(out_path+fname, mel_spec)
 
 
