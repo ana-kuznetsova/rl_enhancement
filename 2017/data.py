@@ -29,7 +29,7 @@ def create_noisy_data(x_path, out_path, noise_path,
 
     target_SNRs = [0, 3, 6]
 
-    fnames = os.listdir()
+    fnames = os.listdir(x_path)
     print('fnames:', fnames)
     for s in target_SNRs:
         for f in tqdm(fnames):
