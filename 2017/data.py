@@ -201,7 +201,6 @@ def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, names=False):
     for i, path in enumerate(tqdm(chunk_x)):
         arr = np.load(x_path+path)
         path = path.split('_')[0]+'.npy'
-        print('path:', path)
         true_a = np.load(a_path+path).reshape(-1,1)
         arr = get_X_batch(arr, P)
         if i ==0:
