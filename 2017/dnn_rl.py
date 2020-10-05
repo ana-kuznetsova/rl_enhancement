@@ -171,7 +171,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
     l1 = RL_L1()
     l1.apply(weights)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(l1.parameters(), lr=0.001, momentum=0.8) #Changed lr for test
+    optimizer = optim.SGD(l1.parameters(), lr=0.001, momentum=0.9) #Changed lr for test
     
     l1.cuda()
     l1 = l1.to(device)

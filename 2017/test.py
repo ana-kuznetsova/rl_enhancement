@@ -16,14 +16,14 @@ from dnn_rl import MMSE_pretrain
 from dnn_rl import MMSE_train
 from data import create_noisy_data
 
-'''
-MMSE_pretrain(chunk_size=1000, x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/', 
+
+MMSE_pretrain(chunk_size=1000, x_path='/N/slate/anakuzne/se_data/snr036_mel_train/', 
            a_path='/N/slate/anakuzne/se_data/action_labels/',
            model_path='/N/slate/anakuzne/se_data/qfunc_pretrain/',
            cluster_path = '/N/slate/anakuzne/se_data/kmeans_centers.npy',
            clean_path = '/N/slate/anakuzne/se_data/clean_melspecs/',
            imag_path= '/N/slate/anakuzne/se_data/snr0_train_img/')
-
+'''
 MMSE_train(chunk_size=1000, x_path='/N/slate/anakuzne/se_data/snr0_train/', 
            y_path='/N/slate/anakuzne/se_data/snr0_w_target/',
            a_path='/N/slate/anakuzne/se_data/action_labels/',
@@ -32,7 +32,8 @@ MMSE_train(chunk_size=1000, x_path='/N/slate/anakuzne/se_data/snr0_train/',
            clean_path = '/N/slate/anakuzne/se_data/snr0_train_clean/',
            imag_path= '/N/slate/anakuzne/se_data/snr0_train_img/')
 
-'''
+
 create_noisy_data(x_path='/N/project/aspire_research_cs/Data/Corpora/Speech/TIMIT/corpus/',
                 out_path='/N/slate/anakuzne/se_data/snr036_mel_train/',
                 noise_path='/N/project/aspire_research_cs/Data/Corpora/Noise/cafe_16k.wav')
+'''
