@@ -23,17 +23,28 @@ def generate_noisy(speech, noise, desired_snr):
     return speech + b*noise
 
 
-def create_noisy_data(data_paths, out_path, noise_path, 
-                      target_SNR, win_len, hop_size, fs):
+def create_noisy_data(x_path, out_path, noise_path, 
+                      win_len=512, hop_size=256, fs=16000):
     noise = read(noise_path, fs)
 
-    for path in tqdm(data_paths):
-        speech = read(path, fs)
-        noise = pad_noise(speech, noise)
-        blend = generate_noisy(speech, noise, target_SNR)
-        stft = STFT(blend, win_len, hop_size)
-        fname = path.split('/')[-2]+ '_' + path.split('/')[-1].split('.')[0] + '.npy'
-        np.save(out_path+fname, stft)
+    target_SNRs = [0, 3, 6]
+
+    fnames = os.listdir()
+
+    for s in target_SNRs:
+        for f in tqdm(fnames):
+            if '.wav' in f:
+                speech = read(f, fs)
+                noise = pad_noise(speech, noise)
+                blend = generate_noisy(speech, noise, s)
+                mel_spec = librosa.feature.melspectrogram(y=blend, sr=16000,
+                                                            n_fft=512,
+                                                            hop_length=256,
+                                                            n_mels=64)
+                #stft = STFT(blend, win_len, hop_size)
+
+                fname = f+"_"+str(s)+'.npy'
+                np.save(out_path+fname, mel_spec)
 
 
 def STFT(x, win_len, hop_size, win_type='hann'):
