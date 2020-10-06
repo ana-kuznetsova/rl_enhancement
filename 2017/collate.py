@@ -7,7 +7,7 @@ class QDataSet(data.Dataset):
     def __init__(self):
         self.x = np.random.rand(10, 2)
         self.y = np.random.rand(10, 2)
-        self.batch_indices = batch_indices
+        #self.batch_indices = batch_indices
     def __getitem__(self, index):
         start_idx = self.batch_indices[index]
         end_idx = self.batch_indices[index+1]
