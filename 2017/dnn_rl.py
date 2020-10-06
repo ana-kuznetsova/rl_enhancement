@@ -207,7 +207,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             end = min(start+chunk_size, 3234)
             print(start, end)
             #returns both training examples and true labels 
-            X_chunk, A_chunk = make_windows(x_path, a_path,
+            X_chunk, A_chunk, batch_indices = make_windows(x_path, a_path,
                                           [start, end], P, 
                                            win_len, 
                                            hop_size, fs)
@@ -216,10 +216,12 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 if len(labels)==0:
                     labels = A_chunk
                 labels = np.vstack((labels, A_chunk))
-            trainData = data.DataLoader(trainDataLoader(X_chunk, A_chunk), batch_size = 128)
+            trainData = data.DataLoader(QDataLoader(X_chunk, A_chunk, batch_indices), batch_size = 1)
 
             for x, target in trainData:
                 x = x.to(device)
+                data = x.view(-1, 1)
+                print(data.shape)
                 target = target.to(device).long()
                 target = torch.flatten(target)
                 output = l1(x)
