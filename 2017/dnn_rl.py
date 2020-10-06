@@ -29,7 +29,6 @@ class QDataSet(data.Dataset):
     def __getitem__(self, index):
         print('get item ind:', index)
         start_idx = self.batch_indices[index]
-        #print('batch indices:', self.batch_indices[: index+3])
         print('Start:', start_idx)
         end_idx = self.batch_indices[index+1]
         print('End:', end_idx)
