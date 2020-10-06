@@ -27,6 +27,7 @@ class QDataSet(data.Dataset):
         self.y = y_chunk
         self.batch_indices = batch_indices
     def __getitem__(self, index):
+        print('get item ind:', index)
         start_idx = self.batch_indices[index]
         #print('batch indices:', self.batch_indices[: index+3])
         print('Start:', start_idx)
