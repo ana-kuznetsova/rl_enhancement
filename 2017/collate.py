@@ -23,6 +23,6 @@ dataset = QDataSet([0, 5, 9])
 loader = data.DataLoader(dataset, batch_size=1)
 
 for i, data in enumerate(loader):
-    x = data[0]
-    y = data[1]
+    x = data[0].view(-1, 1)
+    y = data[1].view(-1, 1)
     print(x.shape, y.shape)
