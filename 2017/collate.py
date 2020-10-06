@@ -10,10 +10,10 @@ class QDataSet(data.Dataset):
         self.batch_indices = batch_indices
     def __getitem__(self, index):
         start_idx = self.batch_indices[index]
-        print('start', start_idx)
+        #print('start', start_idx)
         end_idx = self.batch_indices[index+1]
-        print('end', end_idx)
-        print('shape', torch.from_numpy(self.x[start_idx:end_idx]).float())
+        #print('end', end_idx)
+        #print('shape', torch.from_numpy(self.x[start_idx:end_idx]).float())
         return torch.from_numpy(self.x[start_idx:end_idx]).float(), torch.from_numpy(self.y[start_idx:end_idx]).float()
     def __len__(self):
         #Number of files
