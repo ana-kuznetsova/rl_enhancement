@@ -22,8 +22,6 @@ class QDataSet(data.Dataset):
 dataset = QDataSet([0, 5, 9])
 loader = data.DataLoader(dataset, batch_size=1)
 
-for i, x, y in enumerate(loader):
-    
-    x = x.view(-1, 1)
-    print(x)
-    print(x.shape)
+for i, data in enumerate(loader):
+    print(data)
+    print(len(data))
