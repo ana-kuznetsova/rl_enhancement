@@ -19,7 +19,7 @@ class QDataSet(data.Dataset):
         #Number of files
         return len(self.batch_indices) - 1
 
-dataset = QDataSet([0, 5, 9])
+dataset = QDataSet([0, 2, 5, 9])
 loader = data.DataLoader(dataset, batch_size=1)
 
 for i, data in enumerate(loader):
