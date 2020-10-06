@@ -196,7 +196,7 @@ def get_X_batch(stft, P):
 
 def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, names=False):
     chunk_x = os.listdir(x_path)[ind[0]:ind[1]]
-    batch_indices = []
+    batch_indices = [0]
     X = 0
     A = 0
     for i, path in enumerate(tqdm(chunk_x)):
