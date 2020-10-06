@@ -222,6 +222,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
 
             for x, target in loader:
                 x = x.to(device)
+                x = x.reshape(x.shape[1], x.shape[2])
                 print(x.shape)
                 target = target.to(device).long()
                 target = torch.flatten(target)
