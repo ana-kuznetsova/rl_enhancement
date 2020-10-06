@@ -22,7 +22,7 @@ class QDataSet(data.Dataset):
 dataset = QDataSet([0, 5, 9])
 loader = data.DataLoader(dataset, batch_size=1)
 
-for data in loader:
+for i, data in enumerate(loader):
     print(data)
     data = data.view(-1, 1)
     print(data.shape)
