@@ -28,11 +28,13 @@ class QDataLoader(data.Dataset):
         self.batch_indices = batch_indices
     def __getitem__(self, index):
         start_idx = self.batch_indices[index]
+        print('Start:', start_idx)
         end_idx = self.batch_indices[index+1]
+        print('End:', end_idx)
         return torch.from_numpy(self.x[start_idx:end_idx]).float(), torch.from_numpy(self.y[start_idx:end_idx]).float()
     def __len__(self):
         #Number of files
-        return self.x.shape[0]
+        return len(self.batch_indices) - 1
 
 #### LAYERS FOR RL PRETRAINING ###
 
