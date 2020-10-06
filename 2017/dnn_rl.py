@@ -21,20 +21,16 @@ from utils import invert
 from metrics import calc_Z
 
 
-class QDataLoader(data.Dataset):
+class QDataSet(data.Dataset):
     def __init__(self, X_chunk, y_chunk, batch_indices):
         self.x = X_chunk
         self.y = y_chunk
         self.batch_indices = batch_indices
     def __getitem__(self, index):
         start_idx = self.batch_indices[index]
-        print('Start:', start_idx)
         end_idx = self.batch_indices[index+1]
-        print('End:', end_idx)
-        print('X:', self.x[start_idx:end_idx].shape)
         return torch.from_numpy(self.x[start_idx:end_idx]).float(), torch.from_numpy(self.y[start_idx:end_idx]).float()
     def __len__(self):
-        #Number of files
         return len(self.batch_indices) - 1
 
 #### LAYERS FOR RL PRETRAINING ###
@@ -219,11 +215,13 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 if len(labels)==0:
                     labels = A_chunk
                 labels = np.vstack((labels, A_chunk))
-            trainData = data.DataLoader(QDataLoader(X_chunk, A_chunk, batch_indices), batch_size = 1)
+            
+            dataset = QDataSet(X_chunk, A_chunk, batch_indices)
+            loader = data.DataLoader(dataset, batch_size=1)
+            #trainData = data.DataLoader(QDataLoader(X_chunk, A_chunk, batch_indices), batch_size = 1)
 
-            for x, target in trainData:
+            for x, target in loader:
                 x = x.to(device)
-                x = x.view(-1, 1)
                 print(x.shape)
                 target = target.to(device).long()
                 target = torch.flatten(target)
