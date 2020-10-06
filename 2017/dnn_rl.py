@@ -223,7 +223,8 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
 
             for x, target in trainData:
                 x = x.to(device)
-                print(x.view(-1, 1).shape)
+                x = x.view(-1, 1)
+                print(x.shape)
                 target = target.to(device).long()
                 target = torch.flatten(target)
                 output = l1(x)
