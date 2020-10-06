@@ -31,7 +31,7 @@ class QDataLoader(data.Dataset):
         print('Start:', start_idx)
         end_idx = self.batch_indices[index+1]
         print('End:', end_idx)
-        print('X:'. x.shape)
+        print('X:', self.x.shape)
         return torch.from_numpy(self.x[start_idx:end_idx]).float(), torch.from_numpy(self.y[start_idx:end_idx]).float()
     def __len__(self):
         #Number of files
