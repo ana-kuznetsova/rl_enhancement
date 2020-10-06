@@ -226,6 +226,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 print(x.shape)
                 target = target.to(device).long()
                 target = torch.flatten(target)
+                print('target', target.shape)
                 output = l1(x)
                 if epoch==num_epochs+1:
                     pred_qfunc = output.detach().cpu().numpy()
