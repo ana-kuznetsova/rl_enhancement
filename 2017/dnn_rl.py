@@ -27,11 +27,8 @@ class QDataSet(data.Dataset):
         self.y = y_chunk
         self.batch_indices = batch_indices
     def __getitem__(self, index):
-        print('get item ind:', index)
         start_idx = self.batch_indices[index]
-        print('Start:', start_idx)
         end_idx = self.batch_indices[index+1]
-        print('End:', end_idx)
         return torch.from_numpy(self.x[start_idx:end_idx]).float(), torch.from_numpy(self.y[start_idx:end_idx]).float()
     def __len__(self):
         return len(self.batch_indices) - 1
@@ -226,11 +223,10 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             for x, target in loader:
                 x = x.to(device)
                 x = x.reshape(x.shape[1], x.shape[2])
-                print(x.shape)
                 target = target.to(device).long()
                 target = torch.flatten(target)
-                print('target', target.shape)
                 output = l1(x)
+                print('Out shape:', output.shape)
                 if epoch==num_epochs+1:
                     pred_qfunc = output.detach().cpu().numpy()
                     ##take argmax and save predicted actions

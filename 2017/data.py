@@ -208,7 +208,7 @@ def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, names=False):
             batch_indices.append(i)
         else:
             batch_indices.append(batch_indices[i-1]+arr.shape[0])
-        print('batch ind', batch_indices[i-1], batch_indices[i])
+        
         if i ==0:
             X = arr
             A = true_a
