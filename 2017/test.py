@@ -18,6 +18,7 @@ from data import create_noisy_data
 from models import pretrain
 
 pretrain(chunk_size=100, x_path='/N/slate/anakuzne/se_data/snr0_train/',
+        y_path='/N/slate/anakuzne/se_data/snr0_train_clean/', 
         model_path='/N/slate/anakuzne/se_data/model_log_amp/', 
         loss_path='/N/slate/anakuzne/se_data/model_log_amp/')
 
