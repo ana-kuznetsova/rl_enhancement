@@ -17,7 +17,7 @@ from dnn_rl import MMSE_train
 from data import create_noisy_data
 from models import pretrain
 
-pretrain(chunk_size=10, x_path='/N/slate/anakuzne/se_data/snr0_train/',
+pretrain(chunk_size=500, x_path='/N/slate/anakuzne/se_data/snr0_train/',
         y_path='/N/slate/anakuzne/se_data/snr0_train_clean/', 
         model_path='/N/slate/anakuzne/se_data/model_log_amp/', 
         loss_path='/N/slate/anakuzne/se_data/model_log_amp/')
