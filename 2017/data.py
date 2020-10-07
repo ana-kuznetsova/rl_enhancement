@@ -196,17 +196,18 @@ def get_X_batch(stft, P):
 
 def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, names=False):
     chunk_x = os.listdir(x_path)[ind[0]:ind[1]]
-    batch_indices = [0]
+    batch_indices = []
     X = 0
     A = 0
     for i, path in enumerate(tqdm(chunk_x)):
         arr = np.load(x_path+path)
         true_a = np.load(a_path+path).reshape(-1,1)
         arr = get_X_batch(arr, P)
-        print(arr.shape)
-        print(arr.shape)
 
-        batch_indices.append(batch_indices[i-1]+arr.shape[0])
+        if i==0:
+            batch_indices.append(i)
+        else:
+            batch_indices.append(batch_indices[i-1]+arr.shape[0])
         print('batch ind', batch_indices[i-1], batch_indices[i])
         if i ==0:
             X = arr
