@@ -17,7 +17,7 @@ from dnn_rl import MMSE_train
 from data import create_noisy_data
 
 
-MMSE_pretrain(chunk_size=1000, x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/', 
+MMSE_pretrain(chunk_size=100, x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/', 
            a_path='/N/slate/anakuzne/se_data/action_labels/',
            model_path='/N/slate/anakuzne/se_data/qfunc_pretrain/',
            cluster_path = '/N/slate/anakuzne/se_data/kmeans_centers.npy',
