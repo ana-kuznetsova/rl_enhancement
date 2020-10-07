@@ -226,8 +226,8 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 target = target.to(device).long()
                 target = torch.flatten(target)
                 output = l1(x)
-                print('Out shape:', output.shape)
-                print(output)
+                #print('Out shape:', output.shape)
+                #print(output)
                 if epoch==num_epochs+1:
                     pred_qfunc = output.detach().cpu().numpy()
                     ##take argmax and save predicted actions
