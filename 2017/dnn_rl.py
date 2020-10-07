@@ -174,7 +174,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
     val_losses = []
     true_actions = []
     pred_actions = []
-    #losses_l2 = []
+    losses_l2 = []
    
     device = torch.device('cuda:0') #change to 2 if on Ada
     torch.cuda.set_device(0) #change to 2 if on Ada
@@ -257,17 +257,20 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
         # Y is a clean speech spectrogram
         start = 3234
         end = 4620
-        X_val, A_val = make_windows(x_path, a_path,
+        X_val, A_val, batch_indices = make_windows(x_path, a_path,
                                           [start, end], P, 
                                            win_len, 
                                            hop_size, fs)
 
-        valData = data.DataLoader(trainDataLoader(X_val, A_val), batch_size = 128)
+        #valData = data.DataLoader(trainDataLoader(X_val, A_val), batch_size = 128)
+        dataset = QDataSet(X_chunk, A_chunk, batch_indices)
+        val_loader = data.DataLoader(dataset, batch_size=1)
         overall_val_loss=0
 
-        for x, target in trainData:
+        for x, target in val_loader:
             x = x.to(device)
             x.requires_grad=True
+            x = x.reshape(x.shape[1], x.shape[2])
             target = target.to(device).long()
             target = torch.flatten(target)
             output = l1(x)
@@ -309,7 +312,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             end = min(start+chunk_size, 3234)
             print(start, end)
             #returns both training examples and true labels 
-            X_chunk, A_chunk = make_windows(x_path, a_path,
+            X_chunk, A_chunk, batch_indices = make_windows(x_path, a_path,
                                           [start, end], P, 
                                            win_len, 
                                            hop_size, fs)
@@ -318,10 +321,13 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 if len(labels)==0:
                     labels = A_chunk
                 labels = np.vstack((labels, A_chunk))
-            trainData = data.DataLoader(trainDataLoader(X_chunk, A_chunk), batch_size = 128)
-
-            for x, target in trainData:
+            
+            dataset = QDataSet(X_chunk, A_chunk, batch_indices)
+            loader = data.DataLoader(dataset, batch_size=1)
+    
+            for x, target in loader:
                 x = x.to(device)
+                x = x.reshape(x.shape[1], x.shape[2])
                 target = target.to(device).long()
                 target = torch.flatten(target)
                 output = l2(x)
@@ -345,7 +351,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
 
         
-        losses_l1.append(epoch_loss/num_chunk)
+        losses_l2.append(epoch_loss/num_chunk)
         pickle.dump(losses_l1, open(model_path+"losses_l2.p", "wb" ) )
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
 
@@ -354,20 +360,18 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
         # Y is a clean speech spectrogram
         start = 3234
         end = 4620
-        X_val, A_val = make_windows(x_path, a_path,
-                                          [start, end], P, 
-                                           win_len, 
-                                           hop_size, fs)
-
-        valData = data.DataLoader(trainDataLoader(X_val, A_val), batch_size = 128)
+        
+        dataset = QDataSet(X_chunk, A_chunk, batch_indices)
+        val_loader = data.DataLoader(dataset, batch_size=1)
         overall_val_loss=0
 
-        for x, target in trainData:
+        for x, target in val_loader:
             x = x.to(device)
             x.requires_grad=True
+            x = x.reshape(x.shape[1], x.shape[2])
             target = target.to(device).long()
             target = torch.flatten(target)
-            output = l2(x)
+            output = l1(x)
             valLoss = criterion(x, target)
             overall_val_loss+=valLoss.detach().cpu().numpy()
 
