@@ -76,7 +76,7 @@ class Layer1(nn.Module):
     '''
     def __init__(self):
         super().__init__()
-        self.fc1 = nn.Linear(2827, 128)
+        self.fc1 = nn.Linear(704, 128)
         #self.bnorm = nn.BatchNorm1d(704)
         self.drop = nn.Dropout(0.3)
         self.out = nn.Linear(128, 257)
