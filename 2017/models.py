@@ -173,7 +173,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=50
             print(start, end)
 
             X_chunk, y_chunk, batch_indices = make_windows(x_path, y_path,
-                                          [start, end], P, 
+                                          [start, end], P=5, 
                                            win_len, 
                                            hop_size, fs, nn_type='map')
 
