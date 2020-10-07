@@ -204,6 +204,7 @@ def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, names=False):
         true_a = np.load(a_path+path).reshape(-1,1)
         arr = get_X_batch(arr, P)
         print(arr.shape)
+        print(arr.shape)
 
         batch_indices.append(batch_indices[i-1]+arr.shape[0])
         print('batch ind', batch_indices[i-1], batch_indices[i])
