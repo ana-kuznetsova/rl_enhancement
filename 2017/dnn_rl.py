@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.utils.data as data
 
-from models import weights
+
 from models import DNN_mel
 from models import trainDataLoader
 
