@@ -174,8 +174,8 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=50
 
             X_chunk, y_chunk, batch_indices = make_windows(x_path, y_path,
                                           [start, end], P=5, 
-                                           win_len, 
-                                           hop_size, fs, nn_type='map')
+                                           win_len=512, 
+                                           hop_size=256, fs, nn_type='map')
 
             #trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 128)
             dataset = QDataSet(X_chunk, y_chunk, batch_indices)
