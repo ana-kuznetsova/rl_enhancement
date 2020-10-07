@@ -204,7 +204,7 @@ def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, nn_type='qfunc')
         if nn_type=='qfunc':
             true_a = np.load(a_path+path).reshape(-1,1)
         elif nn_type=='map':
-            true_a = np.log(np.load(a_path+path))
+            true_a = np.log(np.load(a_path+path)).T
             print('true:', true_a.shape)
         arr = get_X_batch(arr, P)
         print('X:', arr.shape)
