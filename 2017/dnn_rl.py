@@ -263,7 +263,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                                            hop_size, fs)
 
         #valData = data.DataLoader(trainDataLoader(X_val, A_val), batch_size = 128)
-        dataset = QDataSet(X_chunk, A_chunk, batch_indices)
+        dataset = QDataSet(X_val, A_val, batch_indices)
         val_loader = data.DataLoader(dataset, batch_size=1)
         overall_val_loss=0
 
@@ -277,8 +277,8 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             valLoss = criterion(x, target)
             overall_val_loss+=valLoss.detach().cpu().numpy()
 
-        val_losses.append(overall_val_loss/len(valData))
-        print('Validation loss: ', overall_val_loss/len(valData))
+        val_losses.append(overall_val_loss/len(val_loader))
+        print('Validation loss: ', overall_val_loss/len(val_loader))
         np.save(model_path+'val_losses_l1.npy', np.asarray(val_losses))
         if epoch==num_epochs+1:
             np.save(model_path+"true_actions_l1.npy", labels)
@@ -352,16 +352,20 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
 
         
         losses_l2.append(epoch_loss/num_chunk)
-        pickle.dump(losses_l1, open(model_path+"losses_l2.p", "wb" ) )
+        pickle.dump(losses_l2, open(model_path+"losses_l2.p", "wb" ) )
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
 
         ##Validation
         print('Starting validation...')
-        # Y is a clean speech spectrogram
+        
         start = 3234
         end = 4620
+        X_val, A_val, batch_indices = make_windows(x_path, a_path,
+                                          [start, end], P, 
+                                           win_len, 
+                                           hop_size, fs)
         
-        dataset = QDataSet(X_chunk, A_chunk, batch_indices)
+        dataset = QDataSet(X_val, A_val, batch_indices)
         val_loader = data.DataLoader(dataset, batch_size=1)
         overall_val_loss=0
 
@@ -371,12 +375,12 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             x = x.reshape(x.shape[1], x.shape[2])
             target = target.to(device).long()
             target = torch.flatten(target)
-            output = l1(x)
+            output = l2(x)
             valLoss = criterion(x, target)
             overall_val_loss+=valLoss.detach().cpu().numpy()
 
-        val_losses.append(overall_val_loss/len(valData))
-        print('Validation loss: ', overall_val_loss/len(valData))
+        val_losses.append(overall_val_loss/len(val_loader))
+        print('Validation loss: ', overall_val_loss/len(val_loader))
         np.save(model_path+'val_losses_l2.npy', np.asarray(val_losses))
         if epoch==num_epochs+1:
             np.save(model_path+"true_actions_l2.npy", labels)
