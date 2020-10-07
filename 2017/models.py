@@ -184,8 +184,9 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=50
             for x, target in loader:
                 x = x.to(device)
                 x = x.reshape(x.shape[1], x.shape[2])
+                print('X:', x.shape)
                 target = target.to(device).long()
-                target = torch.flatten(target)
+                print('Y:', target.shape)
                 output = l1(x)
 
                 newLoss = criterion(output, target)              
