@@ -9,7 +9,9 @@ import copy
 import pickle
 import pandas as pd
 import os
+from dnn_rl import QDataSet
 
+from data import make_windows
 from data import make_batch
 from data import make_batch_test
 from data import pad
@@ -64,12 +66,12 @@ class Layer1(nn.Module):
     def __init__(self):
         super().__init__()
         self.fc1 = nn.Linear(704, 128)
-        self.bnorm = nn.BatchNorm1d(704)
+        #self.bnorm = nn.BatchNorm1d(704)
         self.drop = nn.Dropout(0.3)
         self.out = nn.Linear(128, 257)
 
     def forward(self, x):
-        x = self.bnorm(x)
+        #x = self.bnorm(x)
         x = torch.sigmoid(self.fc1(x))
         x = self.drop(x)
         return self.out(x)
@@ -82,11 +84,11 @@ class Layer_1_2(nn.Module):
         self.fc1 = nn.Linear(704, 128)
         self.fc2 = nn.Linear(128, 128)
         self.drop = nn.Dropout(0.3)
-        self.bnorm = nn.BatchNorm1d(704)
+        #self.bnorm = nn.BatchNorm1d(704)
         self.out = nn.Linear(128, 257)
 
     def forward(self, x):
-        x = self.bnorm(x)
+        #x = self.bnorm(x)
         x = torch.sigmoid(self.fc1(x))
         x = self.drop(x)
         x = torch.sigmoid(self.fc2(x))
@@ -122,12 +124,13 @@ def weights(m):
         nn.init.constant_(m.bias.data,0.1)
 
 
-def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
-            maxlen=1339, win_len=512, hop_size=256, fs=16000):
+def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=50
+             , win_len=512, hop_size=256, fs=16000):
     
     feat_type='stft'
     losses_l1 = []
     losses_l2 = []
+    val_losses = []
 
     ############# PRETRAIN FIRST LAYER ################
     
@@ -151,41 +154,75 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=100,
 
         epoch_loss = 0.0
 
-        num_chunk = (4620//chunk_size) + 1
+        num_chunk = (3234//chunk_size) + 1
         for chunk in range(num_chunk):
             chunk_loss = 0
             start = chunk*chunk_size
-            end = min(start+chunk_size, 4620)
+            end = min(start+chunk_size, 3234)
             print(start, end)
 
-            X_chunk, y_chunk = make_batch(x_path, y_path, 
-                                         [start, end], 5, 
-                                         maxlen, win_len, 
-                                         hop_size, feat_type, fs)
+            X_chunk, y_chunk, batch_indices = make_windows(x_path, y_path,
+                                          [start, end], P, 
+                                           win_len, 
+                                           hop_size, fs, nn_type='map')
 
-            trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 128)
+            #trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 128)
+            dataset = QDataSet(X_chunk, y_chunk, batch_indices)
+            loader = data.DataLoader(dataset, batch_size=1)
 
-            for step, (audio, target) in enumerate(trainData): 
-                audio = audio.to(device)
-                target = target.to(device)
-                l1.train()
-                output = l1(audio)
-                newLoss = criterion(output,target)                
+            for x, target in loader:
+                x = x.to(device)
+                x = x.reshape(x.shape[1], x.shape[2])
+                target = target.to(device).long()
+                target = torch.flatten(target)
+                output = l1(x)
+
+                newLoss = criterion(output, target)              
                 chunk_loss += newLoss.data
                 optimizer.zero_grad()
                 newLoss.backward()
                 optimizer.step()
-            
-            chunk_loss = (chunk_loss.detach().cpu().numpy())/len(trainData)
+
+            chunk_loss = (chunk_loss.detach().cpu().numpy())/len(loader)
             
             epoch_loss+=chunk_loss
 
             print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
 
-        #Check for early stopping
         losses_l1.append(epoch_loss/num_chunk)
         pickle.dump(losses_l1, open(loss_path+"losses_l1.p", "wb" ) )
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
+
+        #### VALIDATION #####
+       
+        print('Starting validation...')
+        # Y is a clean speech spectrogram
+        start = 3234
+        end = 4620
+        X_val, A_val, batch_indices = make_windows(x_path, y_path,
+                                          [start, end], P, 
+                                           win_len, 
+                                           hop_size, fs)
+
+        #valData = data.DataLoader(trainDataLoader(X_val, A_val), batch_size = 128)
+        dataset = QDataSet(X_val, A_val, batch_indices)
+        val_loader = data.DataLoader(dataset, batch_size=1)
+        overall_val_loss=0
+
+        for x, target in val_loader:
+            x = x.to(device)
+            x.requires_grad=True
+            x = x.reshape(x.shape[1], x.shape[2])
+            target = target.to(device).long()
+            target = torch.flatten(target)
+            output = l1(x)
+            valLoss = criterion(x, target)
+            overall_val_loss+=valLoss.detach().cpu().numpy()
+
+        val_losses.append(overall_val_loss/len(val_loader))
+        print('Validation loss: ', overall_val_loss/len(val_loader))
+        np.save(model_path+'val_losses_l1.npy', np.asarray(val_losses))
+
 
         
         
