@@ -9,7 +9,6 @@ import copy
 import pickle
 import pandas as pd
 import os
-from dnn_rl import QDataSet
 
 from data import make_windows
 from data import make_batch
@@ -17,6 +16,18 @@ from data import make_batch_test
 from data import pad
 from metrics import eval_pesq
 
+
+class QDataSet(data.Dataset):
+    def __init__(self, X_chunk, y_chunk, batch_indices):
+        self.x = X_chunk
+        self.y = y_chunk
+        self.batch_indices = batch_indices
+    def __getitem__(self, index):
+        start_idx = self.batch_indices[index]
+        end_idx = self.batch_indices[index+1]
+        return torch.from_numpy(self.x[start_idx:end_idx]).float(), torch.from_numpy(self.y[start_idx:end_idx]).float()
+    def __len__(self):
+        return len(self.batch_indices) - 1
 
 class trainDataLoader(data.Dataset):
     def __init__(self, X_chunk, y_chunk):
