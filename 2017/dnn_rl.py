@@ -45,7 +45,8 @@ class RL_L2(nn.Module):
         super().__init__()
         if l1:
             self.fc1 = l1.fc1
-        self.fc1 = nn.Linear(704, 64)
+        else:
+            self.fc1 = nn.Linear(704, 64)
         self.fc2 = nn.Linear(64, 32)
         self.drop = nn.Dropout(0.3)
         self.soft = nn.Softmax(dim=1)
