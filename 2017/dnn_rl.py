@@ -47,7 +47,8 @@ class RL_L2(nn.Module):
             self.fc1 = l1.fc1
         else:
             self.fc1 = nn.Linear(704, 64)
-        self.fc2 = nn.Linear(64, 32)
+        self.fc2 = nn.Linear(64, 64)
+        self.out = nn.Linear(64, 32)
         self.drop = nn.Dropout(0.3)
         self.soft = nn.Softmax(dim=1)
 
@@ -56,6 +57,7 @@ class RL_L2(nn.Module):
         x = self.drop(x)
         x = torch.sigmoid(self.fc2(x))
         x = self.drop(x)
+        x = self.out(x)
         return self.soft(x)
     
 class DNN_RL(nn.Module):
@@ -66,8 +68,8 @@ class DNN_RL(nn.Module):
             self.fc2 = l1_2.fc2
         else:
             self.fc1 = nn.Linear(704, 64)
-            self.fc2 = nn.Linear(64, 32)
-        
+            self.fc2 = nn.Linear(64, 64)
+        self.out = nn.Linear(64, 32)
         self.soft = nn.Softmax(dim=1)
         self.drop = nn.Dropout(0.3)
         
@@ -76,6 +78,7 @@ class DNN_RL(nn.Module):
         x = self.drop(x)
         x = torch.sigmoid(self.fc2(x))
         x = self.drop(x)
+        x = self.out(x)
         x = self.soft(x)
         return x 
 
