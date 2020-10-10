@@ -17,18 +17,20 @@ from dnn_rl import MMSE_train
 from data import create_noisy_data
 from models import pretrain
 
-pretrain(chunk_size=500, x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/',
-        y_path='/N/slate/anakuzne/se_data/snr0_train_clean/', 
-        model_path='/N/slate/anakuzne/se_data/model_log_amp/', 
-        loss_path='/N/slate/anakuzne/se_data/model_log_amp/')
 
-'''
+
+
 MMSE_pretrain(chunk_size=1000, x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/', 
            a_path='/N/slate/anakuzne/se_data/action_labels/',
            model_path='/N/slate/anakuzne/se_data/qfunc_pretrain/',
            cluster_path = '/N/slate/anakuzne/se_data/kmeans_centers.npy',
            clean_path = '/N/slate/anakuzne/se_data/clean_melspecs/',
            imag_path= '/N/slate/anakuzne/se_data/snr0_train_img/')
+'''
+pretrain(chunk_size=500, x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/',
+        y_path='/N/slate/anakuzne/se_data/snr0_train_clean/', 
+        model_path='/N/slate/anakuzne/se_data/model_log_amp/', 
+        loss_path='/N/slate/anakuzne/se_data/model_log_amp/')
 
 MMSE_train(chunk_size=1000, x_path='/N/slate/anakuzne/se_data/snr0_train/', 
            y_path='/N/slate/anakuzne/se_data/snr0_w_target/',
