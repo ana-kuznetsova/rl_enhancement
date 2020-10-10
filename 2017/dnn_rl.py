@@ -282,12 +282,14 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             torch.save(best_l1, model_path+'rl_dnn_l1.pth')
             prev_val = curr_val_loss
         
+        ##Save last model
+        torch.save(best_l1, model_path+'rl_dnn_l1_last.pth')
+
         if epoch==num_epochs+1:
             np.save(model_path+"true_actions_l1.npy", labels)
             np.save(model_path+"pred_actions_l1.npy", np.asarray(pred_actions))
 
-        #print('Saing model...')
-        #torch.save(best_l1, model_path+'rl_dnn_l1.pth')
+    prev_val = 999999
 
     ######## PRETRAIN SECOND LAYER ############
 
@@ -380,16 +382,20 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             output = l2(x)
             valLoss = criterion(x, target)
             overall_val_loss+=valLoss.detach().cpu().numpy()
-
-        val_losses.append(overall_val_loss/len(val_loader))
-        print('Validation loss: ', overall_val_loss/len(val_loader))
+        
+        curr_val_loss = overall_val_loss/len(val_loader)
+        val_losses.append(curr_val_loss)
+        print('Validation loss: ', curr_val_loss)
         np.save(model_path+'val_losses_l2.npy', np.asarray(val_losses))
+
+        if curr_val_loss < prev_val:
+            prev_val = curr_val_loss
+            torch.save(best_l1, model_path+'rl_dnn_l2.pth')
+        torch.save(best_l1, model_path+'rl_dnn_l2_last.pth')
+        
         if epoch==num_epochs+1:
             np.save(model_path+"true_actions_l2.npy", labels)
             np.save(model_path+"pred_actions_l2.npy", np.asarray(pred_actions))
-
-        print('Saing model...')
-        torch.save(best_l1, model_path+'rl_dnn_l2.pth')
 
 ########################################################
 
