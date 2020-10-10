@@ -159,7 +159,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 win_len=512,
                 hop_size=256, fs=16000):
 
-    num_epochs = 5
+    num_epochs = 100
     P=5 #Window size
     #G = np.load(cluster_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
@@ -169,6 +169,8 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
     true_actions = []
     pred_actions = []
     losses_l2 = []
+
+    prev_val = 99999
    
     device = torch.device('cuda:0') #change to 2 if on Ada
     torch.cuda.set_device(0) #change to 2 if on Ada
@@ -271,15 +273,21 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             valLoss = criterion(x, target)
             overall_val_loss+=valLoss.detach().cpu().numpy()
 
-        val_losses.append(overall_val_loss/len(val_loader))
-        print('Validation loss: ', overall_val_loss/len(val_loader))
+        curr_val_loss = overall_val_loss/len(val_loader)
+        val_losses.append(curr_val_loss)
+        print('Validation loss: ', curr_val_loss)
         np.save(model_path+'val_losses_l1.npy', np.asarray(val_losses))
+
+        if curr_val_loss < prev_val:
+            torch.save(best_l1, model_path+'rl_dnn_l1.pth')
+            prev_val = curr_val_loss
+        
         if epoch==num_epochs+1:
             np.save(model_path+"true_actions_l1.npy", labels)
             np.save(model_path+"pred_actions_l1.npy", np.asarray(pred_actions))
 
-        print('Saing model...')
-        torch.save(best_l1, model_path+'rl_dnn_l1.pth')
+        #print('Saing model...')
+        #torch.save(best_l1, model_path+'rl_dnn_l1.pth')
 
     ######## PRETRAIN SECOND LAYER ############
 
