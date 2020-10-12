@@ -184,9 +184,9 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=100
         start = 3234
         end = 4620
         X_val, A_val, batch_indices = make_windows(x_path, y_path,
-                                          [start, end], P, 
-                                           win_len, 
-                                           hop_size, fs)
+                                          [start, end], P=5, 
+                                           win_len=512, 
+                                           hop_size=256, fs=16000, nn_type='map')
 
         #valData = data.DataLoader(trainDataLoader(X_val, A_val), batch_size = 128)
         dataset = QDataSet(X_val, A_val, batch_indices)
@@ -284,9 +284,9 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=100
         start = 3234
         end = 4620
         X_val, A_val, batch_indices = make_windows(x_path, y_path,
-                                          [start, end], P, 
-                                           win_len, 
-                                           hop_size, fs)
+                                          [start, end], P=5, 
+                                           win_len=512, 
+                                           hop_size=256, fs=16000, nn_type='map')
 
         dataset = QDataSet(X_val, A_val, batch_indices)
         val_loader = data.DataLoader(dataset, batch_size=1)
