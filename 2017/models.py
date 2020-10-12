@@ -48,27 +48,6 @@ class testDataLoader(data.Dataset):
         #Number of files
         return self.x.shape[0]
 
-
-
-'''
-class DNN_mel(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.bnorm = nn.BatchNorm1d(704)
-        self.fc1 = nn.Linear(704, 128)
-        self.fc2 = nn.Linear(128, 128)
-        self.fc3 = nn.Linear(128, 257)
-        self.drop = nn.Dropout(0.3)
-    
-    def forward(self, x):
-        x = self.bnorm(x)
-        x = Func.sigmoid(self.fc1(x))
-        x = self.drop(x)
-        x = Func.sigmoid(self.fc2(x))
-        x = self.drop(x)
-        x = self.fc3(x)
-        return x
-'''
 class Layer1(nn.Module):
     '''
     Train with mel features
@@ -76,12 +55,10 @@ class Layer1(nn.Module):
     def __init__(self):
         super().__init__()
         self.fc1 = nn.Linear(704, 128)
-        #self.bnorm = nn.BatchNorm1d(704)
         self.drop = nn.Dropout(0.3)
         self.out = nn.Linear(128, 257)
 
     def forward(self, x):
-        #x = self.bnorm(x)
         x = torch.sigmoid(self.fc1(x))
         x = self.drop(x)
         return self.out(x)
@@ -91,14 +68,12 @@ class Layer_1_2(nn.Module):
         super().__init__()
         if l1:
             self.fc1 = l1.fc1
-        self.fc1 = nn.Linear(704, 128)
+        else:
+            self.fc1 = nn.Linear(704, 128)
         self.fc2 = nn.Linear(128, 128)
-        self.drop = nn.Dropout(0.3)
-        #self.bnorm = nn.BatchNorm1d(704)
         self.out = nn.Linear(128, 257)
 
     def forward(self, x):
-        #x = self.bnorm(x)
         x = torch.sigmoid(self.fc1(x))
         x = self.drop(x)
         x = torch.sigmoid(self.fc2(x))
@@ -134,10 +109,9 @@ def weights(m):
         nn.init.constant_(m.bias.data,0.1)
 
 
-def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=50
+def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
              , win_len=512, hop_size=256, fs=16000):
     
-    feat_type='stft'
     losses_l1 = []
     losses_l2 = []
     val_losses = []
@@ -176,17 +150,16 @@ def pretrain(chunk_size, model_path, x_path, y_path, loss_path, num_epochs=50
                                            win_len=512, 
                                            hop_size=256, fs=16000, nn_type='map')
 
-            #trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 128)
             dataset = QDataSet(X_chunk, y_chunk, batch_indices)
             loader = data.DataLoader(dataset, batch_size=1)
 
             for x, target in loader:
                 x = x.to(device)
                 x = x.reshape(x.shape[1], x.shape[2])
-                #print('X:', x.shape)
+                print('X:', x.shape)
                 target = target.to(device).float()
                 target = target.reshape(target.shape[1], target.shape[2])
-                #print('Y:', target.shape)
+                print('Y:', target.shape)
                 output = l1(x)
 
                 newLoss = criterion(output, target)              
