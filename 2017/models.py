@@ -215,6 +215,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
 
     ###### TRAIN SECOND LAYER ##########
     prev_val=99999
+    val_losses = []
     l1 = Layer1()
 
     l1.load_state_dict(torch.load(model_path+'dnn_l1.pth'))
@@ -258,7 +259,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
                 x = x.reshape(x.shape[1], x.shape[2])
                 target = target.to(device).float()
                 target = target.reshape(target.shape[1], target.shape[2])
-                output = l1(x)
+                output = l2(x)
 
                 newLoss = criterion(output, target)              
                 chunk_loss += newLoss.data
@@ -272,7 +273,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
 
             print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
 
-        losses_l1.append(epoch_loss/num_chunk)
+        losses_l2.append(epoch_loss/num_chunk)
         pickle.dump(losses_l1, open(model_path+"losses_l2.p", "wb" ) )
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
 
@@ -297,7 +298,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
             x = x.reshape(x.shape[1], x.shape[2])
             target = target.to(device).long()
             target = torch.flatten(target)
-            output = l1(x)
+            output = l2(x)
             valLoss = criterion(x, target)
             overall_val_loss+=valLoss.detach().cpu().numpy()
 
@@ -307,9 +308,9 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
         np.save(model_path+'val_losses_l2.npy', np.asarray(val_losses))
 
         if curr_val_loss < prev_val:
-            torch.save(best_l1, model_path+'dnn_map_l1_best.pth')
+            torch.save(best_l2, model_path+'dnn_map_l2_best.pth')
             prev_val = curr_val_loss
-        torch.save(best_l1, model_path+"dnn_map_l1_last.
+        torch.save(best_l2, model_path+"dnn_map_l2_last.
 
             
 
