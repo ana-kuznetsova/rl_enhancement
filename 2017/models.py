@@ -115,6 +115,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
     losses_l1 = []
     losses_l2 = []
     val_losses = []
+    prev_val = 9999
 
     ############# PRETRAIN FIRST LAYER ################
     
@@ -156,10 +157,8 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
             for x, target in loader:
                 x = x.to(device)
                 x = x.reshape(x.shape[1], x.shape[2])
-                print('X:', x.shape)
                 target = target.to(device).float()
                 target = target.reshape(target.shape[1], target.shape[2])
-                print('Y:', target.shape)
                 output = l1(x)
 
                 newLoss = criterion(output, target)              
@@ -175,7 +174,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
             print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
 
         losses_l1.append(epoch_loss/num_chunk)
-        pickle.dump(losses_l1, open(loss_path+"losses_l1.p", "wb" ) )
+        pickle.dump(losses_l1, open(model_path+"losses_l1.p", "wb" ) )
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
 
         #### VALIDATION #####
@@ -204,16 +203,18 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
             valLoss = criterion(x, target)
             overall_val_loss+=valLoss.detach().cpu().numpy()
 
-        val_losses.append(overall_val_loss/len(val_loader))
-        print('Validation loss: ', overall_val_loss/len(val_loader))
+        curr_val_loss = overall_val_loss/len(val_loader)
+        val_losses.append(curr_val_loss)
+        print('Validation loss: ', curr_val_loss)
         np.save(model_path+'val_losses_l1.npy', np.asarray(val_losses))
 
+        if curr_val_loss < prev_val:
+            torch.save(best_l1, model_path+'dnn_map_l1_best.pth')
+            prev_val = curr_val_loss
+        torch.save(best_l1, model_path+"dnn_map_l1_last.pth")
 
-        
-        
-    
     ###### TRAIN SECOND LAYER ##########
-
+    prev_val=99999
     l1 = Layer1()
 
     l1.load_state_dict(torch.load(model_path+'dnn_l1.pth'))
