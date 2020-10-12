@@ -82,7 +82,7 @@ def main(args):
         '''
 
     elif args.mode=='pretrain':
-        pretrain(args.chunk_size, args.model_path, args.x_path, args.y_path, args.loss_path)
+        pretrain(args.chunk_size, args.model_path, args.x_path, args.y_path)
 
     elif args.mode=='eval':
         eval_pesq(args.preds_path, args.y_path, args.test_path, args.test_out, args.imag)
