@@ -15,7 +15,6 @@ from data import make_batch
 from data import make_batch_test
 from data import pad
 from metrics import eval_pesq
-from dnn_rl import QDataSet
 
 class QDataSet(data.Dataset):
     def __init__(self, X_chunk, y_chunk, batch_indices):
