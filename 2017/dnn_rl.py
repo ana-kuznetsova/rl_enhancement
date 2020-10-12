@@ -278,6 +278,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
         torch.save(best_l1, model_path+'rl_dnn_l1_last.pth')
 
     prev_val = 999999
+    val_losses = []
 
     ######## PRETRAIN SECOND LAYER ############
 
