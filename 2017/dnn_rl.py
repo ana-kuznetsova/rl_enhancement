@@ -19,19 +19,9 @@ from data import make_batch
 from data import make_windows
 from utils import invert
 from metrics import calc_Z
+from models import QDataSet
 
 
-class QDataSet(data.Dataset):
-    def __init__(self, X_chunk, y_chunk, batch_indices):
-        self.x = X_chunk
-        self.y = y_chunk
-        self.batch_indices = batch_indices
-    def __getitem__(self, index):
-        start_idx = self.batch_indices[index]
-        end_idx = self.batch_indices[index+1]
-        return torch.from_numpy(self.x[start_idx:end_idx]).float(), torch.from_numpy(self.y[start_idx:end_idx]).float()
-    def __len__(self):
-        return len(self.batch_indices) - 1
 
 #### LAYERS FOR RL PRETRAINING ###
 
@@ -55,8 +45,10 @@ class RL_L2(nn.Module):
         super().__init__()
         if l1:
             self.fc1 = l1.fc1
-        self.fc1 = nn.Linear(704, 64)
-        self.fc2 = nn.Linear(64, 32)
+        else:
+            self.fc1 = nn.Linear(704, 64)
+        self.fc2 = nn.Linear(64, 64)
+        self.out = nn.Linear(64, 32)
         self.drop = nn.Dropout(0.3)
         self.soft = nn.Softmax(dim=1)
 
@@ -65,6 +57,7 @@ class RL_L2(nn.Module):
         x = self.drop(x)
         x = torch.sigmoid(self.fc2(x))
         x = self.drop(x)
+        x = self.out(x)
         return self.soft(x)
     
 class DNN_RL(nn.Module):
@@ -75,8 +68,8 @@ class DNN_RL(nn.Module):
             self.fc2 = l1_2.fc2
         else:
             self.fc1 = nn.Linear(704, 64)
-            self.fc2 = nn.Linear(64, 32)
-        
+            self.fc2 = nn.Linear(64, 64)
+        self.out = nn.Linear(64, 32)
         self.soft = nn.Softmax(dim=1)
         self.drop = nn.Dropout(0.3)
         
@@ -85,6 +78,7 @@ class DNN_RL(nn.Module):
         x = self.drop(x)
         x = torch.sigmoid(self.fc2(x))
         x = self.drop(x)
+        x = self.out(x)
         x = self.soft(x)
         return x 
 
@@ -165,7 +159,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 win_len=512,
                 hop_size=256, fs=16000):
 
-    num_epochs = 5
+    num_epochs = 100
     P=5 #Window size
     #G = np.load(cluster_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
@@ -175,6 +169,8 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
     true_actions = []
     pred_actions = []
     losses_l2 = []
+
+    prev_val = 99999
    
     device = torch.device('cuda:0') #change to 2 if on Ada
     torch.cuda.set_device(0) #change to 2 if on Ada
@@ -277,15 +273,23 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             valLoss = criterion(x, target)
             overall_val_loss+=valLoss.detach().cpu().numpy()
 
-        val_losses.append(overall_val_loss/len(val_loader))
-        print('Validation loss: ', overall_val_loss/len(val_loader))
+        curr_val_loss = overall_val_loss/len(val_loader)
+        val_losses.append(curr_val_loss)
+        print('Validation loss: ', curr_val_loss)
         np.save(model_path+'val_losses_l1.npy', np.asarray(val_losses))
+
+        if curr_val_loss < prev_val:
+            torch.save(best_l1, model_path+'rl_dnn_l1.pth')
+            prev_val = curr_val_loss
+        
+        ##Save last model
+        torch.save(best_l1, model_path+'rl_dnn_l1_last.pth')
+
         if epoch==num_epochs+1:
             np.save(model_path+"true_actions_l1.npy", labels)
             np.save(model_path+"pred_actions_l1.npy", np.asarray(pred_actions))
 
-        print('Saing model...')
-        torch.save(best_l1, model_path+'rl_dnn_l1.pth')
+    prev_val = 999999
 
     ######## PRETRAIN SECOND LAYER ############
 
@@ -378,16 +382,20 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             output = l2(x)
             valLoss = criterion(x, target)
             overall_val_loss+=valLoss.detach().cpu().numpy()
-
-        val_losses.append(overall_val_loss/len(val_loader))
-        print('Validation loss: ', overall_val_loss/len(val_loader))
+        
+        curr_val_loss = overall_val_loss/len(val_loader)
+        val_losses.append(curr_val_loss)
+        print('Validation loss: ', curr_val_loss)
         np.save(model_path+'val_losses_l2.npy', np.asarray(val_losses))
+
+        if curr_val_loss < prev_val:
+            prev_val = curr_val_loss
+            torch.save(best_l1, model_path+'rl_dnn_l2.pth')
+        torch.save(best_l1, model_path+'rl_dnn_l2_last.pth')
+        
         if epoch==num_epochs+1:
             np.save(model_path+"true_actions_l2.npy", labels)
             np.save(model_path+"pred_actions_l2.npy", np.asarray(pred_actions))
-
-        print('Saing model...')
-        torch.save(best_l1, model_path+'rl_dnn_l2.pth')
 
 ########################################################
 
