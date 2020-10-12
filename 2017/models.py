@@ -299,6 +299,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=100
             target = target.to(device).long()
             target = torch.flatten(target)
             output = l2(x)
+            print('X:', x.shape, 'T:', target.shape)
             valLoss = criterion(x, target)
             overall_val_loss+=valLoss.detach().cpu().numpy()
 
