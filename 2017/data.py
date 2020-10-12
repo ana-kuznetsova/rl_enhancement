@@ -149,32 +149,32 @@ def calc_mel_wiener(x_path, y_path):
         np.save(y_path+f, w_mel)
     
 
-def calc_masks(speech_paths, noise_path, fs, win_len, hop_size,
+def calc_masks(speech_path, noise_path, fs, win_len, hop_size,
                mask_dir,
                mask_type='IRM',
                stft_dir=None):
     
     noise = read(noise_path, fs)
+    speech_fnames = os.listdir(speech_path)
 
-    for p in tqdm(speech_paths):
-        fname = p.split('/')[-2]+ '_' + p.split('/')[-1].split('.')[0] + '.npy'
-        speech = read(p, fs)
+    for p in tqdm(speech_fnames):
+        speech = read(speech_path+p, fs)
         noise = pad_noise(speech, noise)
         stft_noise = STFT(noise, win_len, hop_size)
         stft_clean = STFT(speech, win_len, hop_size)
         if mask_type=='IRM':
             irm = IRM(stft_clean, stft_noise)
-            write_npy(mask_dir, fname, irm)
+            write_npy(mask_dir, p, irm)
         elif mask_type=='Wiener':
             wiener = Wiener(stft_clean, stft_noise)
-            write_npy(mask_dir, fname, wiener)
+            write_npy(mask_dir, p, wiener)
 
         elif mask_type=='ln':
-            target = np.log(stft_clean) + 0.0000001
+            target = np.log(stft_clean)
             #target = np.nan_to_num(target)
-            write_npy(mask_dir, fname, target)
+            write_npy(mask_dir, p, target)
         elif mask_type=='stft':
-            write_npy(mask_dir, fname, stft_clean)
+            write_npy(mask_dir, p, stft_clean)
 
 
 def get_X_batch(stft, P):
