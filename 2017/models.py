@@ -310,7 +310,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
         if curr_val_loss < prev_val:
             torch.save(best_l2, model_path+'dnn_map_l2_best.pth')
             prev_val = curr_val_loss
-        torch.save(best_l2, model_path+"dnn_map_l2_last.pth')
+        torch.save(best_l2, model_path+"dnn_map_l2_last.pth")
 
             
 
