@@ -159,14 +159,13 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 win_len=512,
                 hop_size=256, fs=16000):
 
-    num_epochs = 100
+    num_epochs = 50
     P=5 #Window size
     #G = np.load(cluster_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
 
     losses_l1 = []
     val_losses = []
-    true_actions = []
     pred_actions = []
     losses_l2 = []
 
@@ -207,14 +206,8 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                                            win_len, 
                                            hop_size, fs)
             
-            if epoch==num_epochs+1:
-                if len(labels)==0:
-                    labels = A_chunk
-                labels = np.vstack((labels, A_chunk))
-            
             dataset = QDataSet(X_chunk, A_chunk, batch_indices)
             loader = data.DataLoader(dataset, batch_size=1)
-            #trainData = data.DataLoader(QDataLoader(X_chunk, A_chunk, batch_indices), batch_size = 1)
 
             for x, target in loader:
                 x = x.to(device)
@@ -222,13 +215,6 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 target = target.to(device).long()
                 target = torch.flatten(target)
                 output = l1(x)
-                #print('Out shape:', output.shape)
-                #print(output)
-                if epoch==num_epochs+1:
-                    pred_qfunc = output.detach().cpu().numpy()
-                    ##take argmax and save predicted actions
-                    for i in range(pred_qfunc.shape[1]):
-                        pred_actions.append(int(np.argmax(pred_qfunc[:, i])))
 
                 newLoss = criterion(output, target)              
                 chunk_loss += newLoss.data
@@ -258,7 +244,6 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                                            win_len, 
                                            hop_size, fs)
 
-        #valData = data.DataLoader(trainDataLoader(X_val, A_val), batch_size = 128)
         dataset = QDataSet(X_val, A_val, batch_indices)
         val_loader = data.DataLoader(dataset, batch_size=1)
         overall_val_loss=0
@@ -279,15 +264,18 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
         np.save(model_path+'val_losses_l1.npy', np.asarray(val_losses))
 
         if curr_val_loss < prev_val:
-            torch.save(best_l1, model_path+'rl_dnn_l1.pth')
+            torch.save(best_l1, model_path+'rl_dnn_l1_best.pth')
             prev_val = curr_val_loss
+            pred_qfunc = output.detach().cpu().numpy()
+            
+            ##take argmax and save predicted actions
+            for i in range(pred_qfunc.shape[1]):
+                pred_actions.append(int(np.argmax(pred_qfunc[:, i])))
+                np.save(model_path+"true_actions_l1.npy", A_chunk)
+                np.save(model_path+"pred_actions_l1.npy", np.asarray(pred_actions))
         
         ##Save last model
         torch.save(best_l1, model_path+'rl_dnn_l1_last.pth')
-
-        if epoch==num_epochs+1:
-            np.save(model_path+"true_actions_l1.npy", labels)
-            np.save(model_path+"pred_actions_l1.npy", np.asarray(pred_actions))
 
     prev_val = 999999
 
@@ -321,10 +309,6 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                                            win_len, 
                                            hop_size, fs)
             
-            if epoch==num_epochs+1:
-                if len(labels)==0:
-                    labels = A_chunk
-                labels = np.vstack((labels, A_chunk))
             
             dataset = QDataSet(X_chunk, A_chunk, batch_indices)
             loader = data.DataLoader(dataset, batch_size=1)
