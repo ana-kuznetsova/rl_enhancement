@@ -8,4 +8,4 @@ pretrain(chunk_size=500, x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/'
         y_path='/N/slate/anakuzne/se_data/snr0_train_clean/', 
         model_path='/N/slate/anakuzne/se_data/model_log_amp/')
 
-python /N/u/anakuzne/Carbonate/rl_enhancement/2017/main.py --mode="pretrain" --chunk_size=100 --x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/' --y_path='/N/slate/anakuzne/se_data/snr0_train_clean/' --model_path='/N/slate/anakuzne/se_data/model_log_amp/'
+python /N/u/anakuzne/Carbonate/rl_enhancement/2017/main.py --mode="pretrain" --chunk_size=1000 --x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/' --y_path='/N/slate/anakuzne/se_data/snr0_train_clean/' --model_path='/N/slate/anakuzne/se_data/model_log_amp/'
