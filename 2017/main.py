@@ -17,6 +17,7 @@ from data import mel_spec
 from data import calc_mel_wiener
 from metrics import eval_pesq
 from dnn_rl import q_learning
+from dnn_rl import MMSE_pretrain
 
 def main(args):
     if args.mode=='train':
@@ -102,6 +103,12 @@ def main(args):
                    args.model_path,
                    args.clean_path,
                    args.imag)
+    elif args.mode=='mse_pretrain':
+        MMSE_pretrain(chunk_size=1000, x_path='/nobackup/anakuzne/data/snr0_train_melspecs/', 
+           a_path='/nobackup/anakuzne/data/action_labels/',
+           model_path='/nobackup/anakuzne/data/qfunc_pretrain/',
+           cluster_path = '/nobackup/anakuzne/data/kmeans_centers.npy',
+           clean_path = '/nobackup/anakuzne/data/clean_melspecs/')
 
 
 
