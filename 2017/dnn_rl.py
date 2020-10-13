@@ -177,7 +177,6 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
 
     if resume==False:
     ######## PRETRAIN FIRST RL-LAYER #########
-        optimizer = optim.SGD(l1.parameters(), lr=0.001, momentum=0.9)
 
         l1 = RL_L1()
         l1.apply(weights)
@@ -185,6 +184,8 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
         l1.cuda()
         l1 = l1.to(device)
         criterion.cuda()
+
+        optimizer = optim.SGD(l1.parameters(), lr=0.001, momentum=0.9)
 
         best_l1 = copy.deepcopy(l1.state_dict())
 
