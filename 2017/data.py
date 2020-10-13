@@ -319,17 +319,16 @@ def calc_MMSE_labels(x_path, a_path, clean_path, cluster_path):
     fnames = os.listdir(x_path)
     G_mat = np.load(cluster_path).T
 
-    print('Cluster M:', G_mat.shape)
-
     for f in tqdm(fnames):
         A_t = []
         x_source = np.load(x_path+f)
         x_clean = np.load(clean_path+f)
-        print('Source:', x_source.shape, 'Clean:', x_clean.shape)
+
         for timestep in range(x_source.shape[1]):
             sums = []
             for a in range(G_mat.shape[1]):
                 diff = np.sum(x_clean[:,timestep] - np.multiply(G_mat[:,a], x_source[:, timestep]))
+                print(diff)
                 sums.append(diff)
             sums = np.asarray(sums)
             A_t.append(np.argmin(sums))
