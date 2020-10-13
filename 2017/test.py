@@ -24,8 +24,7 @@ MMSE_pretrain(chunk_size=1000, x_path='/N/slate/anakuzne/se_data/snr0_train_mels
            a_path='/N/slate/anakuzne/se_data/action_labels/',
            model_path='/N/slate/anakuzne/se_data/qfunc_pretrain/',
            cluster_path = '/N/slate/anakuzne/se_data/kmeans_centers.npy',
-           clean_path = '/N/slate/anakuzne/se_data/clean_melspecs/',
-           imag_path= '/N/slate/anakuzne/se_data/snr0_train_img/')
+           clean_path = '/N/slate/anakuzne/se_data/clean_melspecs/', resume=True)
 '''
 pretrain(chunk_size=500, x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/',
         y_path='/N/slate/anakuzne/se_data/snr0_train_clean/', 
