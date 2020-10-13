@@ -172,14 +172,14 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
    
     device = torch.device('cuda:0') #change to 2 if on Ada
     torch.cuda.set_device(0) #change to 2 if on Ada
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.SGD(l1.parameters(), lr=0.001, momentum=0.9)
 
     if resume==False:
     ######## PRETRAIN FIRST RL-LAYER #########
 
         l1 = RL_L1()
         l1.apply(weights)
-        criterion = nn.CrossEntropyLoss()
-        optimizer = optim.SGD(l1.parameters(), lr=0.001, momentum=0.9)
     
         l1.cuda()
         l1 = l1.to(device)
