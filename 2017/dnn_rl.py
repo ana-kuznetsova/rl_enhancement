@@ -218,7 +218,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                     target = torch.flatten(target)
                     output = l1(x)
 
-                    newLoss = criterion(target, output)              
+                    newLoss = criterion(output, target)            
                     chunk_loss += newLoss.data
                     optimizer.zero_grad()
                     newLoss.backward()
@@ -257,7 +257,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 target = target.to(device).long()
                 target = torch.flatten(target)
                 output = l1(x)
-                valLoss = criterion(target, output)
+                valLoss = criterion(output, target)
                 overall_val_loss+=valLoss.detach().cpu().numpy()
 
             curr_val_loss = overall_val_loss/len(val_loader)
@@ -327,7 +327,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                     for i in range(pred_qfunc.shape[1]):
                         pred_actions.append(int(np.argmax(pred_qfunc[:, i])))
 
-                newLoss = criterion(target, output)             
+                newLoss = criterion(output, target)             
                 chunk_loss += newLoss.data
                 optimizer.zero_grad()
                 newLoss.backward()
@@ -366,7 +366,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             target = target.to(device).long()
             target = torch.flatten(target)
             output = l2(x)
-            valLoss = criterion(target, output)    
+            valLoss = criterion(output, target)     
             overall_val_loss+=valLoss.detach().cpu().numpy()
         
         curr_val_loss = overall_val_loss/len(val_loader)
