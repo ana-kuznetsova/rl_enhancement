@@ -329,7 +329,6 @@ def calc_MMSE_labels(x_path, a_path, clean_path, cluster_path):
             for a in range(G_mat.shape[1]):
                 temp = x_clean[:,timestep] - np.multiply(G_mat[:,a], x_source[:, timestep])
                 diff = np.sum(np.square(temp))/x_clean[:,timestep].shape[0]
-                print(diff)
                 sums.append(diff)
             sums = np.asarray(sums)
             A_t.append(np.argmin(sums))
