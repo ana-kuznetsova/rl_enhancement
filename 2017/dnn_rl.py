@@ -229,6 +229,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                     print(pred_qfunc.shape)
                     for i in range(pred_qfunc.shape[1]):
                         n = pred_qfunc[:, i]
+                        print(n.shape)
 
 
                 chunk_loss = (chunk_loss.detach().cpu().numpy())/len(X_chunk)
