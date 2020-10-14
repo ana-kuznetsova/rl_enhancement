@@ -225,13 +225,6 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                     newLoss.backward()
                     optimizer.step()
 
-                    pred_qfunc = output.detach().cpu().numpy()
-                    print(pred_qfunc.shape)
-                    for i in range(pred_qfunc.shape[1]):
-                        n = pred_qfunc[i]
-                        print(np.argmax(n))
-
-
                 chunk_loss = (chunk_loss.detach().cpu().numpy())/len(X_chunk)
                 
                 epoch_loss+=chunk_loss
@@ -271,7 +264,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 ##take argmax and save predicted actions
                 pred_qfunc = output.detach().cpu().numpy()
                 for i in range(pred_qfunc.shape[1]):
-                    pred_actions.append(int(np.argmax(pred_qfunc[:, i])))
+                    pred_actions.append(np.argmax(pred_qfunc[i]))
 
             curr_val_loss = overall_val_loss/len(val_loader)
             val_losses.append(curr_val_loss)
@@ -375,7 +368,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             ##take argmax and save predicted actions
             pred_qfunc = output.detach().cpu().numpy()
             for i in range(pred_qfunc.shape[1]):
-                pred_actions.append(int(np.argmax(pred_qfunc[:, i])))
+                pred_actions.append(np.argmax(pred_qfunc[i]))
         
         curr_val_loss = overall_val_loss/len(val_loader)
         val_losses.append(curr_val_loss)

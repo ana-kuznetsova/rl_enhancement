@@ -104,7 +104,7 @@ def main(args):
                    args.clean_path,
                    args.imag)
     elif args.mode=='mse_pretrain':
-        MMSE_pretrain(chunk_size=100, x_path='/nobackup/anakuzne/data/snr0_train_melspecs/', 
+        MMSE_pretrain(chunk_size=1000, x_path='/nobackup/anakuzne/data/snr0_train_melspecs/', 
            a_path='/nobackup/anakuzne/data/action_labels/',
            model_path='/nobackup/anakuzne/data/qfunc_pretrain/',
            cluster_path = '/nobackup/anakuzne/data/kmeans_centers.npy',
