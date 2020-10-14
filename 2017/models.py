@@ -240,11 +240,11 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
 
         epoch_loss = 0.0
 
-        num_chunk = (4620//chunk_size) + 1
+        num_chunk = (3234//chunk_size) + 1
         for chunk in range(num_chunk):
             chunk_loss = 0
             start = chunk*chunk_size
-            end = min(start+chunk_size, 4620)
+            end = min(start+chunk_size, 3234)
             print(start, end)
 
             X_chunk, y_chunk, batch_indices = make_windows(x_path, y_path,
