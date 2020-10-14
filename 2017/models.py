@@ -298,7 +298,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
             x = x.reshape(x.shape[1], x.shape[2])
             target = target.to(device).float()
             target = target.reshape(target.shape[1], target.shape[2])
-            output = l1(x)
+            output = l2(x)
             valLoss = criterion(output, target)
             overall_val_loss+=valLoss.detach().cpu().numpy()
 
