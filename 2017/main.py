@@ -108,7 +108,7 @@ def main(args):
            a_path='/nobackup/anakuzne/data/action_labels/',
            model_path='/nobackup/anakuzne/data/qfunc_pretrain/',
            cluster_path = '/nobackup/anakuzne/data/kmeans_centers.npy',
-           clean_path = '/nobackup/anakuzne/data/clean_melspecs/', resume=True)
+           clean_path = '/nobackup/anakuzne/data/clean_melspecs/')
 
 
 
