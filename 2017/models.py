@@ -110,7 +110,7 @@ def weights(m):
 
 
 def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=100
-             , win_len=512, hop_size=256, fs=16000):
+             , win_len=512, hop_size=256, fs=16000, resume=False):
     
     losses_l1 = []
     losses_l2 = []
@@ -118,99 +118,100 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=100
     prev_val = 9999
 
     ############# PRETRAIN FIRST LAYER ################
+    if resume==False:
     
-    l1 = Layer1()
-    l1.apply(weights)
-    criterion = nn.MSELoss()
-    optimizer = optim.SGD(l1.parameters(), lr=0.01, momentum=0.9)
-    device = torch.device("cuda")
-    l1.cuda()
-    l1 = l1.to(device)
-    criterion.cuda()
+        l1 = Layer1()
+        l1.apply(weights)
+        criterion = nn.MSELoss()
+        optimizer = optim.SGD(l1.parameters(), lr=0.01, momentum=0.9)
+        device = torch.device("cuda")
+        l1.cuda()
+        l1 = l1.to(device)
+        criterion.cuda()
 
-    best_l1 = copy.deepcopy(l1.state_dict())
+        best_l1 = copy.deepcopy(l1.state_dict())
 
-    print('---------------------------------')
-    print("Start PRETRAINING first layer...")
-    print('--------------------------------')
+        print('---------------------------------')
+        print("Start PRETRAINING first layer...")
+        print('--------------------------------')
 
-    for epoch in range(1, num_epochs+1):
-        print('Epoch {}/{}'.format(epoch, num_epochs))
+        for epoch in range(1, num_epochs+1):
+            print('Epoch {}/{}'.format(epoch, num_epochs))
 
-        epoch_loss = 0.0
+            epoch_loss = 0.0
 
-        num_chunk = (3234//chunk_size) + 1
-        for chunk in range(num_chunk):
-            chunk_loss = 0
-            start = chunk*chunk_size
-            end = min(start+chunk_size, 3234)
-            print(start, end)
+            num_chunk = (3234//chunk_size) + 1
+            for chunk in range(num_chunk):
+                chunk_loss = 0
+                start = chunk*chunk_size
+                end = min(start+chunk_size, 3234)
+                print(start, end)
 
-            X_chunk, y_chunk, batch_indices = make_windows(x_path, y_path,
-                                          [start, end], P=5, 
-                                           win_len=512, 
-                                           hop_size=256, fs=16000, nn_type='map')
+                X_chunk, y_chunk, batch_indices = make_windows(x_path, y_path,
+                                            [start, end], P=5, 
+                                            win_len=512, 
+                                            hop_size=256, fs=16000, nn_type='map')
 
-            dataset = QDataSet(X_chunk, y_chunk, batch_indices)
-            loader = data.DataLoader(dataset, batch_size=1)
+                dataset = QDataSet(X_chunk, y_chunk, batch_indices)
+                loader = data.DataLoader(dataset, batch_size=1)
 
-            for x, target in loader:
+                for x, target in loader:
+                    x = x.to(device)
+                    x = x.reshape(x.shape[1], x.shape[2])
+                    target = target.to(device).float()
+                    target = target.reshape(target.shape[1], target.shape[2])
+                    output = l1(x)
+
+                    newLoss = criterion(output, target)              
+                    chunk_loss += newLoss.data
+                    optimizer.zero_grad()
+                    newLoss.backward()
+                    optimizer.step()
+
+                chunk_loss = (chunk_loss.detach().cpu().numpy())/len(loader)
+                
+            epoch_loss+=chunk_loss
+
+            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
+
+            losses_l1.append(epoch_loss/num_chunk)
+            pickle.dump(losses_l1, open(model_path+"losses_l1.p", "wb" ) )
+            print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
+
+            #### VALIDATION #####
+        
+            print('Starting validation...')
+            # Y is a clean speech spectrogram
+            start = 3234
+            end = 4620
+            X_val, A_val, batch_indices = make_windows(x_path, y_path,
+                                            [start, end], P=5, 
+                                            win_len=512, 
+                                            hop_size=256, fs=16000, nn_type='map')
+
+            #valData = data.DataLoader(trainDataLoader(X_val, A_val), batch_size = 128)
+            dataset = QDataSet(X_val, A_val, batch_indices)
+            val_loader = data.DataLoader(dataset, batch_size=1)
+            overall_val_loss=0
+
+            for x, target in val_loader:
                 x = x.to(device)
                 x = x.reshape(x.shape[1], x.shape[2])
                 target = target.to(device).float()
                 target = target.reshape(target.shape[1], target.shape[2])
                 output = l1(x)
+                valLoss = criterion(output, target)
+                overall_val_loss+=valLoss.detach().cpu().numpy()
 
-                newLoss = criterion(output, target)              
-                chunk_loss += newLoss.data
-                optimizer.zero_grad()
-                newLoss.backward()
-                optimizer.step()
+            curr_val_loss = overall_val_loss/len(val_loader)
+            val_losses.append(curr_val_loss)
+            print('Validation loss: ', curr_val_loss)
+            np.save(model_path+'val_losses_l1.npy', np.asarray(val_losses))
 
-            chunk_loss = (chunk_loss.detach().cpu().numpy())/len(loader)
-            
-            epoch_loss+=chunk_loss
-
-            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
-
-        losses_l1.append(epoch_loss/num_chunk)
-        pickle.dump(losses_l1, open(model_path+"losses_l1.p", "wb" ) )
-        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
-
-        #### VALIDATION #####
-       
-        print('Starting validation...')
-        # Y is a clean speech spectrogram
-        start = 3234
-        end = 4620
-        X_val, A_val, batch_indices = make_windows(x_path, y_path,
-                                          [start, end], P=5, 
-                                           win_len=512, 
-                                           hop_size=256, fs=16000, nn_type='map')
-
-        #valData = data.DataLoader(trainDataLoader(X_val, A_val), batch_size = 128)
-        dataset = QDataSet(X_val, A_val, batch_indices)
-        val_loader = data.DataLoader(dataset, batch_size=1)
-        overall_val_loss=0
-
-        for x, target in val_loader:
-            x = x.to(device)
-            x = x.reshape(x.shape[1], x.shape[2])
-            target = target.to(device).float()
-            target = target.reshape(target.shape[1], target.shape[2])
-            output = l1(x)
-            valLoss = criterion(output, target)
-            overall_val_loss+=valLoss.detach().cpu().numpy()
-
-        curr_val_loss = overall_val_loss/len(val_loader)
-        val_losses.append(curr_val_loss)
-        print('Validation loss: ', curr_val_loss)
-        np.save(model_path+'val_losses_l1.npy', np.asarray(val_losses))
-
-        if curr_val_loss < prev_val:
-            torch.save(best_l1, model_path+'dnn_map_l1_best.pth')
-            prev_val = curr_val_loss
-        torch.save(best_l1, model_path+"dnn_map_l1_last.pth")
+            if curr_val_loss < prev_val:
+                torch.save(best_l1, model_path+'dnn_map_l1_best.pth')
+                prev_val = curr_val_loss
+            torch.save(best_l1, model_path+"dnn_map_l1_last.pth")
 
     ###### TRAIN SECOND LAYER ##########
     prev_val=99999

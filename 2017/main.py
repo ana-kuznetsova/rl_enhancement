@@ -83,7 +83,7 @@ def main(args):
         '''
 
     elif args.mode=='pretrain':
-        pretrain(args.chunk_size, args.model_path, args.x_path, args.y_path)
+        pretrain(args.chunk_size, args.model_path, args.x_path, args.y_path, args.resume)
 
     elif args.mode=='eval':
         eval_pesq(args.preds_path, args.y_path, args.test_path, args.test_out, args.imag)
@@ -134,5 +134,6 @@ if __name__ == '__main__':
     parser.add_argument('--clean_path', type=str, help='path to clean')
     parser.add_argument('--a_path', type=str, help='path to the ground truth actions')
     parser.add_argument('--cluster_path', type=str, help='path to the k-means clusters')
+    parser.add_argument('--resume', type=str, help='Bool')
     args = parser.parse_args()
     main(args)
