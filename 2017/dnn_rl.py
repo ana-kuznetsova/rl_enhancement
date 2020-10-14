@@ -226,8 +226,9 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                     optimizer.step()
 
                     pred_qfunc = output.detach().cpu().numpy()
+                    print(pred_qfunc.shape)
                     for i in range(pred_qfunc.shape[1]):
-                        print('Argmax:', np.argmax(pred_qfunc[:, i]))
+                        print(pred_qfunc[:, i])
 
 
                 chunk_loss = (chunk_loss.detach().cpu().numpy())/len(X_chunk)
