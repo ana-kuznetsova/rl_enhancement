@@ -70,6 +70,7 @@ class Layer_1_2(nn.Module):
             self.fc1 = l1.fc1
         else:
             self.fc1 = nn.Linear(704, 128)
+        self.drop = nn.Dropout(0.3)
         self.fc2 = nn.Linear(128, 128)
         self.out = nn.Linear(128, 257)
 
