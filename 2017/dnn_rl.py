@@ -376,6 +376,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
         np.save(model_path+'val_losses_l2.npy', np.asarray(val_losses))
 
         if curr_val_loss < prev_val:
+            print('Pred_actions:', len(pred_actions))
             torch.save(best_l2, model_path+'rl_dnn_l2_best.pth')
             prev_val = curr_val_loss
             pred_qfunc = output.detach().cpu().numpy()
