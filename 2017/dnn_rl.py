@@ -217,7 +217,6 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                     target = target.to(device).long()
                     target = torch.flatten(target)
                     output = l1(x)
-                    print('Out shape:',output.shape)
 
                     newLoss = criterion(output, target)            
                     chunk_loss += newLoss.data
