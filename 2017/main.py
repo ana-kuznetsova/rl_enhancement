@@ -50,10 +50,10 @@ def main(args):
 
         
         calc_MMSE_labels(
-            x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/',
-            a_path='/N/slate/anakuzne/se_data/action_labels/',
-            clean_path = '/N/slate/anakuzne/se_data/clean_melspecs/',
-            cluster_path = '/N/slate/anakuzne/se_data/kmeans_centers.npy'
+            x_path='/nobackup/anakuzne/data/snr0_train_melspecs/',
+            a_path='/nobackup/anakuzne/data/action_labels/',
+            clean_path = '/nobackup/anakuzne/data/clean_melspecs/',
+            cluster_path = '/nobackup/anakuzne/data/kmeans_centers.npy'
         )
 
         '''
