@@ -296,7 +296,7 @@ def get_freq_bins(train_paths, ind, maxlen=1339):
 def KMeans(chunk_size, train_path, out_path):
     kmeans = MiniBatchKMeans(n_clusters=32, 
                          batch_size=128,
-                         max_iter=100)
+                         max_iter=10000)
 
     paths = os.listdir(train_path)
     paths = [train_path+p for p in paths]

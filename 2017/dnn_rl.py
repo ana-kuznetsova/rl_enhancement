@@ -158,7 +158,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 win_len=512,
                 hop_size=256, fs=16000, resume=False):
 
-    num_epochs = 50
+    num_epochs = 35
     P=5 #Window size
     #G = np.load(cluster_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
@@ -224,7 +224,6 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                     newLoss.backward()
                     optimizer.step()
 
-
                 chunk_loss = (chunk_loss.detach().cpu().numpy())/len(X_chunk)
                 
                 epoch_loss+=chunk_loss
@@ -238,6 +237,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
 
             ##Validation
             print('Starting validation...')
+            pred_actions = []
             # Y is a clean speech spectrogram
             start = 3234
             end = 4620
@@ -260,6 +260,11 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 valLoss = criterion(output, target)
                 overall_val_loss+=valLoss.detach().cpu().numpy()
 
+                ##take argmax and save predicted actions
+                pred_qfunc = output.detach().cpu().numpy()
+                for i in range(pred_qfunc.shape[1]):
+                    pred_actions.append(np.argmax(pred_qfunc[i]))
+
             curr_val_loss = overall_val_loss/len(val_loader)
             val_losses.append(curr_val_loss)
             print('Validation loss: ', curr_val_loss)
@@ -268,12 +273,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             if curr_val_loss < prev_val:
                 torch.save(best_l1, model_path+'rl_dnn_l1_best.pth')
                 prev_val = curr_val_loss
-                pred_qfunc = output.detach().cpu().numpy()
-                
-                ##take argmax and save predicted actions
-                for i in range(pred_qfunc.shape[1]):
-                    pred_actions.append(int(np.argmax(pred_qfunc[:, i])))
-                np.save(model_path+"true_actions_l1.npy", A_chunk)
+                np.save(model_path+"true_actions_l1.npy", A_val)
                 np.save(model_path+"pred_actions_l1.npy", np.asarray(pred_actions))
             
             ##Save last model
@@ -283,7 +283,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
         val_losses = []
 
     ######## PRETRAIN SECOND LAYER ############
-
+    
     l1 = RL_L1()
 
     l1.load_state_dict(torch.load(model_path+'rl_dnn_l1_best.pth'))
@@ -321,12 +321,6 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
                 target = target.to(device).long()
                 target = torch.flatten(target)
                 output = l2(x)
-                if epoch==num_epochs+1:
-                    pred_qfunc = output.detach().cpu().numpy()
-                    ##take argmax and save predicted actions
-                    for i in range(pred_qfunc.shape[1]):
-                        pred_actions.append(int(np.argmax(pred_qfunc[:, i])))
-
                 newLoss = criterion(output, target)             
                 chunk_loss += newLoss.data
                 optimizer.zero_grad()
@@ -347,6 +341,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
 
         ##Validation
         print('Starting validation...')
+        pred_actions = []
         
         start = 3234
         end = 4620
@@ -368,6 +363,11 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             output = l2(x)
             valLoss = criterion(output, target)     
             overall_val_loss+=valLoss.detach().cpu().numpy()
+            
+            ##take argmax and save predicted actions
+            pred_qfunc = output.detach().cpu().numpy()
+            for i in range(pred_qfunc.shape[1]):
+                pred_actions.append(np.argmax(pred_qfunc[i]))
         
         curr_val_loss = overall_val_loss/len(val_loader)
         val_losses.append(curr_val_loss)
@@ -375,6 +375,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
         np.save(model_path+'val_losses_l2.npy', np.asarray(val_losses))
 
         if curr_val_loss < prev_val:
+            print('Pred_actions:', len(pred_actions))
             torch.save(best_l2, model_path+'rl_dnn_l2_best.pth')
             prev_val = curr_val_loss
             pred_qfunc = output.detach().cpu().numpy()
@@ -382,7 +383,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             ##take argmax and save predicted actions
             for i in range(pred_qfunc.shape[1]):
                 pred_actions.append(int(np.argmax(pred_qfunc[:, i])))
-            np.save(model_path+"true_actions_l2.npy", A_chunk)
+            np.save(model_path+"true_actions_l2.npy", A_val)
             np.save(model_path+"pred_actions_l2.npy", np.asarray(pred_actions))
         
         ##Save last model

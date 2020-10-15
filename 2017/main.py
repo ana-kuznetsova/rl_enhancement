@@ -22,13 +22,10 @@ from dnn_rl import MMSE_pretrain
 def main(args):
     if args.mode=='train':
         print('Start DNN mapping...')
-        train_dnn(args.num_epochs,
+        train_dnn(args.chunk_size, 
                 args.model_path,
                 args.x_path,
                 args.y_path,
-                args.loss_path,
-                args.chunk_size, 
-                args.feat_type,
                 args.pre_path,
                 args.from_pretrained)
     elif args.mode=='test':
@@ -50,10 +47,10 @@ def main(args):
 
         
         calc_MMSE_labels(
-            x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/',
-            a_path='/N/slate/anakuzne/se_data/action_labels/',
-            clean_path = '/N/slate/anakuzne/se_data/clean_melspecs/',
-            cluster_path = '/N/slate/anakuzne/se_data/kmeans_centers.npy'
+            x_path='/nobackup/anakuzne/data/snr0_train_melspecs/',
+            a_path='/nobackup/anakuzne/data/action_labels/',
+            clean_path = '/nobackup/anakuzne/data/clean_melspecs/',
+            cluster_path = '/nobackup/anakuzne/data/kmeans_centers.npy'
         )
 
         '''
@@ -83,7 +80,7 @@ def main(args):
         '''
 
     elif args.mode=='pretrain':
-        pretrain(args.chunk_size, args.model_path, args.x_path, args.y_path)
+        pretrain(args.chunk_size, args.model_path, args.x_path, args.y_path, resume=args.resume)
 
     elif args.mode=='eval':
         eval_pesq(args.preds_path, args.y_path, args.test_path, args.test_out, args.imag)
@@ -134,5 +131,6 @@ if __name__ == '__main__':
     parser.add_argument('--clean_path', type=str, help='path to clean')
     parser.add_argument('--a_path', type=str, help='path to the ground truth actions')
     parser.add_argument('--cluster_path', type=str, help='path to the k-means clusters')
+    parser.add_argument('--resume', type=str, help='Bool')
     args = parser.parse_args()
     main(args)
