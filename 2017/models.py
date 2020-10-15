@@ -391,7 +391,7 @@ def train_dnn(chunk_size,
         #### VALIDATION #####
        
     print('Starting validation...')
-        
+    prev_val = 9999
     val_losses = []
     start = 3234
     end = 4620
