@@ -344,7 +344,7 @@ def train_dnn(chunk_size,
 
     best_model = copy.deepcopy(model.state_dict())
     losses = []
-
+    '''
     for epoch in range(1, num_epochs+1):
         print('Epoch {}/{}'.format(epoch, num_epochs))
         epoch_loss = 0
@@ -387,7 +387,7 @@ def train_dnn(chunk_size,
             np.save("losses.npy", losses)
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
 
-
+        '''
         #### VALIDATION #####
        
         print('Starting validation...')

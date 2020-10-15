@@ -9,3 +9,5 @@ pretrain(chunk_size=500, x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/'
         model_path='/N/slate/anakuzne/se_data/model_log_amp/')
 
 python /N/u/anakuzne/Carbonate/rl_enhancement/2017/main.py --mode="pretrain" --chunk_size=1000 --x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/' --y_path='/N/slate/anakuzne/se_data/snr0_train_clean/' --model_path='/N/slate/anakuzne/se_data/model_log_amp/'
+
+python main.py --mode='train' --chunk_size=100 --model_path='/nobackup/anakuzne/data/model_log_amp/' --pre_path='/nobackup/anakuzne/data/model_log_amp/' --x_path='/nobackup/anakuzne/data/snr0_train_mel_specs/' --y_path='/nobackup/anakuzne/data/snr0_train_clean/' --from_pretrained=True
