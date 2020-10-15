@@ -273,7 +273,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             if curr_val_loss < prev_val:
                 torch.save(best_l1, model_path+'rl_dnn_l1_best.pth')
                 prev_val = curr_val_loss
-                np.save(model_path+"true_actions_l1.npy", A_chunk)
+                np.save(model_path+"true_actions_l1.npy", A_val)
                 np.save(model_path+"pred_actions_l1.npy", np.asarray(pred_actions))
             
             ##Save last model
@@ -383,7 +383,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
             ##take argmax and save predicted actions
             for i in range(pred_qfunc.shape[1]):
                 pred_actions.append(int(np.argmax(pred_qfunc[:, i])))
-            np.save(model_path+"true_actions_l2.npy", A_chunk)
+            np.save(model_path+"true_actions_l2.npy", A_val)
             np.save(model_path+"pred_actions_l2.npy", np.asarray(pred_actions))
         
         ##Save last model
