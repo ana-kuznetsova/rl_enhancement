@@ -390,38 +390,38 @@ def train_dnn(chunk_size,
         '''
         #### VALIDATION #####
        
-        print('Starting validation...')
+    print('Starting validation...')
         
-        val_losses = []
-        start = 3234
-        end = 4620
-        X_val, A_val, batch_indices = make_windows(x_path, y_path,
+    val_losses = []
+    start = 3234
+    end = 4620
+    X_val, A_val, batch_indices = make_windows(x_path, y_path,
                                           [start, end], P=5, 
                                            win_len=512, 
                                            hop_size=256, fs=16000, nn_type='map')
 
-        dataset = QDataSet(X_val, A_val, batch_indices)
-        val_loader = data.DataLoader(dataset, batch_size=1)
-        overall_val_loss=0
+    dataset = QDataSet(X_val, A_val, batch_indices)
+    val_loader = data.DataLoader(dataset, batch_size=1)
+    overall_val_loss=0
 
-        for x, target in val_loader:
-            x = x.to(device)
-            x = x.reshape(x.shape[1], x.shape[2])
-            target = target.to(device).float()
-            target = target.reshape(target.shape[1], target.shape[2])
-            output = model(x)
-            valLoss = criterion(output, target)
-            overall_val_loss+=valLoss.detach().cpu().numpy()
+    for x, target in val_loader:
+        x = x.to(device)
+        x = x.reshape(x.shape[1], x.shape[2])
+        target = target.to(device).float()
+        target = target.reshape(target.shape[1], target.shape[2])
+        output = model(x)
+        valLoss = criterion(output, target)
+        overall_val_loss+=valLoss.detach().cpu().numpy()
 
-        curr_val_loss = overall_val_loss/len(val_loader)
-        val_losses.append(curr_val_loss)
-        print('Validation loss: ', curr_val_loss)
-        np.save(model_path+'val_losses.npy', np.asarray(val_losses))
+    curr_val_loss = overall_val_loss/len(val_loader)
+    val_losses.append(curr_val_loss)
+    print('Validation loss: ', curr_val_loss)
+    np.save(model_path+'val_losses.npy', np.asarray(val_losses))
 
-        if curr_val_loss < prev_val:
-            torch.save(best_model, model_path+'dnn_map_best.pth')
-            prev_val = curr_val_loss
-        torch.save(best_model, model_path+"dnn_map_last.pth")
+    if curr_val_loss < prev_val:
+        torch.save(best_model, model_path+'dnn_map_best.pth')
+        prev_val = curr_val_loss
+    torch.save(best_model, model_path+"dnn_map_last.pth")
 
 
 
