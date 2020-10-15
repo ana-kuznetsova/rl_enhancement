@@ -315,22 +315,22 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
             
 
 
-def train_dnn(num_epochs, model_path, x_path, y_path, 
-              loss_path, chunk_size, feat_type, pretrain_path, from_pretrained=False,
+def train_dnn(chunk_size,
+              model_path, x_path, y_path,  pretrain_path, from_pretrained=False,
               maxlen=1339, win_len=512, hop_size=256, fs=16000):
-    if feat_type=='stft':
-        model = DNN()
-    elif feat_type=='mel':
-        if from_pretrained:
-            l1 = Layer1()
-            l1.load_state_dict(torch.load(pretrain_path+'dnn_l1.pth'))
-            l1_2 = Layer_1_2(l1)
-            l1_2.load_state_dict(torch.load(pretrain_path+'dnn_l2.pth'))
-            model = DNN_mel(l1_2)
+    
+    num_epochs = 50
+    
+    if from_pretrained:
+        l1 = Layer1()
+        l1.load_state_dict(torch.load(pretrain_path+'dnn_map_l1_best.pth'))
+        l1_2 = Layer_1_2(l1)
+        l1_2.load_state_dict(torch.load(pretrain_path+'dnn_map_l2_best.pth'))
+        model = DNN_mel(l1_2)
         
-        else:
-            model = DNN_mel()
-            model.apply(weights)
+    else:
+        model = DNN_mel()
+        model.apply(weights)
 
     criterion = nn.MSELoss()
     optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
@@ -347,46 +347,81 @@ def train_dnn(num_epochs, model_path, x_path, y_path,
 
     for epoch in range(1, num_epochs+1):
         print('Epoch {}/{}'.format(epoch, num_epochs))
-        loss = 0.0 
+        epoch_loss = 0
         
-        num_chunk = (4620//chunk_size) + 1
+        num_chunk = (3234//chunk_size) + 1
         for chunk in range(num_chunk):
             chunk_loss = 0
             start = chunk*chunk_size
-            end = min(start+chunk_size, 4620)
+            end = min(start+chunk_size, 3234)
             print(start, end)
 
-            X_chunk, y_chunk = make_batch(x_path, y_path, 
-                                         [start, end], 5, 
-                                         maxlen, win_len, 
-                                         hop_size, feat_type, fs)
+            X_chunk, y_chunk, batch_indices = make_windows(x_path, y_path,
+                                          [start, end], P=5, 
+                                           win_len=512, 
+                                           hop_size=256, fs=16000, nn_type='map')
 
-            trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 128)
+            dataset = QDataSet(X_chunk, y_chunk, batch_indices)
+            loader = data.DataLoader(dataset, batch_size=1)
 
-            for step, (audio, target) in enumerate(trainData): 
-                #print('Step:', step)
-                audio = audio.to(device)
-                target = target.to(device)
-                model.train()
-                output = model(audio)
-                newLoss = criterion(output,target)
+            for x, target in loader:
+                x = x.to(device)
+                x = x.reshape(x.shape[1], x.shape[2])
+                target = target.to(device).float()
+                target = target.reshape(target.shape[1], target.shape[2])
+                output = model(x)
+
+                newLoss = criterion(output, target)              
                 chunk_loss += newLoss.data
                 optimizer.zero_grad()
                 newLoss.backward()
                 optimizer.step()
 
-            chunk_loss = chunk_loss.detach().cpu().numpy()/len(trainData) 
-            loss += chunk_loss           
+            chunk_loss = (chunk_loss.detach().cpu().numpy())/len(loader)
+            
+            epoch_loss+=chunk_loss
+
             print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
 
+            losses.append(epoch_loss/num_chunk)
+            np.save("losses.npy", losses)
+        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
 
-        losses.append(loss/num_chunk)
-        pickle.dump(losses, open(loss_path+"losses.p", "wb" ) )
+
+        #### VALIDATION #####
+       
+        print('Starting validation...')
         
-        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, loss/num_chunk))
+        val_losses = []
+        start = 3234
+        end = 4620
+        X_val, A_val, batch_indices = make_windows(x_path, y_path,
+                                          [start, end], P=5, 
+                                           win_len=512, 
+                                           hop_size=256, fs=16000, nn_type='map')
 
+        dataset = QDataSet(X_val, A_val, batch_indices)
+        val_loader = data.DataLoader(dataset, batch_size=1)
+        overall_val_loss=0
 
-        torch.save(best_model, model_path+'dnn_map_best.pth')
+        for x, target in val_loader:
+            x = x.to(device)
+            x = x.reshape(x.shape[1], x.shape[2])
+            target = target.to(device).float()
+            target = target.reshape(target.shape[1], target.shape[2])
+            output = model(x)
+            valLoss = criterion(output, target)
+            overall_val_loss+=valLoss.detach().cpu().numpy()
+
+        curr_val_loss = overall_val_loss/len(val_loader)
+        val_losses.append(curr_val_loss)
+        print('Validation loss: ', curr_val_loss)
+        np.save(model_path+'val_losses.npy', np.asarray(val_losses))
+
+        if curr_val_loss < prev_val:
+            torch.save(best_model, model_path+'dnn_map_best.pth')
+            prev_val = curr_val_loss
+        torch.save(best_model, model_path+"dnn_map_last.pth")
 
 
 

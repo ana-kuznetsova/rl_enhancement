@@ -22,13 +22,10 @@ from dnn_rl import MMSE_pretrain
 def main(args):
     if args.mode=='train':
         print('Start DNN mapping...')
-        train_dnn(args.num_epochs,
+        train_dnn(args.chunk_size, 
                 args.model_path,
                 args.x_path,
                 args.y_path,
-                args.loss_path,
-                args.chunk_size, 
-                args.feat_type,
                 args.pre_path,
                 args.from_pretrained)
     elif args.mode=='test':
