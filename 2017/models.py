@@ -384,8 +384,8 @@ def train_dnn(chunk_size,
 
             print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
 
-            losses.append(epoch_loss/num_chunk)
-            np.save(model_path+"losses.npy", losses)
+        losses.append(epoch_loss/num_chunk)
+        np.save(model_path+"losses.npy", losses)
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
 
         #### VALIDATION #####
@@ -424,43 +424,27 @@ def train_dnn(chunk_size,
 
 
 
-def inference(test_data_path,
-              out_test, model_path, imag_path, 
-              chunk_size, feat_type, mask='ln', maxlen=1339,
+def inference(chunk_size, x_path, y_path, model_path,
+              out_test, imag_path,
               win_len=512, hop_size=256, fs=16000):
-    if feat_type=='stft':
-        model = DNN()
-    elif feat_type=='mel':
-        model = DNN_mel()
 
+
+    model = DNN_mel()
     model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
     fnames = os.listdir(test_data_path)
 
-    num_chunk = (1680//chunk_size) +1
-    for chunk in range(num_chunk):
-        chunk_loss = 0
-        start = chunk*chunk_size
-        end = min(start+chunk_size, 1680)
-        print(start, end)
-        x_list = [test_data_path + n for n in fnames]
-        X_chunk = make_batch_test(x_list, [start, end], 5, feat_type, maxlen, win_len, hop_size, fs)
-        testData = data.DataLoader(testDataLoader(X_chunk), batch_size = 1339)
+    X_test, y_test, batch_indices = make_windows(x_path, y_path,
+                                            [start, end], P=5, 
+                                            win_len=512, 
+                                            hop_size=256, fs=16000, nn_type='map')
 
-        chunk_names = fnames[start:end]
-        #print('chunk names:', chunk_names)
-        for step, audio in enumerate(testData):
-            #print('Step:', step)
+    dataset = QDataSet(X_test, y_test, batch_indices)
+    test_loader = data.DataLoader(dataset, batch_size=1)
 
-            name = chunk_names[step]
-            #print('name:', name)
-            with torch.no_grad():
-                output = model(audio)
-                output = np.transpose(output.cpu().data.numpy().squeeze())
-                ##Restore phase (imaginary part)
-                imag = pad(np.load(imag_path+name), maxlen)
-                if mask=='ln':
-                    np.save(out_test+name, np.exp(output)+imag)
-                elif mask=='wiener':
-                    noisy_aud = pad(np.load(test_data_path+name), maxlen)
-                    result = np.multiply(output, noisy_aud)
-                    np.save(out_test+name, result+imag)
+    for x, target in test_loader:
+        x = x.to(device)
+        x = x.reshape(x.shape[1], x.shape[2])
+        target = target.to(device).float()
+        target = target.reshape(target.shape[1], target.shape[2])
+        output = model(x).cpu().data.numpy()
+        #imag = pad(np.load(imag_path+name), maxlen)
