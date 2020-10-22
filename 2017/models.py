@@ -431,7 +431,7 @@ def inference(chunk_size, x_path, y_path, model_path,
 
     model = DNN_mel()
     model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
-    fnames = os.listdir(test_data_path)
+    fnames = os.listdir(x_path)
 
     X_test, y_test, batch_indices = make_windows(x_path, y_path,
                                             [start, end], P=5, 
