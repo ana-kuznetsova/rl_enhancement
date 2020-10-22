@@ -2,6 +2,7 @@ python /N/u/anakuzne/Carbonate/rl_enhancement/2017/main.py --mode="qlearn" --num
 
 
 /N/project/aspire_research_cs/Data/Corpora/Speech/TIMIT/corpus/
+/N/project/aspire_research_cs/Data/Corpora/Speech/TIMIT/test_corpus/corpus/
 
 
 pretrain(chunk_size=500, x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/',
