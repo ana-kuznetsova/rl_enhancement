@@ -404,8 +404,6 @@ def MMSE_train(chunk_size, x_path, a_path, model_path,
 
     losses = []
     val_losses = []
-    pred_actions = []
-    true_actions = []
     prev_val = 99999
 
     device = torch.device('cuda:0')
@@ -493,9 +491,10 @@ def MMSE_train(chunk_size, x_path, a_path, model_path,
         ##take argmax and save predicted actions
         pred_qfunc = output.detach().cpu().numpy()
         for i in range(pred_qfunc.shape[1]):
-            print(pred_qfunc[i].shape)
-            print("predicted a: ", np.argmax(pred_qfunc[i]))
             pred_actions.append(np.argmax(pred_qfunc[i]))
+
+        print("Target:", target[:30])
+        print("Predicted:", A_val[:30] )
     
     
     curr_val_loss = overall_val_loss/len(val_loader)
