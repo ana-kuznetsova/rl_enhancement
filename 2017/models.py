@@ -438,7 +438,7 @@ def inference(chunk_size, x_path, y_path, model_path,
     fnames = os.listdir(x_path)
 
     X_test, y_test, batch_indices = make_windows(x_path, y_path,
-                                            [0, 1680], P=5, 
+                                            [0, 100], P=5, 
                                             win_len=512, 
                                             hop_size=256, fs=16000, nn_type='map')
 

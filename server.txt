@@ -17,4 +17,4 @@ python main.py --mode="pretrain" --chunk_size=1000 --x_path='/nobackup/anakuzne/
 python main.py --mode='train' --chunk_size=100 --model_path='/nobackup/anakuzne/data/model_log_amp/' --pre_path='/nobackup/anakuzne/data/model_log_amp/' --x_path='/nobackup/anakuzne/data/snr0_train_mel_specs/' --y_path='/nobackup/anakuzne/data/snr0_train_clean/' --from_pretrained=True
 
 
-python main.py --mode='test' --chunk_size=100 --model_path='/nobackup/anakuzne/data/model_log_amp/' --x_path='/nobackup/anakuzne/data/snr0_train_mel_specs/' --y_path='/nobackup/anakuzne/data/snr0_train_clean/'
+python main.py --mode='test' --x_path='/nobackup/anakuzne/data/snr0_test_melspecs/' --test_out='/nobackup/anakuzne/data/model_log_amp/test_specs/' --y_path='/nobackup/anakuzne/data/snr0_train_clean/' --model_path="/nobackup/anakuzne/data/model_log_amp/"
