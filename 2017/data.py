@@ -158,25 +158,24 @@ def calc_masks(speech_path, noise_path, fs, win_len, hop_size,
     speech_fnames = os.listdir(speech_path)
 
     for p in tqdm(speech_fnames):
-        if '.wav' in p:
-            speech = read(speech_path+p, fs)
-            noise = pad_noise(speech, noise)
-            stft_noise = STFT(noise, win_len, hop_size)
-            stft_clean = STFT(speech, win_len, hop_size)
-            p = p.split('.')[0]+'.npy'
-            if mask_type=='IRM':
-                irm = IRM(stft_clean, stft_noise)
-                write_npy(mask_dir, p, irm)
-            elif mask_type=='Wiener':
-                wiener = Wiener(stft_clean, stft_noise)
-                write_npy(mask_dir, p, wiener)
+        if '.wav' in p
+        speech = read(speech_path+p, fs)
+        noise = pad_noise(speech, noise)
+        stft_noise = STFT(noise, win_len, hop_size)
+        stft_clean = STFT(speech, win_len, hop_size)
+        if mask_type=='IRM':
+            irm = IRM(stft_clean, stft_noise)
+            write_npy(mask_dir, p, irm)
+        elif mask_type=='Wiener':
+            wiener = Wiener(stft_clean, stft_noise)
+            write_npy(mask_dir, p, wiener)
 
-            elif mask_type=='ln':
-                target = np.log(stft_clean)
-                #target = np.nan_to_num(target)
-                write_npy(mask_dir, p, target)
-            elif mask_type=='stft':
-                write_npy(mask_dir, p, stft_clean)
+        elif mask_type=='ln':
+            target = np.log(stft_clean)
+            #target = np.nan_to_num(target)
+            write_npy(mask_dir, p, target)
+        elif mask_type=='stft':
+            write_npy(mask_dir, p, stft_clean)
 
 
 def get_X_batch(stft, P):
@@ -296,7 +295,7 @@ def get_freq_bins(train_paths, ind, maxlen=1339):
 def KMeans(chunk_size, train_path, out_path):
     kmeans = MiniBatchKMeans(n_clusters=32, 
                          batch_size=128,
-                         max_iter=10000)
+                         max_iter=100)
 
     paths = os.listdir(train_path)
     paths = [train_path+p for p in paths]
@@ -323,12 +322,11 @@ def calc_MMSE_labels(x_path, a_path, clean_path, cluster_path):
         A_t = []
         x_source = np.load(x_path+f)
         x_clean = np.load(clean_path+f)
-
+        
         for timestep in range(x_source.shape[1]):
             sums = []
             for a in range(G_mat.shape[1]):
-                temp = x_clean[:,timestep] - np.multiply(G_mat[:,a], x_source[:, timestep])
-                diff = np.sum(np.square(temp))/x_clean[:,timestep].shape[0]
+                diff = np.sum(x_clean[:,timestep] - np.multiply(G_mat[:,a], x_source[:, timestep]))
                 sums.append(diff)
             sums = np.asarray(sums)
             A_t.append(np.argmin(sums))

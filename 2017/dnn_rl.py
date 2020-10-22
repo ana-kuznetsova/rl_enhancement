@@ -160,7 +160,6 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
 
     num_epochs = 35
     P=5 #Window size
-    #G = np.load(cluster_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
 
     losses_l1 = []
@@ -391,44 +390,40 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
 
 ########################################################
 
-def MMSE_train(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
-                clean_path,
-                imag_path='/nobackup/anakuzne/data/snr0_train_img/',
-                maxlen=1339, 
+def MMSE_train(chunk_size, x_path, a_path, model_path,
                 win_len=512,
-                hop_size=256, fs=16000):
+                hop_size=256, fs=16000, resume=False):
 
-    feat_type='mel'
-
-    num_epochs = 5
+    num_epochs = 50
     P=5 #Window size
-    G = np.load(cluster_path) #Cluster centers for wiener masks
     torch.cuda.empty_cache() 
+   
+    device = torch.device('cuda:0') #change to 2 if on Ada
+    torch.cuda.set_device(0) #change to 2 if on Ada
+    criterion = nn.CrossEntropyLoss()
 
     losses = []
     val_losses = []
     pred_actions = []
     true_actions = []
+    prev_val = 99999
 
     device = torch.device('cuda:0')
     torch.cuda.set_device(0)
 
     layers = RL_L2()
-    layers.load_state_dict(torch.load(model_path+'dnn_rl_l2.pth'))
+    layers.load_state_dict(torch.load(model_path+'dnn_rl_l2_best.pth'))
 
     q_func_pretrained = DNN_RL(layers)
-
-    criterion = MMSE_loss(G)
-    criterion.cuda()
 
     optimizer = optim.SGD(q_func_pretrained.parameters(), lr=0.0001, momentum=0.8)
     q_func_pretrained.cuda()
     best_q = copy.deepcopy(q_func_pretrained.state_dict())
 
+
     for epoch in range(1, num_epochs+1):
         print('Epoch {}/{}'.format(epoch, num_epochs))
         epoch_loss = 0.0
-
         ##Training 
         num_chunk = (3234//chunk_size) + 1
         for chunk in range(num_chunk):
@@ -436,70 +431,94 @@ def MMSE_train(chunk_size, x_path, y_path, a_path, model_path, cluster_path,
             start = chunk*chunk_size
             end = min(start+chunk_size, 3234)
             print(start, end)
-
-            # Y is a clean speech spectrogram
-            X_chunk, y_chunk, fnames = make_batch(x_path, y_path, 
-                                         [start, end], P, 
-                                         maxlen, win_len, 
-                                         hop_size, feat_type, fs, names=True)
+            #returns both training examples and true labels 
+            X_chunk, A_chunk, batch_indices = make_windows(x_path, a_path,
+                                          [start, end], P, 
+                                           win_len, 
+                                           hop_size, fs)
             
-            trainData = data.DataLoader(trainDataLoader(X_chunk, y_chunk), batch_size = 1339)
+            
+            dataset = QDataSet(X_chunk, A_chunk, batch_indices)
+            loader = data.DataLoader(dataset, batch_size=1)
 
-            for step, (audio, target) in enumerate(trainData): 
-                audio = audio.to(device)
-                target = target.to(device)
-                output = q_func_pretrained(audio)
-                
-                newLoss = q_training_step(output, step, G, criterion, 
-                                          x_path, a_path, clean_path, imag_path, fnames, proc='train')               
+            for x, target in loader:
+                x = x.to(device)
+                x = x.reshape(x.shape[1], x.shape[2])
+                target = target.to(device).long()
+                target = torch.flatten(target)
+                output = q_func_pretrained(x)
+                newLoss = criterion(output, target)             
                 chunk_loss += newLoss.data
                 optimizer.zero_grad()
                 newLoss.backward()
                 optimizer.step()
 
-            chunk_loss = (chunk_loss.detach().cpu().numpy())/len(trainData)
+
+            chunk_loss = (chunk_loss.detach().cpu().numpy())/len(X_chunk)
             
             epoch_loss+=chunk_loss
 
             print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
 
-       
         losses.append(epoch_loss/num_chunk)
-        pickle.dump(losses, open(model_path+"losses_pre.p", "wb" ) )
+        np.save(model_path+"qpretrain_losses.npy", losses)
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
+    
+    ##Validation
+    print('Starting validation...')
+    pred_actions = []
+    
+    start = 3234
+    end = 4620
+    X_val, A_val, batch_indices = make_windows(x_path, a_path,
+                                        [start, end], P, 
+                                        win_len, 
+                                        hop_size, fs)
+    
+    dataset = QDataSet(X_val, A_val, batch_indices)
+    val_loader = data.DataLoader(dataset, batch_size=1)
+    overall_val_loss=0
 
-        ##Validation
-        print('Starting validation...')
-        # Y is a clean speech spectrogram
-        start = 3234
-        end = 4620
-        X_val, y_val, fnames = make_batch(x_path, y_path, 
-                                         [start, end], 5, 
-                                         maxlen, win_len, 
-                                         hop_size, feat_type, fs, names=True)
+    for x, target in val_loader:
+        x = x.to(device)
+        x.requires_grad=True
+        x = x.reshape(x.shape[1], x.shape[2])
+        target = target.to(device).long()
+        target = torch.flatten(target)
+        output = q_func_pretrained(x)
+        valLoss = criterion(output, target)     
+        overall_val_loss+=valLoss.detach().cpu().numpy()
             
-        valData = data.DataLoader(trainDataLoader(X_val, y_val), batch_size = 1339)
+        ##take argmax and save predicted actions
+        pred_qfunc = output.detach().cpu().numpy()
+        for i in range(pred_qfunc.shape[1]):
+            pred_actions.append(np.argmax(pred_qfunc[i]))
+    
+    '''
+    curr_val_loss = overall_val_loss/len(val_loader)
+    val_losses.append(curr_val_loss)
+    print('Validation loss: ', curr_val_loss)
+    np.save(model_path+'val_losses_l2.npy', np.asarray(val_losses))
 
-        overall_val_loss=0
-        for step, (audio, target) in enumerate(valData): 
-            audio = audio.to(device)
-            target = target.to(device)
-            output = q_func_pretrained(audio)
-            
-            valLoss, labels = q_training_step(output, step, G, criterion, 
-                                     x_path, a_path, clean_path, imag_path, fnames, proc='val') 
-            overall_val_loss+=valLoss.detach().cpu().numpy()
-        val_losses.append(overall_val_loss/len(valData))
-        print('Validation loss: ', overall_val_loss/len(valData))
-        np.save(model_path+'val_losses.npy', np.asarray(val_losses))
-        true_actions.append(labels)
-        np.save(model_path+'true_actions.npy', np.asarray(true_actions))
-        pred_actions.append(output.detach().cpu().numpy())
-        np.save(model_path+'pred_actions.npy', np.asarray(pred_actions))
+    if curr_val_loss < prev_val:
+        print('Pred_actions:', len(pred_actions))
+        torch.save(best_l2, model_path+'rl_dnn_l2_best.pth')
+        prev_val = curr_val_loss
+        pred_qfunc = output.detach().cpu().numpy()
         
+        ##take argmax and save predicted actions
+        for i in range(pred_qfunc.shape[1]):
+            pred_actions.append(int(np.argmax(pred_qfunc[:, i])))
+        np.save(model_path+"true_actions_l2.npy", A_val)
+        np.save(model_path+"pred_actions_l2.npy", np.asarray(pred_actions))
+    
+    ##Save last model
+    torch.save(best_l2, model_path+'rl_dnn_l2_last.pth')
+    '''
 
-    print('Saving model...')
-    torch.save(best_q, model_path+'qfunc_pretrained.pth')
+
+
+    
 
 
 def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
