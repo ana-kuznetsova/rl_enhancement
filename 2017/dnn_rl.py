@@ -493,7 +493,7 @@ def MMSE_train(chunk_size, x_path, a_path, model_path,
         ##take argmax and save predicted actions
         pred_qfunc = output.detach().cpu().numpy()
         for i in range(pred_qfunc.shape[1]):
-            print(i.shape)
+            print(pred_qfunc[i].shape)
             print("predicted a: ", np.argmax(pred_qfunc[i]))
             pred_actions.append(np.argmax(pred_qfunc[i]))
     
