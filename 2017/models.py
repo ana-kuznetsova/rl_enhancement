@@ -425,7 +425,7 @@ def train_dnn(chunk_size,
 
 
 def inference(chunk_size, x_path, y_path, model_path,
-              out_test,
+              test_out,
               win_len=512, hop_size=256, fs=16000):
 
     
@@ -438,7 +438,7 @@ def inference(chunk_size, x_path, y_path, model_path,
     fnames = os.listdir(x_path)
 
     X_test, y_test, batch_indices = make_windows(x_path, y_path,
-                                            [0, 100], P=5, 
+                                            [0, len(fnames)], P=5, 
                                             win_len=512, 
                                             hop_size=256, fs=16000, nn_type='map')
 
@@ -450,5 +450,5 @@ def inference(chunk_size, x_path, y_path, model_path,
         x = x.reshape(x.shape[1], x.shape[2])
         target = target.to(device).float()
         target = target.reshape(target.shape[1], target.shape[2])
-        output = model(x).cpu().data.numpy()
-        print("Out", output.shape)
+        output = model(x).cpu().data.numpy().T
+        np.save(test_out+fnames[i], output)
