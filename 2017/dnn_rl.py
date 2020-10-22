@@ -420,7 +420,7 @@ def MMSE_train(chunk_size, x_path, a_path, model_path,
     q_func_pretrained.cuda()
     best_q = copy.deepcopy(q_func_pretrained.state_dict())
 
-
+    '''
     for epoch in range(1, num_epochs+1):
         print('Epoch {}/{}'.format(epoch, num_epochs))
         epoch_loss = 0.0
@@ -463,13 +463,14 @@ def MMSE_train(chunk_size, x_path, a_path, model_path,
         losses.append(epoch_loss/num_chunk)
         np.save(model_path+"qpretrain_losses.npy", losses)
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
-    
+    '''
     ##Validation
     print('Starting validation...')
     pred_actions = []
     
     start = 3234
-    end = 4620
+    #end = 4620
+    end = 3334
     X_val, A_val, batch_indices = make_windows(x_path, a_path,
                                         [start, end], P, 
                                         win_len, 
@@ -494,12 +495,13 @@ def MMSE_train(chunk_size, x_path, a_path, model_path,
         for i in range(pred_qfunc.shape[1]):
             pred_actions.append(np.argmax(pred_qfunc[i]))
     
-    '''
+    
     curr_val_loss = overall_val_loss/len(val_loader)
     val_losses.append(curr_val_loss)
     print('Validation loss: ', curr_val_loss)
-    np.save(model_path+'val_losses_l2.npy', np.asarray(val_losses))
+    np.save(model_path+'qpretrain_val_losses.npy', np.asarray(val_losses))
 
+    '''
     if curr_val_loss < prev_val:
         print('Pred_actions:', len(pred_actions))
         torch.save(best_l2, model_path+'rl_dnn_l2_best.pth')
