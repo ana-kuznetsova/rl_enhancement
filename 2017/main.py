@@ -39,11 +39,11 @@ def main(args):
         FS = 16000
         noise_path = '/N/project/aspire_research_cs/Data/Corpora/Noise/cafe_16k.wav'
         
-        #mel_spec(args.x_path, args.y_path)
+        mel_spec(args.x_path, args.y_path)
 
         #calc_mel_wiener(args.x_path, args.y_path)
 
-        
+        '''
         calc_MMSE_labels(
             x_path='/nobackup/anakuzne/data/snr0_train_melspecs/',
             a_path='/nobackup/anakuzne/data/action_labels/',
@@ -51,7 +51,7 @@ def main(args):
             cluster_path = '/nobackup/anakuzne/data/kmeans_centers.npy'
         )
 
-        '''
+        
         print('Generating TRAINING data...')
         train_files = collect_paths('/u/anakuzne/data/TIMIT_full/train/')
         out_path = '/u/anakuzne/data/snr0_train/'
