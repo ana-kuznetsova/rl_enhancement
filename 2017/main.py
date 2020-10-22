@@ -30,8 +30,8 @@ def main(args):
                 args.from_pretrained)
     elif args.mode=='test':
         print('Staring inference on test data...')
-        inference(args.chunk_size, args.x_path, args.y_path, args.model_path,
-                  args.test_out,  args.imag)
+        inference(args.chunk_size, args.x_path, args.y_path, 
+                 args.model_path, args.out_test)
     elif args.mode=='data':
 
         WIN_LEN = 512

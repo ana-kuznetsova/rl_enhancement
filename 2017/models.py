@@ -425,26 +425,30 @@ def train_dnn(chunk_size,
 
 
 def inference(chunk_size, x_path, y_path, model_path,
-              out_test, imag_path,
+              out_test,
               win_len=512, hop_size=256, fs=16000):
 
-
+    
+    device = torch.device("cuda")
     model = DNN_mel()
     model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
+    model.cuda()
+    model = model.to(device)
+
     fnames = os.listdir(x_path)
 
     X_test, y_test, batch_indices = make_windows(x_path, y_path,
-                                            [start, end], P=5, 
+                                            [0, 1680], P=5, 
                                             win_len=512, 
                                             hop_size=256, fs=16000, nn_type='map')
 
     dataset = QDataSet(X_test, y_test, batch_indices)
     test_loader = data.DataLoader(dataset, batch_size=1)
 
-    for x, target in test_loader:
+    for i, (x, target) in enumerate(test_loader):
         x = x.to(device)
         x = x.reshape(x.shape[1], x.shape[2])
         target = target.to(device).float()
         target = target.reshape(target.shape[1], target.shape[2])
         output = model(x).cpu().data.numpy()
-        #imag = pad(np.load(imag_path+name), maxlen)
+        print("Out", output.shape)
