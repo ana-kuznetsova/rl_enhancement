@@ -158,11 +158,11 @@ def calc_masks(speech_path, noise_path, fs, win_len, hop_size,
     speech_fnames = os.listdir(speech_path)
 
     for p in tqdm(speech_fnames):
-        if '.wav' in p
-        speech = read(speech_path+p, fs)
-        noise = pad_noise(speech, noise)
-        stft_noise = STFT(noise, win_len, hop_size)
-        stft_clean = STFT(speech, win_len, hop_size)
+        if '.wav' in p:
+            speech = read(speech_path+p, fs)
+            noise = pad_noise(speech, noise)
+            stft_noise = STFT(noise, win_len, hop_size)
+            stft_clean = STFT(speech, win_len, hop_size)
         if mask_type=='IRM':
             irm = IRM(stft_clean, stft_noise)
             write_npy(mask_dir, p, irm)
