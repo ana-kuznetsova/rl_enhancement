@@ -141,11 +141,11 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
 
             epoch_loss = 0.0
 
-            num_chunk = (3234//chunk_size) + 1
+            num_chunk = (12474//chunk_size) + 1
             for chunk in range(num_chunk):
                 chunk_loss = 0
                 start = chunk*chunk_size
-                end = min(start+chunk_size, 3234)
+                end = min(start+chunk_size, 12474)
                 print(start, end)
 
                 X_chunk, y_chunk, batch_indices = make_windows(x_path, y_path,
@@ -176,21 +176,21 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
             print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
 
             losses_l1.append(epoch_loss/num_chunk)
-            pickle.dump(losses_l1, open(model_path+"losses_l1.p", "wb" ) )
+            np.save(model_path+"losses_l1.npy", np.asarray(losses_l1))
             print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
 
             #### VALIDATION #####
         
             print('Starting validation...')
             # Y is a clean speech spectrogram
-            start = 3234
-            end = 4620
+            start = 12474
+            end = 13860
             X_val, A_val, batch_indices = make_windows(x_path, y_path,
                                             [start, end], P=5, 
                                             win_len=512, 
                                             hop_size=256, fs=16000, nn_type='map')
 
-            #valData = data.DataLoader(trainDataLoader(X_val, A_val), batch_size = 128)
+           
             dataset = QDataSet(X_val, A_val, batch_indices)
             val_loader = data.DataLoader(dataset, batch_size=1)
             overall_val_loss=0
@@ -240,11 +240,11 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
 
         epoch_loss = 0.0
 
-        num_chunk = (3234//chunk_size) + 1
+        num_chunk = (12474//chunk_size) + 1
         for chunk in range(num_chunk):
             chunk_loss = 0
             start = chunk*chunk_size
-            end = min(start+chunk_size, 3234)
+            end = min(start+chunk_size, 124744)
             print(start, end)
 
             X_chunk, y_chunk, batch_indices = make_windows(x_path, y_path,
@@ -275,15 +275,15 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
             print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
 
         losses_l2.append(epoch_loss/num_chunk)
-        pickle.dump(losses_l2, open(model_path+"losses_l2.p", "wb" ) )
+        np.save(model_path+"losses_l2.npy", np.asarray(losses_l2))
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
 
         #### VALIDATION #####
        
         print('Starting validation...')
         # Y is a clean speech spectrogram
-        start = 3234
-        end = 4620
+        start = 12474
+        end = 13860 
         X_val, A_val, batch_indices = make_windows(x_path, y_path,
                                           [start, end], P=5, 
                                            win_len=512, 
