@@ -152,8 +152,7 @@ def q_training_step(output, step, G, criterion, x_path, a_path, clean_path, imag
         return new_loss, action_labels
 
 
-def MMSE_pretrain(chunk_size, x_path, a_path, model_path, cluster_path,
-                clean_path,
+def MMSE_pretrain(chunk_size, x_path, a_path, model_path,
                 maxlen=1339, 
                 win_len=512,
                 hop_size=256, fs=16000, resume=False):
