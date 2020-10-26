@@ -1,1 +1,1 @@
-python main.py --mode='pretrain' --chunk_size=100 --model_path='/nobackup/anakuzne/data/model_log_amp_036/' --x_path='/nobackup/anakuzne/data/model_log_amp_036/snr036_mel_train/' --y_path='/nobackup/anakuzne/data/model_log_amp_036/snr0_train_clean/' --resume='False'
+python main.py --mode='pretrain' --chunk_size=100 --model_path='/nobackup/anakuzne/data/model_log_amp_036/' --x_path='/nobackup/anakuzne/data/snr036_mel_train/' --y_path='/nobackup/anakuzne/data/snr0_train_clean/' --resume='False'

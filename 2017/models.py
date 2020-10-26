@@ -155,6 +155,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
 
                 dataset = QDataSet(X_chunk, y_chunk, batch_indices)
                 loader = data.DataLoader(dataset, batch_size=1)
+                print("Loader:", len(loader))
 
                 for x, target in loader:
                     x = x.to(device)
