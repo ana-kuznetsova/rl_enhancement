@@ -538,9 +538,11 @@ def eval_actions(model_path, x_path, a_path):
         target = torch.flatten(target)
         pred_qfunc = output.detach().cpu().numpy()
 
+        print("pred.shape:", pred_qfunc.shape[0])
         for i in range(pred_qfunc.shape[1]):
             pred_actions.append(int(np.argmax(pred_qfunc[i]))) 
 
+        print("true shape:", target.shape )
         for a in target:
             true_actions.append(int(a))
     
