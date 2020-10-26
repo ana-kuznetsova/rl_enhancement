@@ -510,7 +510,48 @@ def MMSE_train(chunk_size, x_path, a_path, model_path,
 
 
 
+def eval_actions(model_path, x_path, a_path):
+    device = torch.device('cuda:0') #change to 2 if on Ada
+    torch.cuda.set_device(0) #change to 2 if on Ada
+
+    device = torch.device('cuda:0')
+    torch.cuda.set_device(0)
+
+    q_func_pretrained = DNN_RL()
+    q_func_pretrained.load_state_dict(torch.load(model_path+'rl_dnn_best.pth'))
+
+    start = 3234
+    end = 4620
+        
+    X_val, A_val, batch_indices = make_windows(x_path, y_path,
+                                        [start, end], P=5, 
+                                        win_len=512, 
+                                        hop_size=256, fs=16000)
+
+    dataset = QDataSet(X_val, A_val, batch_indices)
+    val_loader = data.DataLoader(dataset, batch_size=1)
+
+    pred_actions = []
+    true_actions = []
+
+    for x, target in val_loader:
+        x = x.to(device)
+        x.requires_grad=True
+        x = x.reshape(x.shape[1], x.shape[2])
+        target = target.to(device).long()
+        target = torch.flatten(target)
+        output = q_func_pretrained(x)
+
+        pred_qfunc = output.detach().cpu().numpy()
+        for i in range(pred_qfunc.shape[1]):
+            pred_actions.append(int(np.argmax(pred_qfunc[i]))) 
+        
+        target = target.detach().cpu().numpy()
+        for a in target:
+            true_actions.append(int(a))
     
+    np.save("true_actions.npy", np.asarray(true_actions))
+    np.save("pred_actions.npy", np.asarray(pred_actions))
 
 
 def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
