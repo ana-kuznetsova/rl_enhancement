@@ -543,11 +543,12 @@ def eval_actions(model_path, x_path, a_path):
         target = torch.flatten(target)
         pred_qfunc = output.detach().cpu().numpy()
         for i in range(pred_qfunc.shape[1]):
+            print("pred a:", int(np.argmax(pred_qfunc[i])))
             pred_actions.append(int(np.argmax(pred_qfunc[i]))) 
         
        
         for a in target:
-            print('A', a)
+            print('true a:', a)
             true_actions.append(int(a))
     
     np.save(model_path+"true_actions.npy", np.asarray(true_actions))
