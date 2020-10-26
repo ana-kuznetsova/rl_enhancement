@@ -540,7 +540,7 @@ def eval_actions(model_path, x_path, a_path):
         x.requires_grad=True
         x = x.reshape(x.shape[1], x.shape[2])
         output = q_func_pretrained(x)
-        target = target.flatten()
+        target = torch.flatten(target)
         pred_qfunc = output.detach().cpu().numpy()
         for i in range(pred_qfunc.shape[1]):
             pred_actions.append(int(np.argmax(pred_qfunc[i]))) 
