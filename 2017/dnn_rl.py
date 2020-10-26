@@ -521,7 +521,8 @@ def eval_actions(model_path, x_path, a_path):
     q_func_pretrained.load_state_dict(torch.load(model_path+'rl_dnn_best.pth'))
 
     start = 3234
-    end = 4620
+    #end = 4620
+    end = 3334
         
     X_val, A_val, batch_indices = make_windows(x_path, a_path,
                                         [start, end], P=5, 
