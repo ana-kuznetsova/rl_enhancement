@@ -514,6 +514,7 @@ def eval_actions(model_path, x_path, a_path):
 
     q_func_pretrained = DNN_RL()
     q_func_pretrained.load_state_dict(torch.load(model_path+'rl_dnn_best.pth'))
+    q_func_pretrained.cuda()
 
     start = 3234
     #end = 4620
