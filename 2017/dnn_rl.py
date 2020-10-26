@@ -157,7 +157,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path,
                 win_len=512,
                 hop_size=256, fs=16000, resume=False):
 
-    num_epochs = 35
+    num_epochs = 50
     P=5 #Window size
     torch.cuda.empty_cache() 
 
