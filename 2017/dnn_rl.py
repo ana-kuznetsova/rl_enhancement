@@ -541,14 +541,14 @@ def eval_actions(model_path, x_path, a_path):
 
     
         for i in range(pred_qfunc.shape[0]):
-            print('pred a:', np.argmax(pred_qfunc[i]))
+            #print('pred a:', np.argmax(pred_qfunc[i]))
             pred_actions.append(int(np.argmax(pred_qfunc[i]))) 
-        #print("pred", len(pred_actions))
+        print("pred:", len(pred_actions))
 
         for a in target:
             #print("true a:", int(a))
             true_actions.append(int(a))
-        #print("true shape:", len(true_actions))
+        print("true:", len(true_actions))
     
     np.save(model_path+"true_actions.npy", np.asarray(true_actions))
     np.save(model_path+"pred_actions.npy", np.asarray(pred_actions))
