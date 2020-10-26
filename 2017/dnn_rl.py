@@ -548,7 +548,7 @@ def eval_actions(model_path, x_path, a_path):
         for i in range(pred_qfunc.shape[1]):
             pred_actions.append(int(np.argmax(pred_qfunc[i]))) 
         
-        print("Actions:", actions.shape)
+        print("Actions", actions.flatten())
         for a in actions:
             print('A', a.shape)
             true_actions.append(int(a))
