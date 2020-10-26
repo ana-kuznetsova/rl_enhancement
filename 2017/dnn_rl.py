@@ -517,8 +517,7 @@ def eval_actions(model_path, x_path, a_path):
     q_func_pretrained.cuda()
 
     start = 3234
-    #end = 4620
-    end = 3334
+    end = 4620
         
     X_val, A_val, batch_indices = make_windows(x_path, a_path,
                                         [start, end], P=5, 

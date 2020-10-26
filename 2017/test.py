@@ -19,9 +19,9 @@ from data import create_noisy_data
 from models import pretrain
 
 
-eval_actions(model_path='/N/slate/anakuzne/se_data/qfunc_pretrain/',
-             x_path="/N/slate/anakuzne/se_data/snr0_train_melspecs/",
-             a_path='/N/slate/anakuzne/se_data/action_labels/')
+eval_actions(model_path='/nobackup/anakuzne/data/qfunc_pretrain/',
+             x_path="/nobackup/anakuzne/data/snr0_train_melspecs/",
+             a_path='/nobackup/anakuzne/data/action_labels/')
 
 '''
 MMSE_train(chunk_size=1000, x_path='/nobackup/anakuzne/data/snr0_train_melspecs/', 
