@@ -155,7 +155,6 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
 
                 dataset = QDataSet(X_chunk, y_chunk, batch_indices)
                 loader = data.DataLoader(dataset, batch_size=1)
-                print("Loader:", len(loader))
 
                 for x, target in loader:
                     x = x.to(device)
@@ -172,9 +171,9 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
 
                 chunk_loss = (chunk_loss.detach().cpu().numpy())/len(loader)
                 
-            epoch_loss+=chunk_loss
+                epoch_loss+=chunk_loss
 
-            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
+                print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
 
             losses_l1.append(epoch_loss/num_chunk)
             np.save(model_path+"losses_l1.npy", np.asarray(losses_l1))
