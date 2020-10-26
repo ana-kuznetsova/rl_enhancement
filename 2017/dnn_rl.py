@@ -233,8 +233,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path,
             print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
 
             ##Validation
-            print('Starting validation...')
-            pred_actions = []
+            print('Starting validation...') 
             # Y is a clean speech spectrogram
             start = 12474
             end = 13860
