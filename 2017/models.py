@@ -90,17 +90,17 @@ class DNN_mel(nn.Module):
         else:
             self.fc1 = nn.Linear(704, 128)
             self.fc2 = nn.Linear(128, 128)
-        self.bnorm = nn.BatchNorm1d(704)
         self.fc3 = nn.Linear(128, 257)
         self.drop = nn.Dropout(0.3)
+        self.out = nn.Linear(128, 257)
         
     def forward(self, x):
-        x = self.bnorm(x)
         x = torch.sigmoid(self.fc1(x))
         x = self.drop(x)
         x = torch.sigmoid(self.fc2(x))
         x = self.drop(x)
         x = self.fc3(x)
+        x = self.out(x)
         return x 
         
 
