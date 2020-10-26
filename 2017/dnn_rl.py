@@ -512,10 +512,7 @@ def MMSE_train(chunk_size, x_path, a_path, model_path,
 
 def eval_actions(model_path, x_path, a_path):
     device = torch.device('cuda:0') #change to 2 if on Ada
-    torch.cuda.set_device(0) #change to 2 if on Ada
-
-    device = torch.device('cuda:0')
-    torch.cuda.set_device(0)
+    torch.cuda.set_device(2) #change to 2 if on Ada
 
     q_func_pretrained = DNN_RL()
     q_func_pretrained.load_state_dict(torch.load(model_path+'rl_dnn_best.pth'))
@@ -543,12 +540,9 @@ def eval_actions(model_path, x_path, a_path):
         target = torch.flatten(target)
         pred_qfunc = output.detach().cpu().numpy()
 
-
-        print(pred_qfunc.shape[0])
         for i in range(pred_qfunc.shape[1]):
             pred_actions.append(int(np.argmax(pred_qfunc[i]))) 
-        
-        print(target.shape)
+
         for a in target:
             true_actions.append(int(a))
     
