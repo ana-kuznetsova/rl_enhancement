@@ -550,8 +550,8 @@ def eval_actions(model_path, x_path, a_path):
         for a in target:
             true_actions.append(int(a))
     
-    np.save("true_actions.npy", np.asarray(true_actions))
-    np.save("pred_actions.npy", np.asarray(pred_actions))
+    np.save(model_path+"true_actions.npy", np.asarray(true_actions))
+    np.save(model_path+"pred_actions.npy", np.asarray(pred_actions))
 
 
 def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
