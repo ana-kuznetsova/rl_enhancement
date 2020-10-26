@@ -511,7 +511,7 @@ def MMSE_train(chunk_size, x_path, a_path, model_path,
 
 
 def eval_actions(model_path, x_path, a_path):
-    device = torch.device('cuda:0') #change to 2 if on Ada
+    device = torch.device('cuda:2') #change to 2 if on Ada
     torch.cuda.set_device(2) #change to 2 if on Ada
 
     q_func_pretrained = DNN_RL()
