@@ -406,9 +406,6 @@ def MMSE_train(chunk_size, x_path, a_path, model_path,
     val_losses = []
     prev_val = 99999
 
-    device = torch.device('cuda:0')
-    torch.cuda.set_device(0)
-
     layers = RL_L2()
     layers.load_state_dict(torch.load(model_path+'rl_dnn_l2_best.pth'))
 
@@ -511,8 +508,9 @@ def MMSE_train(chunk_size, x_path, a_path, model_path,
 
 
 def eval_actions(model_path, x_path, a_path):
-    device = torch.device('cuda:2') #change to 2 if on Ada
-    torch.cuda.set_device(2) #change to 2 if on Ada
+    torch.cuda.empty_cache() 
+    device = torch.device('cuda:0') #change to 2 if on Ada
+    torch.cuda.set_device(0) #change to 2 if on Ada
 
     q_func_pretrained = DNN_RL()
     q_func_pretrained.load_state_dict(torch.load(model_path+'rl_dnn_best.pth'))
