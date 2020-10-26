@@ -540,8 +540,8 @@ def eval_actions(model_path, x_path, a_path):
         pred_qfunc = output.detach().cpu().numpy()
 
     
-        for i in range(pred_qfunc.shape[1]):
-            print("q func:", pred_qfunc.shape)
+        for i in range(pred_qfunc.shape[0]):
+            print('vec:', pred_qfunc[i].shape)
             pred_actions.append(int(np.argmax(pred_qfunc[i]))) 
         #print("pred", len(pred_actions))
 
