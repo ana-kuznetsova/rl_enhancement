@@ -536,21 +536,18 @@ def eval_actions(model_path, x_path, a_path):
     true_actions = []
 
     for x, target in val_loader:
-        actions = target
         x = x.to(device)
         x.requires_grad=True
         x = x.reshape(x.shape[1], x.shape[2])
-        target = target.to(device).long()
-        target = torch.flatten(target)
         output = q_func_pretrained(x)
 
         pred_qfunc = output.detach().cpu().numpy()
         for i in range(pred_qfunc.shape[1]):
             pred_actions.append(int(np.argmax(pred_qfunc[i]))) 
         
-        print("Actions", actions.flatten())
-        for a in actions:
-            print('A', a.shape)
+        print("Actions", target.flatten().shape())
+        for a in target:
+            print('A', target.shape)
             true_actions.append(int(a))
     
     np.save(model_path+"true_actions.npy", np.asarray(true_actions))
