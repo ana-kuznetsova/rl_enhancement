@@ -111,7 +111,7 @@ def weights(m):
 
 
 def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
-             , win_len=512, hop_size=256, fs=16000, resume=False):
+             , win_len=512, hop_size=256, fs=16000, resume='False'):
     
     losses_l1 = []
     losses_l2 = []
@@ -119,7 +119,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
     prev_val = 9999
 
     ############# PRETRAIN FIRST LAYER ################
-    if resume==False:
+    if resume=='False':
     
         l1 = Layer1()
         l1.apply(weights)
