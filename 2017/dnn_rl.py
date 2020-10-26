@@ -546,9 +546,9 @@ def eval_actions(model_path, x_path, a_path):
         #print("pred", len(pred_actions))
 
         for a in target:
-            print("true a:", int(a))
+            #print("true a:", int(a))
             true_actions.append(int(a))
-        print("true shape:", len(true_actions))
+        #print("true shape:", len(true_actions))
     
     np.save(model_path+"true_actions.npy", np.asarray(true_actions))
     np.save(model_path+"pred_actions.npy", np.asarray(pred_actions))
