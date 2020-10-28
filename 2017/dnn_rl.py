@@ -331,8 +331,6 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path,
 
         ##Validation
         print('Starting validation...')
-        pred_actions = []
-        
         start = 12474
         end = 13860
         X_val, A_val, batch_indices = make_windows(x_path, a_path,
@@ -397,11 +395,11 @@ def MMSE_train(chunk_size, x_path, a_path, model_path,
         print('Epoch {}/{}'.format(epoch, num_epochs))
         epoch_loss = 0.0
         ##Training 
-        num_chunk = (3234//chunk_size) + 1
+        num_chunk = (12474//chunk_size) + 1
         for chunk in range(num_chunk):
             chunk_loss = 0
             start = chunk*chunk_size
-            end = min(start+chunk_size, 3234)
+            end = min(start+chunk_size, 12474)
             print(start, end)
             #returns both training examples and true labels 
             X_chunk, A_chunk, batch_indices = make_windows(x_path, a_path,
@@ -438,10 +436,9 @@ def MMSE_train(chunk_size, x_path, a_path, model_path,
     
         ##Validation
         print('Starting validation...')
-        pred_actions = []
         
-        start = 3234
-        end = 4620
+        start = 12474
+        end = 13860
         
         X_val, A_val, batch_indices = make_windows(x_path, a_path,
                                             [start, end], P, 
@@ -462,10 +459,6 @@ def MMSE_train(chunk_size, x_path, a_path, model_path,
             valLoss = criterion(output, target)     
             overall_val_loss+=valLoss.detach().cpu().numpy()
                 
-            ##take argmax and save predicted actions
-            pred_qfunc = output.detach().cpu().numpy()
-            for i in range(pred_qfunc.shape[1]):
-                pred_actions.append(int(np.argmax(pred_qfunc[i]))) 
         
         curr_val_loss = overall_val_loss/len(val_loader)
         val_losses.append(curr_val_loss)
@@ -475,12 +468,8 @@ def MMSE_train(chunk_size, x_path, a_path, model_path,
         if curr_val_loss < prev_val:
             torch.save(best_q, model_path+'rl_dnn_best.pth')
             prev_val = curr_val_loss
-
-            np.save(model_path+"true_actions.npy", A_val)
-            np.save(model_path+"pred_actions.npy", np.asarray(pred_actions))
         
         ##Save last model
-        pred_actions = []
         torch.save(best_q, model_path+'rl_dnn_last.pth')
 
 
