@@ -350,11 +350,11 @@ def train_dnn(chunk_size,
         print('Epoch {}/{}'.format(epoch, num_epochs))
         epoch_loss = 0
         
-        num_chunk = (3234//chunk_size) + 1
+        num_chunk = (12474//chunk_size) + 1
         for chunk in range(num_chunk):
             chunk_loss = 0
             start = chunk*chunk_size
-            end = min(start+chunk_size, 3234)
+            end = min(start+chunk_size, 12474)
             print(start, end)
 
             X_chunk, y_chunk, batch_indices = make_windows(x_path, y_path,
@@ -392,8 +392,8 @@ def train_dnn(chunk_size,
        
         print('Starting validation...')
         prev_val = 9999
-        start = 3234
-        end = 4620
+        start = 12474
+        end = 13860
         X_val, A_val, batch_indices = make_windows(x_path, y_path,
                                             [start, end], P=5, 
                                             win_len=512, 
