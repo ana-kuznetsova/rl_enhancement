@@ -20,19 +20,20 @@ from models import pretrain
 
 
 
-MMSE_pretrain(chunk_size=1000, x_path='/nobackup/anakuzne/data/snr036_mel_train/',
-             a_path='/nobackup/anakuzne/data/action_labels/',
-             model_path='/nobackup/anakuzne/data/qfunc_pretrain_036/', resume=True)
+MMSE_train(chunk_size=1000, x_path='/nobackup/anakuzne/data/snr036_mel_train/', 
+           a_path='/nobackup/anakuzne/data/action_labels/',
+           model_path='/nobackup/anakuzne/data/qfunc_pretrain_036/')
+
 
 '''
 eval_actions(model_path='/nobackup/anakuzne/data/qfunc_pretrain/',
              x_path="/nobackup/anakuzne/data/snr0_train_melspecs/",
              a_path='/nobackup/anakuzne/data/action_labels/')
 
+MMSE_pretrain(chunk_size=1000, x_path='/nobackup/anakuzne/data/snr036_mel_train/',
+             a_path='/nobackup/anakuzne/data/action_labels/',
+             model_path='/nobackup/anakuzne/data/qfunc_pretrain_036/', resume=True)
 
-MMSE_train(chunk_size=1000, x_path='/nobackup/anakuzne/data/snr0_train_melspecs/', 
-           a_path='/nobackup/anakuzne/data/action_labels/',
-           model_path='/nobackup/anakuzne/data/qfunc_pretrain/')
 
 pretrain(chunk_size=500, x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/',
         y_path='/N/slate/anakuzne/se_data/snr0_train_clean/', 
