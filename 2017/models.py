@@ -322,7 +322,7 @@ def train_dnn(chunk_size,
     num_epochs = 50
     
     if from_pretrained=='True':
-        "Loading pretrained weights..."
+        print("Loading pretrained weights...")
         l1 = Layer1()
         l1.load_state_dict(torch.load(pretrain_path+'dnn_map_l1_best.pth'))
         l1_2 = Layer_1_2(l1)
