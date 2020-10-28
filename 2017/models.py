@@ -316,12 +316,12 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
 
 
 def train_dnn(chunk_size,
-              model_path, x_path, y_path,  pretrain_path, from_pretrained=False,
+              model_path, x_path, y_path,  pretrain_path, from_pretrained='False',
               maxlen=1339, win_len=512, hop_size=256, fs=16000):
     
     num_epochs = 50
     
-    if from_pretrained:
+    if from_pretrained=='True':
         "Loading pretrained weights..."
         l1 = Layer1()
         l1.load_state_dict(torch.load(pretrain_path+'dnn_map_l1_best.pth'))
