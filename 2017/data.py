@@ -41,9 +41,10 @@ def create_noisy_data(x_path, out_path, noise_path,
                                                             n_fft=512,
                                                             hop_length=256,
                                                             n_mels=64)
-                #stft = STFT(blend, win_len, hop_size)
-
+                stft = STFT(blend, win_len, hop_size)
+                img = np.imag(stft)
                 fname = f.split('.')[0]+"_"+str(s)+'.npy'
+                np.save('/N/slate/anakuzne/se_data/mel_test_img'+fname, img)
                 np.save(out_path+fname, mel_spec)
 
 
