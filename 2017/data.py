@@ -196,18 +196,33 @@ def get_X_batch(stft, P):
 
 def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, nn_type='qfunc'):
     chunk_x = os.listdir(x_path)[ind[0]:ind[1]]
+    noise_path = '/N/project/aspire_research_cs/Data/Corpora/Noise/cafe_16k.wav'
     batch_indices = []
     X = 0
     A = 0
     for i, path in enumerate(tqdm(chunk_x)):
-        arr = np.load(x_path+path)
+        '''
+        First generate windows then apply mel spec transformation
+        '''
+        #arr = np.load(x_path+path)
+        speech = read(x_path+path)
+        noise = read(noise_path, 16000)
+        noise = pad_noise(speech, noise)
+        blend = generate_noisy(speech, noise, 0)
+
         if nn_type=='qfunc':
             #true_a = np.load(a_path+path).reshape(-1,1)
             true_a = np.load(a_path+path.split('_')[0]+'.npy').reshape(-1,1)
         elif nn_type=='map':
             #true_a = np.log(np.load(a_path+path)).T
-            true_a = np.log(np.load(a_path+path.split('_')[0]+'.npy')).T
+            #true_a = np.log(np.load(a_path+path.split('_')[0]+'.npy')).T
+            stft = librosa.stft(blend, win_length=512, hop_length=256, window='hann')
+            arr = librosa.feature.melspectrogram(S=stft, hop_length=256, win_length=512, n_fft=64)
+            true_a = librosa.stft(speech, win_length=512, hop_length=256, window='hann')
+            print("Noisy:", arr.shape, "Clean:", true_a.shape)
         arr = get_X_batch(arr, P)
+
+        print("Window batch:", arr.shape)
 
         if i==0:
             batch_indices.append(i)
