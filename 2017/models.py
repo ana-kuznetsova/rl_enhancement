@@ -162,6 +162,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
                     target = target.to(device).float()
                     target = target.reshape(target.shape[1], target.shape[2])
                     output = l1(x)
+                    print("out shape:", output.shape)
 
                     newLoss = criterion(output, target)              
                     chunk_loss += newLoss.data
