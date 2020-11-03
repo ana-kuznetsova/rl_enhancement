@@ -18,21 +18,22 @@ from dnn_rl import eval_actions
 from data import create_noisy_data
 from models import pretrain
 
+MMSE_pretrain(chunk_size=1000, x_path='/nobackup/anakuzne/data/TIMIT/corpus/',
+             a_path='/nobackup/anakuzne/data/action_labels/',
+             model_path='/nobackup/anakuzne/data/window_test/')
 
-
+'''
 MMSE_train(chunk_size=1000, x_path='/nobackup/anakuzne/data/snr036_mel_train/', 
            a_path='/nobackup/anakuzne/data/action_labels/',
            model_path='/nobackup/anakuzne/data/qfunc_pretrain_036/', resume='True')
 
 
-'''
+
 eval_actions(model_path='/nobackup/anakuzne/data/qfunc_pretrain/',
              x_path="/nobackup/anakuzne/data/snr0_train_melspecs/",
              a_path='/nobackup/anakuzne/data/action_labels/')
 
-MMSE_pretrain(chunk_size=1000, x_path='/nobackup/anakuzne/data/snr036_mel_train/',
-             a_path='/nobackup/anakuzne/data/action_labels/',
-             model_path='/nobackup/anakuzne/data/qfunc_pretrain_036/', resume=True)
+
 
 
 pretrain(chunk_size=500, x_path='/N/slate/anakuzne/se_data/snr0_train_melspecs/',
