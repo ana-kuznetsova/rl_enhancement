@@ -230,7 +230,8 @@ def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, nn_type='qfunc')
         First generate windows then apply mel spec transformation
         '''
         #arr = np.load(x_path+path)
-        speech = read(x_path+path)
+        if ".wav" in path:
+            speech = read(x_path+path)
         noise = read(noise_path, 16000)
         noise = pad_noise(speech, noise)
         blend = generate_noisy(speech, noise, 0)
