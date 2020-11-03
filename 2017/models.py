@@ -159,7 +159,6 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
                 for x, target in loader:
                     x = x.to(device)
                     x = x.reshape(x.shape[1], x.shape[2])
-                    print("input:", x.shape)
                     target = target.to(device).float()
                     target = target.reshape(target.shape[1], target.shape[2])
                     output = l1(x)
