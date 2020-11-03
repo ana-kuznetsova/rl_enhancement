@@ -153,6 +153,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
                                             [start, end], P=5, 
                                             win_len=512, 
                                             hop_size=256, fs=16000, nn_type='map')
+                print(X_chunk.shape[0])
 
                 #dataset = QDataSet(X_chunk, y_chunk, batch_indices)
                 #loader = data.DataLoader(dataset, batch_size=1)
@@ -172,7 +173,8 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
                     newLoss.backward()
                     optimizer.step()
 
-                chunk_loss = (chunk_loss.detach().cpu().numpy())/len(loader)
+                #chunk_loss = (chunk_loss.detach().cpu().numpy())/len(loader)
+                chunk_loss = (chunk_loss.detach().cpu().numpy())/X_chunk.shape[0]
                 
                 epoch_loss+=chunk_loss
 
