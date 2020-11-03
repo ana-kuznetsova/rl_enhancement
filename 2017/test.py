@@ -22,7 +22,7 @@ from models import pretrain
 
 MMSE_train(chunk_size=1000, x_path='/nobackup/anakuzne/data/snr036_mel_train/', 
            a_path='/nobackup/anakuzne/data/action_labels/',
-           model_path='/nobackup/anakuzne/data/qfunc_pretrain_036/')
+           model_path='/nobackup/anakuzne/data/qfunc_pretrain_036/', resume='True')
 
 
 '''

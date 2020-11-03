@@ -39,7 +39,8 @@ def main(args):
         FS = 16000
         noise_path = '/N/project/aspire_research_cs/Data/Corpora/Noise/cafe_16k.wav'
         
-        mel_spec(args.x_path, args.y_path)
+        create_noisy_data('/N/project/aspire_research_cs/Data/Corpora/Speech/TIMIT/test_corpus/corpus/',
+                          '/N/slate/anakuzne/se_data/snr0_test_melspecs', noise_path)
 
         #calc_mel_wiener(args.x_path, args.y_path)
 
