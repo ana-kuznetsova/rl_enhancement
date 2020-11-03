@@ -197,7 +197,7 @@ def get_X_batch(stft, P):
 
 def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, nn_type='qfunc'):
     chunk_x = os.listdir(x_path)[ind[0]:ind[1]]
-    noise_path = '/N/project/aspire_research_cs/Data/Corpora/Noise/cafe_16k.wav'
+    noise_path = '/nobackup/anakuzne/data/cafe_16k.wav'
     batch_indices = []
     X = 0
     A = 0
