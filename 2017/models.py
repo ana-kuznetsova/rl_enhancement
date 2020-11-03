@@ -156,10 +156,11 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
             
                 #dataset = QDataSet(X_chunk, y_chunk, batch_indices)
                 #loader = data.DataLoader(dataset, batch_size=1)
+                
+                X_chunk = torch.tensor(X_chunk).double()
+                y_chunk = torch.tensor(y_chunk).double()
 
                 for x, target in zip(X_chunk, y_chunk):
-                    x = torch.tensor(x).double()
-                    target = torch.tensor(target).double()
                     x = x.to(device)
                     #x = x.reshape(x.shape[1], x.shape[2])
                     target = target.to(device)
