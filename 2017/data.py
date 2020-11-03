@@ -246,7 +246,7 @@ def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, nn_type='qfunc')
             true_a = librosa.stft(speech, win_length=512, hop_length=256, window='hann').T
     
         arr = window(arr, P).T
-        print("Window batch:", arr.shape, "Clean:", true_a.shape)
+        #print("Window batch:", arr.shape, "Clean:", true_a.shape)
 
         if i==0:
             batch_indices.append(i)
@@ -260,6 +260,7 @@ def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, nn_type='qfunc')
         else:
             X = np.vstack((X, arr))
             A = np.vstack((A, true_a))
+        print(X.shape, A.shape, batch_indices[:10])
     return X, A, batch_indices
 
 def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, feat_type, fs, names=False):
