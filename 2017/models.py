@@ -142,11 +142,11 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
 
             epoch_loss = 0.0
 
-            num_chunk = (12474//chunk_size) + 1
+            num_chunk = (3697//chunk_size) + 1
             for chunk in range(num_chunk):
                 chunk_loss = 0
                 start = chunk*chunk_size
-                end = min(start+chunk_size, 12474)
+                end = min(start+chunk_size, 3697)
                 print(start, end)
 
                 X_chunk, y_chunk, batch_indices = make_windows(x_path, y_path,
@@ -190,15 +190,16 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
         
             print('Starting validation...')
             # Y is a clean speech spectrogram
-            start = 12474
-            end = 13860
+            start = 3697
+            end = 4622
             X_val, A_val, batch_indices = make_windows(x_path, y_path,
                                             [start, end], P=5, 
                                             win_len=512, 
                                             hop_size=256, fs=16000, nn_type='map')
 
            
-            dataset = QDataSet(X_val, A_val, batch_indices)
+            #dataset = QDataSet(X_val, A_val, batch_indices)
+            dataset = trainDataLoader(X_val, A_val)
             val_loader = data.DataLoader(dataset, batch_size=1)
             overall_val_loss=0
 
