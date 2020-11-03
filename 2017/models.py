@@ -153,10 +153,11 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
                                             win_len=512, 
                                             hop_size=256, fs=16000, nn_type='map')
 
-                dataset = QDataSet(X_chunk, y_chunk, batch_indices)
-                loader = data.DataLoader(dataset, batch_size=1)
+                #dataset = QDataSet(X_chunk, y_chunk, batch_indices)
+                #loader = data.DataLoader(dataset, batch_size=1)
 
-                for x, target in loader:
+                for x, target in zip(X_chunk, y_chunk):
+                    print(x.shape, target.shape)
                     x = x.to(device)
                     x = x.reshape(x.shape[1], x.shape[2])
                     target = target.to(device).float()
