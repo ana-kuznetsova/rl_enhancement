@@ -260,7 +260,6 @@ def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, nn_type='qfunc')
         else:
             X = np.vstack((X, arr))
             A = np.vstack((A, true_a))
-        print(X.shape, A.shape, batch_indices[:10])
     return X, A, batch_indices
 
 def make_batch(x_path, y_path, ind, P, maxlen, win_len, hop_size, feat_type, fs, names=False):
