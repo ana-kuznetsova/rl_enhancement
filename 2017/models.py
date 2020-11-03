@@ -69,10 +69,10 @@ class Layer_1_2(nn.Module):
         if l1:
             self.fc1 = l1.fc1
         else:
-            self.fc1 = nn.Linear(704, 128)
+            self.fc1 = nn.Linear(1408, 128)
         self.drop = nn.Dropout(0.3)
         self.fc2 = nn.Linear(128, 128)
-        self.out = nn.Linear(128, 257)
+        self.out = nn.Linear(128, 1025)
 
     def forward(self, x):
         x = torch.sigmoid(self.fc1(x))
@@ -88,11 +88,11 @@ class DNN_mel(nn.Module):
             self.fc1 = l1_2.fc1
             self.fc2 = l1_2.fc2
         else:
-            self.fc1 = nn.Linear(704, 128)
+            self.fc1 = nn.Linear(1408, 128)
             self.fc2 = nn.Linear(128, 128)
         self.fc3 = nn.Linear(128, 128)
         self.drop = nn.Dropout(0.3)
-        self.out = nn.Linear(128, 257)
+        self.out = nn.Linear(128, 1025)
         
     def forward(self, x):
         x = torch.sigmoid(self.fc1(x))
@@ -162,7 +162,6 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
                     target = target.to(device).float()
                     target = target.reshape(target.shape[1], target.shape[2])
                     output = l1(x)
-                    print("out shape:", output.shape)
 
                     newLoss = criterion(output, target)              
                     chunk_loss += newLoss.data
