@@ -122,7 +122,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
     if resume=='False':
     
         l1 = Layer1()
-        l1 = l1.double()
+        #l1 = l1.double()
         l1.apply(weights)
         criterion = nn.MSELoss()
         optimizer = optim.SGD(l1.parameters(), lr=0.01, momentum=0.9)
