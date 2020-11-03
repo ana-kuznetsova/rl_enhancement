@@ -181,7 +181,9 @@ def calc_masks(speech_path, noise_path, fs, win_len, hop_size,
 def get_X_batch(stft, P):
     windows = []
     for col in range(-P, stft.shape[1]-P):
+        print("STFT shape:", stft.shape)
         win = np.zeros((stft.shape[0], (2*P)+1))
+        print(win.shape)
         if col < 0:
             win[:,-col:] = stft[:,:P+1+(P+col)]    
         
@@ -218,8 +220,8 @@ def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, nn_type='qfunc')
             #true_a = np.log(np.load(a_path+path)).T
             #true_a = np.log(np.load(a_path+path.split('_')[0]+'.npy')).T
             stft = librosa.stft(blend, win_length=512, hop_length=256, window='hann')
-            arr = librosa.feature.melspectrogram(S=stft, hop_length=256, win_length=512, n_fft=64).T
-            true_a = librosa.stft(speech, win_length=512, hop_length=256, window='hann').T
+            arr = librosa.feature.melspectrogram(S=stft, hop_length=256, win_length=512, n_fft=64)
+            true_a = librosa.stft(speech, win_length=512, hop_length=256, window='hann')
             print("Noisy:", arr.shape, "Clean:", true_a.shape)
         arr = get_X_batch(arr, P)
 
