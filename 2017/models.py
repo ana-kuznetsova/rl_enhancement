@@ -157,8 +157,8 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
                 #loader = data.DataLoader(dataset, batch_size=1)
 
                 for x, target in zip(X_chunk, y_chunk):
-                    x = torch.tensor(x)
-                    target = torch.tensor(target)
+                    x = torch.tensor(x).double()
+                    target = torch.tensor(target).double()
                     x = x.to(device)
                     #x = x.reshape(x.shape[1], x.shape[2])
                     target = target.to(device)
