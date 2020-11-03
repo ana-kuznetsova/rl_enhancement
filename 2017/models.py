@@ -54,9 +54,9 @@ class Layer1(nn.Module):
     '''
     def __init__(self):
         super().__init__()
-        self.fc1 = nn.Linear(704, 128)
+        self.fc1 = nn.Linear(1408, 128)
         self.drop = nn.Dropout(0.3)
-        self.out = nn.Linear(128, 257)
+        self.out = nn.Linear(128, 1025)
 
     def forward(self, x):
         x = torch.sigmoid(self.fc1(x))
