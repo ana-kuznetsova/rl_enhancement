@@ -200,7 +200,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
            
             #dataset = QDataSet(X_val, A_val, batch_indices)
             dataset = trainDataLoader(X_val, A_val)
-            val_loader = data.DataLoader(dataset, batch_size=32)
+            val_loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
             overall_val_loss=0
 
             for x, target in val_loader:
