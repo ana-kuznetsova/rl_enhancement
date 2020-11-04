@@ -247,7 +247,7 @@ def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, nn_type='qfunc')
             true_a = np.log(librosa.stft(speech, win_length=512, hop_length=256, window='hann').T)
     
         arr = window(arr, P).T
-        #print("Window batch:", arr.shape, "Clean:", true_a.shape)
+        print("Window batch:", arr.shape, "Clean:", true_a.shape)
 
         if i==0:
             batch_indices.append(i)
