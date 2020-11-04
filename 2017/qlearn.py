@@ -139,8 +139,8 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         print('Reward sum:', np.sum(r))
         
         R_ = R(z_rl, z_map)
-        #print('R_cal:', R_)
-
+        print('R_cal:', R_)
+'''
         #### UPDATE Q-FUNCS ####
 
         for i, a_t in enumerate(selected_actions_target):
@@ -167,3 +167,4 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         opt_RMSprop.zero_grad()
         curr_loss.backward()
         opt_RMSprop.step()
+'''
