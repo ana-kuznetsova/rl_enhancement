@@ -236,6 +236,9 @@ def make_windows(x_path, a_path, ind, P, win_len, hop_size, fs, nn_type='qfunc')
         noise = pad_noise(speech, noise)
         blend = generate_noisy(speech, noise, 0)
 
+        stft = librosa.stft(blend, win_length=512, hop_length=256, window='hann')
+        arr = librosa.feature.melspectrogram(S=stft, hop_length=256, win_length=512, n_mels=64)
+
         if nn_type=='qfunc':
             #true_a = np.load(a_path+path).reshape(-1,1)
             true_a = np.load(a_path+path.split('_')[0]+'.npy').reshape(-1,1)
