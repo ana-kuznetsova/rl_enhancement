@@ -28,9 +28,9 @@ pretrain(chunk_size=500, x_path='/nobackup/anakuzne/data/TIMIT/corpus/',
 MMSE_train(chunk_size=1000, x_path='/nobackup/anakuzne/data/snr036_mel_train/', 
            a_path='/nobackup/anakuzne/data/action_labels/',
            model_path='/nobackup/anakuzne/data/qfunc_pretrain_036/', resume='True')
-MMSE_pretrain(chunk_size=1000, x_path='/nobackup/anakuzne/data/TIMIT/corpus/',
+MMSE_pretrain(chunk_size=5000, x_path='/nobackup/anakuzne/data/TIMIT/corpus/',
              a_path='/nobackup/anakuzne/data/action_labels/',
-             model_path='/nobackup/anakuzne/data/window_test/')
+             model_path='/nobackup/anakuzne/data/window_test_q/')
 
 
 eval_actions(model_path='/nobackup/anakuzne/data/qfunc_pretrain/',
