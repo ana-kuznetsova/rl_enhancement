@@ -100,7 +100,7 @@ def main(args):
                    args.clean_path,
                    args.imag)
     elif args.mode=='mse_pretrain':
-           MMSE_pretrain(chunk_size=1000, x_path='/nobackup/anakuzne/data/TIMIT/corpus/',
+           MMSE_pretrain(chunk_size=500, x_path='/nobackup/anakuzne/data/TIMIT/corpus/',
             a_path='/nobackup/anakuzne/data/action_labels/',
             model_path='/nobackup/anakuzne/data/window_test_q/')
 
