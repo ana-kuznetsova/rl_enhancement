@@ -82,7 +82,8 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
     ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
         Q_pred_mmse = q_func_mmse(x).detach().cpu().numpy() #for pretrained Qfunc
-        print("Qpred:", Q_pred_mmse.size)
+        print("Qpred:", Q_pred_mmse.shape)
+        
         wiener_rl = np.zeros((1339, 257))
 
         #Save selected actions
