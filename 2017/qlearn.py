@@ -61,16 +61,9 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
     q_func_mmse.cuda()
     q_func_mmse.to(device)
     
-    #Initialize DNN_RL with pretrained weights
-    
-    dnn_rl = DNN_RL()
-    dnn_rl.load_state_dict(torch.load(model_path+'qfunc_pretrained.pth'))
-    dnn_rl.cuda()
-    dnn_rl = dnn_rl.to(device)
-
     ##Loss
     criterion = nn.MSELoss()
-    opt_RMSprop = optim.RMSprop(dnn_rl.parameters(), lr = 0.001, alpha = 0.9)
+    opt_RMSprop = optim.RMSprop(q_func_mmse.parameters(), lr = 0.001, alpha = 0.9)
     #optimizer = optim.SGD(l1.parameters(), lr=0.01, momentum=0.9)
     criterion.cuda()
 
@@ -91,12 +84,10 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         x_source = np.load(x_path+x_name)
         x = np.abs(get_X_batch(x_source, P)).T
         x = torch.tensor(x).cuda().float()
-        print("source:", x.shape)
 
     ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
-
-        Q_pred_rl = dnn_rl(x).detach().cpu().numpy() #for target Qfunc. Shape (1339, 32)
         Q_pred_mmse = q_func_mmse(x).detach().cpu().numpy() #for pretrained Qfunc
+        print("Qpred:", Q_pred_mmse.size)
         wiener_rl = np.zeros((1339, 257))
 
         #Save selected actions
