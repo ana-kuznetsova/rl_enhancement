@@ -107,6 +107,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         ##### Calculate reward ######
 
         x_source_wav = read(clean_path+x_name)
+        print("wav source", x_source_wav.shape)
         y_map_wav = invert(y_pred_dnn)
         y_rl_wav = InverseMelScale(y_pred_rl)
         
