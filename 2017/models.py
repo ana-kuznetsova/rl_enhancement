@@ -56,7 +56,7 @@ class Layer1(nn.Module):
         super().__init__()
         self.fc1 = nn.Linear(704, 128)
         self.drop = nn.Dropout(0.3)
-        self.out = nn.Linear(128, 1025)
+        self.out = nn.Linear(128, 257)
 
     def forward(self, x):
         x = torch.sigmoid(self.fc1(x))
@@ -72,7 +72,7 @@ class Layer_1_2(nn.Module):
             self.fc1 = nn.Linear(704, 128)
         self.drop = nn.Dropout(0.3)
         self.fc2 = nn.Linear(128, 128)
-        self.out = nn.Linear(128, 1025)
+        self.out = nn.Linear(128, 257)
 
     def forward(self, x):
         x = torch.sigmoid(self.fc1(x))
@@ -88,11 +88,11 @@ class DNN_mel(nn.Module):
             self.fc1 = l1_2.fc1
             self.fc2 = l1_2.fc2
         else:
-            self.fc1 = nn.Linear(1408, 128)
+            self.fc1 = nn.Linear(704, 128)
             self.fc2 = nn.Linear(128, 128)
         self.fc3 = nn.Linear(128, 128)
         self.drop = nn.Dropout(0.3)
-        self.out = nn.Linear(128, 1025)
+        self.out = nn.Linear(128, 257)
         
     def forward(self, x):
         x = torch.sigmoid(self.fc1(x))
