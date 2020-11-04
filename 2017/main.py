@@ -96,7 +96,7 @@ def main(args):
         q_learning(num_episodes=10,
                    x_path='/nobackup/anakuzne/data/snr036_mel_train/',
                    cluster_path='/nobackup/anakuzne/data/kmeans_centers.npy',
-                   model_path= '/nobackup/anakuzne/data/qfunc_pretrain/',
+                   model_path= '/nobackup/anakuzne/data/qlearning/',
                    clean_path='/nobackup/anakuzne/data/snr0_train_clean/')
     elif args.mode=='mse_pretrain':
            MMSE_pretrain(chunk_size=500, x_path='/nobackup/anakuzne/data/TIMIT/corpus/',
