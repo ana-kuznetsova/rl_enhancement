@@ -103,7 +103,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         wiener_rl = wiener_rl.T
         y_pred_rl = torch.tensor(np.multiply(x_source, wiener_rl)).float()
         print("RL", y_pred_rl.shape)
-        y_pred_dnn = dnn_map(x)
+        y_pred_dnn = dnn_map(x).T
 
         print("DNN", y_pred_dnn.shape)
 
