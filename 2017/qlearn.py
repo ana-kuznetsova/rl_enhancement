@@ -111,7 +111,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         print("dnn", y_pred_dnn.shape)
         #y_map_wav = torch.istft(y_pred_dnn, n_fft=512, hop_length=256)
         #print("DNN-pred:", y_map_wav.shape)
-        y_rl_wav = InverseMelScale(mel_spec=y_pred_rl, n_stft=512, hop_length=356, n_mels=64)
+        y_rl_wav = InverseMelScale(n_stft=512, hop_length=356, n_mels=64)(my_pred_rl)
         print("RL out:", y_rl_wav.shape)
         
         z_rl = calc_Z(x_source_wav, y_rl_wav)
