@@ -193,11 +193,11 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path,
             epoch_loss = 0.0
 
             ##Training 
-            num_chunk = (12474//chunk_size) + 1
+            num_chunk = (3697//chunk_size) + 1
             for chunk in range(num_chunk):
                 chunk_loss = 0
                 start = chunk*chunk_size
-                end = min(start+chunk_size, 12474)
+                end = min(start+chunk_size, 3697)
                 print(start, end)
                 #returns both training examples and true labels 
                 X_chunk, A_chunk, batch_indices = make_windows(x_path, a_path,
@@ -205,7 +205,8 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path,
                                             win_len, 
                                             hop_size, fs)
                 
-                dataset = QDataSet(X_chunk, A_chunk, batch_indices)
+                #dataset = QDataSet(X_chunk, A_chunk, batch_indices)
+                dataset = trainDataLoader(X_chunk, y_chunk)
                 loader = data.DataLoader(dataset, batch_size=1)
 
                 for x, target in loader:
@@ -235,8 +236,8 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path,
             ##Validation
             print('Starting validation...') 
             # Y is a clean speech spectrogram
-            start = 12474
-            end = 13860
+            start = 3697
+            end = 4622
             X_val, A_val, batch_indices = make_windows(x_path, a_path,
                                             [start, end], P, 
                                             win_len, 
