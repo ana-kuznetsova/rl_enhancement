@@ -21,7 +21,7 @@ from models import pretrain
 
 pretrain(chunk_size=500, x_path='/nobackup/anakuzne/data/TIMIT/corpus/',
         y_path='/N/slate/anakuzne/se_data/snr0_train_clean/', 
-        model_path='/N/slate/anakuzne/se_data/window_test/')
+        model_path='/nobackup/anakuzne/data/window_test/')
 
 
 '''
