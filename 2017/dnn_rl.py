@@ -520,7 +520,7 @@ def eval_actions(model_path, x_path, a_path):
     np.save(model_path+"true_actions.npy", np.asarray(true_actions))
     np.save(model_path+"pred_actions.npy", np.asarray(pred_actions))
 
-
+'''
 def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
                imag_path='/nobackup/anakuzne/data/snr0_train_img/',
                epsilon=0.01, maxlen=1339, 
@@ -528,7 +528,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
                hop_size=256,
                fs=16000,
                from_pretrained=False):
-    '''
+
     Params:
         num_episodes: num of updates to the target q function
         x_path: path to the training examples
@@ -536,7 +536,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         a_path: path where ground truth actions are stored
         model_path: path where the models are stored
         clean_path: path to clean reference (stft)
-    '''
+
     ### Initialization ###
 
     P=5 #Window size
@@ -677,3 +677,4 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         opt_RMSprop.zero_grad()
         curr_loss.backward()
         opt_RMSprop.step()
+'''

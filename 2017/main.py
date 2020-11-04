@@ -16,7 +16,7 @@ from data import calc_MMSE_labels
 from data import mel_spec
 from data import calc_mel_wiener
 from metrics import eval_pesq
-from dnn_rl import q_learning
+from qlearn import q_learning
 from dnn_rl import MMSE_pretrain
 
 def main(args):
