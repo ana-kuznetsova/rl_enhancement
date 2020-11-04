@@ -590,7 +590,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
         x_source = np.load(x_path+x_name)
         #x = librosa.feature.melspectrogram(x_source, hop_length=256, win_length=512, n_mels=64)
-        x = np.abs(get_X_batch(x, P)).T
+        x = np.abs(get_X_batch(x_source, P)).T
         #x = pad(x, maxlen).T
         x = torch.tensor(x).cuda().float()
 
