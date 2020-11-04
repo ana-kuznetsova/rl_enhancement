@@ -19,6 +19,9 @@ from metrics import calc_Z
 from dnn_rl import DNN_RL
 from utils import invert
 from utils import read
+from dnn_rl import reward
+from dnn_rl import R
+from dnn_rl import time_weight
 
 
 def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
@@ -124,9 +127,10 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         z_map = calc_Z(x_source_wav, y_pred_dnn)
         print('Z-scores:', z_rl, z_map)
 
-        clean = np.load(clean_path+x_name)
-        E = time_weight(y_pred_rl, pad(clean, maxlen))
+        E = time_weight(y_pred_rl, x_source)
+        print("E", E)
         r = reward(z_rl, z_map, E)
+        print("Reward:", r)
         #If inf in reward, skip iter
         if np.isnan(np.sum(r)):
             continue
