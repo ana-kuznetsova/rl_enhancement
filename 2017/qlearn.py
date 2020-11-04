@@ -77,7 +77,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
         x_source = np.load(x_path+x_name)
         x_source = window(x_source, P).T
-        x = torch.tensor(x_source).float()
+        x = torch.tensor(x_source).float().to(device)
         print(x.size())
 
     ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
