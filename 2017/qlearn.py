@@ -13,14 +13,8 @@ from models import weights
 from models import DNN_mel
 from models import trainDataLoader
 
-from data import mel_spec
-from data import pad
-from data import get_X_batch
-from data import make_batch
-from data import make_windows
-from utils import invert
+from data import window
 from metrics import calc_Z
-from models import QDataSet
 from dnn_rl import DNN_RL
 
 
@@ -82,8 +76,13 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         #phase = pad(np.load(imag_path+x_name), maxlen)
 
         x_source = np.load(x_path+x_name)
-        x = np.abs(get_X_batch(x_source, P)).T
-        x = torch.tensor(x).cuda().float()
+        print('Load shape:', x_source.shape)
+        x_source = window(x_source, P)
+
+        print("win:", x_source.shape)
+
+                
+                #dataset = QDataSet(X_chunk, A_chunk, batch_indices)
 
     ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
         Q_pred_mmse = q_func_mmse(x).detach().cpu().numpy() #for pretrained Qfunc
