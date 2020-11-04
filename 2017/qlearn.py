@@ -78,30 +78,26 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         x_source = np.load(x_path+x_name)
         x_source = window(x_source, P).T
         x = torch.tensor(x_source).float().to(device)
-        print(x.size())
 
     ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
         Q_pred_mmse = q_func_mmse(x).detach().cpu().numpy() #for pretrained Qfunc
         wiener_rl = np.zeros((Q_pred_mmse.shape[0], 257))
         
         Q_pred_argmax = np.argmax(Q_pred_mmse, axis=1)
-        print(Q_pred_argmax.shape)
 
         #Select template index, predict Wiener filter
-        for i, row in enumerate(Q_pred_mmse):
+        for i, action in enumerate(Q_pred_argmax):
         #E-greedy selection for target
             a = np.array([0,1])
             probs = np.array([epsilon, 1-epsilon])
             strategy = np.random.choice(a, p=probs)
             if strategy==0:
-                ind_t = np.random.choice(np.arange(32))
-            else:
-                ind_t = np.argmax(row)
-            ind_m = np.argmax(Q_pred_mmse[i])
-            selected_actions_target.append(ind_t)
-            selected_actions_mmse.append(ind_m)
-            G_k_pred = G[ind_t]
+                action = np.random.choice(np.arange(32))
+            
+            G_k_pred = G[action]
             wiener_rl[i] = G_k_pred
+
+        print(wiener_rl)
 
         wiener_rl = wiener_rl.T
         y_pred_rl = np.multiply(pad(x_source, maxlen), wiener_rl) + phase  
