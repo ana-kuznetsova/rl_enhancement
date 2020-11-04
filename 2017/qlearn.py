@@ -85,6 +85,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         
         Q_pred_argmax = np.argmax(Q_pred_mmse, axis=1)
 
+        print("clusters", G.shape)
         #Select template index, predict Wiener filter
         for i, action in enumerate(Q_pred_argmax):
         #E-greedy selection for target
@@ -97,7 +98,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
             G_k_pred = G[action]
             wiener_rl[i] = G_k_pred
 
-        print("clusters", G.shape)
+        
         print(wiener_rl)
 
         wiener_rl = wiener_rl.T
