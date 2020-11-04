@@ -97,6 +97,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
             G_k_pred = G[action]
             wiener_rl[i] = G_k_pred
 
+        print("clusters", G.shape)
         print(wiener_rl)
 
         wiener_rl = wiener_rl.T
