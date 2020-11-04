@@ -81,7 +81,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
     ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
         Q_pred_mmse = q_func_mmse(x).detach().cpu().numpy() #for pretrained Qfunc
-        wiener_rl = np.zeros((Q_pred_mmse.shape[0], 257))
+        wiener_rl = np.zeros((Q_pred_mmse.shape[0], 64))
         
         Q_pred_argmax = np.argmax(Q_pred_mmse, axis=1)
 
