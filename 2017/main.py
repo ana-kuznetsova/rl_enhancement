@@ -93,12 +93,12 @@ def main(args):
         KMeans(args.chunk_size, args.x_path, args.test_out)
 
     elif args.mode=='qlearn':
-        q_learning(args.num_epochs,
-                   args.x_path,
-                   args.cluster_path,
-                   args.model_path,
-                   args.clean_path,
-                   args.imag)
+        q_learning(num_episodes=10,
+                   x_path='/nobackup/anakuzne/data/snr036_mel_train/',
+                   cluster_path='/nobackup/anakuzne/data/kmeans_centers.npy',
+                   model_path= '/nobackup/anakuzne/data/qfunc_pretrain',
+                   clean_path='/nobackup/anakuzne/data/snr0_train_clean',
+                   imag='')
     elif args.mode=='mse_pretrain':
            MMSE_pretrain(chunk_size=500, x_path='/nobackup/anakuzne/data/TIMIT/corpus/',
             a_path='/nobackup/anakuzne/data/action_labels/',
