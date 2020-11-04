@@ -76,8 +76,8 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         #phase = pad(np.load(imag_path+x_name), maxlen)
 
         x_source = np.load(x_path+x_name)
-        x_source = window(x_source, P).T
-        x = torch.tensor(x_source).float().to(device)
+        x = window(x_source, P).T
+        x = torch.tensor(x).float().to(device)
 
     ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
         Q_pred_mmse = q_func_mmse(x).detach().cpu().numpy() #for pretrained Qfunc
