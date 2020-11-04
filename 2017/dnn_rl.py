@@ -206,7 +206,7 @@ def MMSE_pretrain(chunk_size, x_path, a_path, model_path,
                                             hop_size, fs)
                 
                 #dataset = QDataSet(X_chunk, A_chunk, batch_indices)
-                dataset = trainDataLoader(X_chunk, y_chunk)
+                dataset = trainDataLoader(X_chunk, A_chunk)
                 loader = data.DataLoader(dataset, batch_size=1)
 
                 for x, target in loader:
