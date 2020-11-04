@@ -19,7 +19,7 @@ from data import create_noisy_data
 from models import pretrain
 
 
-pretrain(chunk_size=100, x_path='/nobackup/anakuzne/data/TIMIT/corpus/',
+pretrain(chunk_size=500, x_path='/nobackup/anakuzne/data/TIMIT/corpus/',
         y_path='/N/slate/anakuzne/se_data/snr0_train_clean/', 
         model_path='/nobackup/anakuzne/data/window_test/')
 
