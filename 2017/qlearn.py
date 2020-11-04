@@ -98,13 +98,11 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
             wiener_rl[i] = G_k_pred
 
         wiener_rl = wiener_rl.T
-        print("w", wiener_rl.shape)
         y_pred_rl = np.multiply(x_source, wiener_rl)
-        print("pred:", y_pred_rl.shape)
+        print("RL", y_pred_rl.shape)
+        y_pred_dnn = dnn_map(x)
 
-        map_out = dnn_map(x)
-        wiener_map = map_out.detach().cpu().numpy().T
-        y_pred_map = np.multiply(pad(x_source, maxlen), wiener_map) + phase  
+        print("DNN", y_pred_dnn.shape)
 
     
         ##### Calculate reward ######
