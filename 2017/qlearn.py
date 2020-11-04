@@ -82,16 +82,15 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
     ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
         Q_pred_mmse = q_func_mmse(x).detach().cpu().numpy() #for pretrained Qfunc
-        print("Qpred:", Q_pred_mmse.shape)
-        
-        wiener_rl = np.zeros((1339, 257))
+        wiener_rl = np.zeros((Q_pred_mmse.shape[0], 257))
+        print(Q_pred_mmse.shape, wiener_rl.shape)
 
         #Save selected actions
         selected_actions_target = []
         selected_actions_mmse = []
     
         #Select template index, predict Wiener filter
-        for i, row in enumerate(Q_pred_rl):
+        for i, row in enumerate(Q_pred_mmse):
         #E-greedy selection for target
             a = np.array([0,1])
             probs = np.array([epsilon, 1-epsilon])
