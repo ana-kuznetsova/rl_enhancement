@@ -97,7 +97,7 @@ def main(args):
                    x_path='/nobackup/anakuzne/data/snr036_mel_train/',
                    cluster_path='/nobackup/anakuzne/data/kmeans_centers.npy',
                    model_path= '/nobackup/anakuzne/data/qlearning/',
-                   clean_path='/nobackup/anakuzne/data/snr0_train_clean/')
+                   clean_path='/nobackup/anakuzne/data/TIMIT/corpus/')
     elif args.mode=='mse_pretrain':
            MMSE_pretrain(chunk_size=500, x_path='/nobackup/anakuzne/data/TIMIT/corpus/',
             a_path='/nobackup/anakuzne/data/action_labels/',
