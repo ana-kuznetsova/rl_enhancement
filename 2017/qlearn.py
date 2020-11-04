@@ -8,6 +8,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.utils.data as data
+from torchaudio.transforms import InverseMelScale
 
 from models import weights
 from models import DNN_mel
@@ -16,11 +17,13 @@ from models import trainDataLoader
 from data import window
 from metrics import calc_Z
 from dnn_rl import DNN_RL
+from utils import invert
+from utils import read
 
 
 def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
                imag_path='/nobackup/anakuzne/data/snr0_train_img/',
-               epsilon=0.01, maxlen=1339, 
+               epsilon=0.01, 
                win_len=512,
                hop_size=256,
                fs=16000,
@@ -98,7 +101,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
             wiener_rl[i] = G_k_pred
 
         wiener_rl = wiener_rl.T
-        y_pred_rl = np.multiply(x_source, wiener_rl)
+        y_pred_rl = torch.tensor(np.multiply(x_source, wiener_rl)).float()
         print("RL", y_pred_rl.shape)
         y_pred_dnn = dnn_map(x)
 
@@ -107,9 +110,9 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
     
         ##### Calculate reward ######
 
-        x_source_wav = invert(x_source)
-        y_map_wav = invert(y_pred_map)[:x_source_wav.shape[0]]
-        y_rl_wav = invert(y_pred_rl)[:x_source_wav.shape[0]]
+        x_source_wav = read(clean_path+x_name)
+        y_map_wav = invert(y_pred_dnn)
+        y_rl_wav = InverseMelScale(y_pred_rl)
         
         z_rl = calc_Z(x_source_wav, y_rl_wav)
         z_map = calc_Z(x_source_wav, y_map_wav)
