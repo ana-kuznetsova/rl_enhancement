@@ -120,8 +120,8 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
 
         
-        z_rl = calc_Z(x_source_wav, y_rl_wav)
-        z_map = calc_Z(x_source_wav, y_map_wav)
+        z_rl = calc_Z(x_source_wav, y_pred_rl)
+        z_map = calc_Z(x_source_wav, y_pred_dnn)
         print('Z-scores:', z_rl, z_map)
 
         clean = np.load(clean_path+x_name)
