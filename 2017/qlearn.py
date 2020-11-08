@@ -153,7 +153,9 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
                 if R_cal < 0:
                     Q_func_upd[x_k][a_true] = Q_pred_mmse[x_k][a_true] - r[x_k]
 
-        print("Diff:", Q_func_upd - Q_pred_mmse)
+        diff = Q_func_upd - Q_pred_mmse
+
+        print("Diff:", diff[np.nonzero(diff)])
 
 
 
