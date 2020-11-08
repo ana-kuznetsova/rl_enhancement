@@ -117,18 +117,15 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
     
         ##### Calculate reward ######
 
-        x_source_wav = np.load(clean_path+x_name.split('_')[0]+'.npy')
+        x_source_clean = np.load(clean_path+x_name.split('_')[0]+'.npy')
         x_source_wav = invert(x_source_wav)
-        print("wav source", x_source_wav.shape)
         y_pred_rl = InverseMelScale(n_stft=257, n_mels=64)(y_pred_rl).detach().cpu().numpy()
 
-        y_pred_dnn =  invert(y_pred_dnn)
-        y_pred_rl = invert(y_pred_rl)
-
-        print("pred wavs:", y_pred_dnn.shape, y_pred_rl.shape)
+        y_pred_dnn_wav =  invert(y_pred_dnn)
+        y_pred_rl_wav = invert(y_pred_rl)
         
-        z_rl = calc_Z(x_source_wav, y_pred_rl)
-        z_map = calc_Z(x_source_wav, y_pred_dnn)
+        z_rl = calc_Z(x_source_wav, y_pred_rl_wav)
+        z_map = calc_Z(x_source_wav, y_pred_dnn_wav)
         print('Z-scores:', z_rl, z_map)
 
         E = time_weight(y_pred_rl, x_source_wav)
