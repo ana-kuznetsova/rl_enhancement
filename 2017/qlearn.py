@@ -128,7 +128,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         z_map = calc_Z(x_source_wav, y_pred_dnn_wav)
         print('Z-scores:', z_rl, z_map)
 
-        E = time_weight(y_pred_rl, x_source_wav)
+        E = time_weight(y_pred_rl, x_source_clean)
         print("E", E)
         r = reward(z_rl, z_map, E)
         print("Reward:", r)
