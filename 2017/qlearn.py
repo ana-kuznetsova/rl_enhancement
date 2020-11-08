@@ -129,7 +129,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         print('Z-scores:', z_rl, z_map)
 
         E = time_weight(y_pred_rl, x_source_clean)
-        print("E", E)
+        print("E", E.shape)
         r = reward(z_rl, z_map, E)
         #print("Reward:", r)
         #If inf in reward, skip iter
