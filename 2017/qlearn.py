@@ -61,6 +61,8 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
     q_func_mmse.cuda()
     q_func_mmse.to(device)
     
+    curr_qfunc = copy.deepcopy(q_func_mmse.state_dict())
+
     ##Loss
     criterion = nn.MSELoss()
     opt_RMSprop = optim.RMSprop(q_func_mmse.parameters(), lr = 0.001, alpha = 0.9)
@@ -169,6 +171,10 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
             ## Save rewards
             reward_sums.append(np.sum(r))
             np.save(model_path+'reward_sum.npy', np.array(reward_sums))
+
+            ## Save model
+            torch.save(curr_qfunc, model_path+'qfunc_model.pth')
+
         opt_RMSprop.zero_grad()
         curr_loss.backward()
         opt_RMSprop.step()
