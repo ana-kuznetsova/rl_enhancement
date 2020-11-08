@@ -152,7 +152,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
                     Q_func_upd[x_k][a_pred] = r[a_pred] + np.max(Q_pred_mmse[x_k])
             else:
                 print("R_cal:", R_cal)
-                print("UPD:", Q_pred_mmse[x_k][a_true] - r[x_k])
+                print("Old:", Q_func_upd[x_k][a_true], "UPD:", Q_pred_mmse[x_k][a_true] - r[x_k])
                 if R_cal < 0:
                     Q_func_upd[x_k][a_true] = Q_pred_mmse[x_k][a_true] - r[x_k]
 
