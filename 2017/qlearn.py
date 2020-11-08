@@ -86,7 +86,8 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         x = torch.tensor(x).float().to(device)
 
         ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
-        Q_pred_mmse = q_func_mmse(x).detach().cpu().numpy() #for pretrained Qfunc
+        Q_pred_mmse = q_func_mmse(x).detach().cpu().numpy() 
+        print("Qfunc pred:", Q_pred_mmse.shape)
         wiener_rl = np.zeros((Q_pred_mmse.shape[0], 64))
         selected_actions = []
 
@@ -132,18 +133,19 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
             continue
 
         E = time_weight(y_pred_rl, x_source_clean)
-        print("E", E.shape)
         r = reward(z_rl, z_map, E)
-        print("Reward:", r.shape)
         
         reward_sums.append(np.sum(r))
         np.save(model_path+'reward_sum.npy', np.asarray(reward_sums))
-        #print('Reward sum:', np.sum(r))
-        
-        R_ = R(z_rl, z_map)
-        #print('R_cal:', R_)
 
         #### UPDATE Q-FUNCS ####
+
+
+
+
+
+
+
 '''
         #### UPDATE Q-FUNCS ####
 
