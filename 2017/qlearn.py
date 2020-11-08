@@ -82,7 +82,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         x = window(x_source, P).T
         x = torch.tensor(x).float().to(device)
 
-    ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
+        ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
         Q_pred_mmse = q_func_mmse(x).detach().cpu().numpy() #for pretrained Qfunc
         wiener_rl = np.zeros((Q_pred_mmse.shape[0], 64))
         
