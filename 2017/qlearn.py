@@ -125,13 +125,17 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         z_map = calc_Z(x_source_wav, y_pred_dnn_wav)
         print('Z-scores:', z_rl, z_map)
 
+        ##PEQS module returns errors
+        ##Skip iteration when z-scores are nan
+        if np.isnan(z_rl) or np.isnan(z_map):
+            print("Skipping iteration...")
+            continue
+
         E = time_weight(y_pred_rl, x_source_clean)
         print("E", E.shape)
         r = reward(z_rl, z_map, E)
         print("Reward:", r)
-        #If inf in reward, skip iter
-        if np.isnan(np.sum(r)):
-            continue
+        
         reward_sums.append(np.sum(r))
         np.save(model_path+'reward_sum.npy', np.asarray(reward_sums))
         #print('Reward sum:', np.sum(r))
