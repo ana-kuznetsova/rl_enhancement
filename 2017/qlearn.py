@@ -72,6 +72,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
     q_losses = []
     reward_sums = []
+    curr_losses = []
     
     for ep in range(num_episodes):
 
@@ -162,11 +163,15 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
         q_func_mmse.train()
         curr_loss = criterion(Q_func_upd, Q_pred_mmse)
+        curr_losses.append(curr_loss.detach().cpu().numpy())
+
         if ep%100 == 0:
             ## Save losses
-            q_losses.append(curr_loss.detach().cpu().numpy())
+            avg_loss = sum(curr_losses/len(curr_losses))
+            q_losses.append(avg_loss)
+            curr_losses = []
             np.save(model_path+'q_losses.npy', q_losses)
-            print('Episode {}, Training loss:{:>4f}'.format(ep, curr_loss.detach().cpu().numpy()))
+            print('Episode {}, Training loss:{:>4f}'.format(ep, avg_loss))
 
             ## Save rewards
             reward_sums.append(np.sum(r))
