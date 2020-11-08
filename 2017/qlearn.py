@@ -82,7 +82,6 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         #phase = pad(np.load(imag_path+x_name), maxlen)
 
         x_source = np.load(x_path+x_name)
-        print("source:", x_source.shape)
         x = window(x_source, P).T
         x = torch.tensor(x).float().to(device)
 
@@ -96,8 +95,6 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
         #Load true actions
         true_actions = np.load(a_path + x_name.split('_')[0]+'.npy')
-
-        print("true actions:", true_actions.shape)
 
         #Select template index, predict Wiener filter
         for i, action in enumerate(Q_pred_argmax):
@@ -113,7 +110,6 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
         wiener_rl = wiener_rl.T
         y_pred_rl = torch.tensor(np.multiply(x_source, wiener_rl)).float()
-        print("y pred:", y_pred_rl.shape)
         y_pred_dnn = dnn_map(x).T.detach().cpu().numpy()
     
         ##### Calculate reward ######
@@ -132,7 +128,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         E = time_weight(y_pred_rl, x_source_clean)
         print("E", E.shape)
         r = reward(z_rl, z_map, E)
-        #print("Reward:", r)
+        print("Reward:", r)
         #If inf in reward, skip iter
         if np.isnan(np.sum(r)):
             continue
