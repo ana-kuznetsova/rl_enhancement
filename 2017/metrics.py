@@ -61,6 +61,6 @@ def eval_pesq(predicted_path, noisy_test, clean_test, out_path,
     df.to_csv(out_path+'PESQ.csv')
 
 
-def calc_Z(noisy_mix, pred, fs=16000):
-    z = pesq(noisy_mix, pred, fs)
+def calc_Z(reference, pred, fs=16000):
+    z = pesq(reference, pred, fs)
     return z

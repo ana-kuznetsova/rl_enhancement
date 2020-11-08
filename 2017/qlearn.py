@@ -19,6 +19,9 @@ from metrics import calc_Z
 from dnn_rl import DNN_RL
 from utils import invert
 from utils import read
+from dnn_rl import reward
+from dnn_rl import R
+from dnn_rl import time_weight
 
 
 def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
@@ -85,7 +88,8 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
         Q_pred_mmse = q_func_mmse(x).detach().cpu().numpy() #for pretrained Qfunc
         wiener_rl = np.zeros((Q_pred_mmse.shape[0], 64))
-        
+        selected_actions = []
+
         Q_pred_argmax = np.argmax(Q_pred_mmse, axis=1)
 
         #Select template index, predict Wiener filter
@@ -96,28 +100,39 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
             strategy = np.random.choice(a, p=probs)
             if strategy==0:
                 action = np.random.choice(np.arange(32))
-            
+            print("sel action:", action)
+            selected_actions.append(int(action))
             G_k_pred = G[action]
             wiener_rl[i] = G_k_pred
 
         wiener_rl = wiener_rl.T
         y_pred_rl = torch.tensor(np.multiply(x_source, wiener_rl)).float()
-        y_pred_dnn = dnn_map(x).T
+        y_pred_dnn = dnn_map(x).T.detach().cpu().numpy()
     
         ##### Calculate reward ######
 
-        x_source_wav = read(clean_path+x_name.split('_')[0]+'.wav')
+        x_source_wav = np.load(clean_path+x_name.split('_')[0]+'.npy')
+        x_source_wav = invert(x_source_wav)
         print("wav source", x_source_wav.shape)
-        y_map_wav = invert(y_pred_dnn)
-        y_rl_wav = InverseMelScale(y_pred_rl)
+        y_pred_rl = InverseMelScale(n_stft=257, n_mels=64)(y_pred_rl).detach().cpu().numpy()
         
-        z_rl = calc_Z(x_source_wav, y_rl_wav)
-        z_map = calc_Z(x_source_wav, y_map_wav)
+        #Invert both
+
+        y_pred_dnn =  invert(y_pred_dnn)
+        y_pred_rl = invert(y_pred_rl)
+
+        print("pred wavs:", y_pred_dnn.shape, y_pred_rl.shape)
+
+
+        
+        z_rl = calc_Z(x_source_wav, y_pred_rl)
+        z_map = calc_Z(x_source_wav, y_pred_dnn)
         print('Z-scores:', z_rl, z_map)
 
-        clean = np.load(clean_path+x_name)
-        E = time_weight(y_pred_rl, pad(clean, maxlen))
+        E = time_weight(y_pred_rl, x_source_wav)
+        print("E", E)
         r = reward(z_rl, z_map, E)
+        print("Reward:", r)
         #If inf in reward, skip iter
         if np.isnan(np.sum(r)):
             continue
@@ -126,8 +141,10 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         print('Reward sum:', np.sum(r))
         
         R_ = R(z_rl, z_map)
-        #print('R_cal:', R_)
+        print('R_cal:', R_)
 
+        #### UPDATE Q-FUNCS ####
+'''
         #### UPDATE Q-FUNCS ####
 
         for i, a_t in enumerate(selected_actions_target):
@@ -154,3 +171,4 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         opt_RMSprop.zero_grad()
         curr_loss.backward()
         opt_RMSprop.step()
+'''
