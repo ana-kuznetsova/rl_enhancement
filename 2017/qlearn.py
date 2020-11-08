@@ -87,7 +87,6 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
         ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
         Q_pred_mmse = q_func_mmse(x).detach().cpu().numpy() 
-        print("Qfunc pred:", Q_pred_mmse.shape)
         wiener_rl = np.zeros((Q_pred_mmse.shape[0], 64))
         selected_actions = []
 
@@ -152,7 +151,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
                 if R_cal > 0:
                     Q_func_upd[x_k][a_pred] = r[a_pred] + np.max(Q_pred_mmse[x_k])
             else:
-                print("Pred != True")
+                print("Pred != True", "R_cal:", R_cal)
                 if R_cal < 0:
                     Q_func_upd[x_k][a_true] = Q_pred_mmse[x_k][a_true] - r[x_k]
 
