@@ -93,7 +93,7 @@ def main(args):
         KMeans(args.chunk_size, args.x_path, args.test_out)
 
     elif args.mode=='qlearn':
-        q_learning(num_episodes=10000,
+        q_learning(num_episodes=50000,
                    x_path='/nobackup/anakuzne/data/snr036_mel_train/',
                    cluster_path='/nobackup/anakuzne/data/kmeans_centers.npy',
                    model_path= '/nobackup/anakuzne/data/qlearning/',
