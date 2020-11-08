@@ -494,7 +494,7 @@ def eval_actions(model_path, x_path, a_path):
     X_val, A_val, batch_indices = make_windows(x_path, a_path,
                                         [start, end], P=5, 
                                         win_len=512, 
-                                        hop_size=256, fs=16000)
+                                        hop_size=256, fs=16000, nn_type='qfunc')
 
     dataset = QDataSet(X_val, A_val, batch_indices)
     val_loader = data.DataLoader(dataset, batch_size=1)

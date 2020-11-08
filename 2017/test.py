@@ -21,7 +21,7 @@ from models import pretrain
 
 
 eval_actions(model_path='/nobackup/anakuzne/data/qlearning/',
-             x_path="/nobackup/anakuzne/data/snr0_train_melspecs/",
+             x_path="/nobackup/anakuzne/data/TIMIT/corpus/",
              a_path='/nobackup/anakuzne/data/action_labels/')
 
 '''
