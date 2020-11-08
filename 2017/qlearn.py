@@ -167,7 +167,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
         if ep%100 == 0:
             ## Save losses
-            avg_loss = sum(curr_losses/len(curr_losses))
+            avg_loss = np.sum(np.array(curr_losses)/len(curr_losses))
             q_losses.append(avg_loss)
             curr_losses = []
             np.save(model_path+'q_losses.npy', q_losses)
