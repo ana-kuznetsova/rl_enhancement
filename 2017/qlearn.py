@@ -96,7 +96,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         #Load true actions
         true_actions = np.load(a_path + x_name.split('_')[0]+'.npy')
 
-        print("true actions:", true_actions[:10])
+        print("true actions:", true_actions.shape)
 
         #Select template index, predict Wiener filter
         for i, action in enumerate(Q_pred_argmax):
@@ -109,7 +109,6 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
             selected_actions.append(int(action))
             G_k_pred = G[action]
             wiener_rl[i] = G_k_pred
-        print("selected actions:", selected_actions[:10])
 
         wiener_rl = wiener_rl.T
         y_pred_rl = torch.tensor(np.multiply(x_source, wiener_rl)).float()
