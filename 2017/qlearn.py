@@ -94,7 +94,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         Q_pred_argmax = np.argmax(Q_pred_mmse, axis=1)
 
         #Load true actions
-        true_actions = np.load(a_path + x_name)
+        true_actions = np.load(a_path + x_name.split('_')[0]+'.npy')
 
         print("true actions:", true_actions[:10])
 
