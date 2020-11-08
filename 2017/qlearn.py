@@ -159,32 +159,8 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         Q_pred_mmse = torch.tensor(Q_pred_mmse)
         Q_func_upd = torch.tensor(Q_func_upd)
 
+        q_func_mmse.train()
         curr_loss = criterion(Q_func_upd, Q_pred_mmse)
-        print("Loss:", curr_loss)
-
-
-
-
-'''
-        #### UPDATE Q-FUNCS ####
-
-        for i, a_t in enumerate(selected_actions_target):
-            a_m = selected_actions_mmse[i]
-            if a_t==a_m:
-                if R_ > 0:
-                    qfunc_target[i][a_t] = r[i] + np.max(qfunc_target[i]) #qfunc shape (1339, 32)
-                else:
-                    qfunc_target[i][a_t] = Q_pred_rl[i][a_t]
-            else:
-                if R_ > 0:
-                    qfunc_pretrained[i][a_m] = Q_pred_mmse[i][a_m]
-                else:
-                    qfunc_pretrained[i][a_m] = Q_pred_mmse[i][a_m] - r[i]
-
-        target_tensor = torch.tensor(qfunc_target, requires_grad=True).cuda().float()
-        pretrained_tensor = torch.tensor(qfunc_pretrained).cuda().float()
-        dnn_rl.train()
-        curr_loss = criterion(target_tensor, pretrained_tensor)
         q_losses.append(curr_loss.detach().cpu().numpy())
         np.save(model_path+'q_losses.npy', q_losses)
 
@@ -192,4 +168,3 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         opt_RMSprop.zero_grad()
         curr_loss.backward()
         opt_RMSprop.step()
-'''
