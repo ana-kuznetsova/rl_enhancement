@@ -24,8 +24,8 @@ from dnn_rl import R
 from dnn_rl import time_weight
 
 
-def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
-               imag_path='/nobackup/anakuzne/data/snr0_train_img/',
+def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path, 
+               a_path,
                epsilon=0.01, 
                win_len=512,
                hop_size=256,
@@ -90,7 +90,15 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         wiener_rl = np.zeros((Q_pred_mmse.shape[0], 64))
         selected_actions = []
 
+        #Predicted actions
         Q_pred_argmax = np.argmax(Q_pred_mmse, axis=1)
+
+        print("predicted actions:", Q_pred_argmax[:10])
+
+        #Load true actions
+        true_actions = np.load(a_path + x_name)
+
+        print("true actions:", true_actions[:10])
 
         #Select template index, predict Wiener filter
         for i, action in enumerate(Q_pred_argmax):
@@ -115,15 +123,11 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         x_source_wav = invert(x_source_wav)
         print("wav source", x_source_wav.shape)
         y_pred_rl = InverseMelScale(n_stft=257, n_mels=64)(y_pred_rl).detach().cpu().numpy()
-        
-        #Invert both
 
         y_pred_dnn =  invert(y_pred_dnn)
         y_pred_rl = invert(y_pred_rl)
 
         print("pred wavs:", y_pred_dnn.shape, y_pred_rl.shape)
-
-
         
         z_rl = calc_Z(x_source_wav, y_pred_rl)
         z_map = calc_Z(x_source_wav, y_pred_dnn)
