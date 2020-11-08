@@ -131,16 +131,16 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         E = time_weight(y_pred_rl, x_source_clean)
         print("E", E)
         r = reward(z_rl, z_map, E)
-        print("Reward:", r)
+        #print("Reward:", r)
         #If inf in reward, skip iter
         if np.isnan(np.sum(r)):
             continue
         reward_sums.append(np.sum(r))
         np.save(model_path+'reward_sum.npy', np.asarray(reward_sums))
-        print('Reward sum:', np.sum(r))
+        #print('Reward sum:', np.sum(r))
         
         R_ = R(z_rl, z_map)
-        print('R_cal:', R_)
+        #print('R_cal:', R_)
 
         #### UPDATE Q-FUNCS ####
 '''
