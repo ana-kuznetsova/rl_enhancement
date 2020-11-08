@@ -134,7 +134,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         E = time_weight(y_pred_rl, x_source_clean)
         print("E", E.shape)
         r = reward(z_rl, z_map, E)
-        print("Reward:", r)
+        print("Reward:", r.shape)
         
         reward_sums.append(np.sum(r))
         np.save(model_path+'reward_sum.npy', np.asarray(reward_sums))
