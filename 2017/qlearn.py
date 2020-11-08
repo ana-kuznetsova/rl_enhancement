@@ -140,7 +140,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         #### UPDATE Q-FUNCS ####
         Q_func_upd = Q_pred_mmse
         R_cal = R(z_rl, z_map)
-        print("R_cal:", R_cal)
+        #print("R_cal:", R_cal)
 
         for x_k in range(Q_func_upd.shape[0]):
             a_true = true_actions[x_k]
