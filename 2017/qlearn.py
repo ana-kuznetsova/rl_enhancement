@@ -72,8 +72,6 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
     reward_sums = []
     
     for ep in range(num_episodes):
-        if ep//100:
-            print('Episode:{}/{}'.format(ep, num_episodes))
 
         #Select random
         x_files = os.listdir(x_path)
@@ -133,9 +131,6 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
         E = time_weight(y_pred_rl, x_source_clean)
         r = reward(z_rl, z_map, E)
-        
-        reward_sums.append(np.sum(r))
-        np.save(model_path+'reward_sum.npy', np.asarray(reward_sums))
 
         #### UPDATE Q-FUNCS ####
         Q_func_upd = Q_pred_mmse
@@ -165,10 +160,15 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
         q_func_mmse.train()
         curr_loss = criterion(Q_func_upd, Q_pred_mmse)
-        q_losses.append(curr_loss.detach().cpu().numpy())
-        np.save(model_path+'q_losses.npy', q_losses)
+        if ep//100 == 0:
+            ## Save losses
+            q_losses.append(curr_loss.detach().cpu().numpy())
+            np.save(model_path+'q_losses.npy', q_losses)
+            print('Episode {}, Training loss:{:>4f}'.format(ep, curr_loss.detach().cpu().numpy()))
 
-        print('Episode {}, Training loss:{:>4f}'.format(ep, curr_loss.detach().cpu().numpy()))
+            ## Save rewards
+            reward_sums.append(np.sum(r))
+            np.save(model_path+'reward_sum.npy', np.array(reward_sums))
         opt_RMSprop.zero_grad()
         curr_loss.backward()
         opt_RMSprop.step()
