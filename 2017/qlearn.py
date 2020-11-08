@@ -162,7 +162,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
         q_func_mmse.train()
         curr_loss = criterion(Q_func_upd, Q_pred_mmse)
-        if ep//100 == 0:
+        if ep%100 == 0:
             ## Save losses
             q_losses.append(curr_loss.detach().cpu().numpy())
             np.save(model_path+'q_losses.npy', q_losses)
