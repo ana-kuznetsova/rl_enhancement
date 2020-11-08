@@ -147,21 +147,20 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
             a_pred = selected_actions[x_k]
 
             if a_pred==a_true:
-                print("Pred == True")
+                #print("Pred == True")
                 if R_cal > 0:
                     Q_func_upd[x_k][a_pred] = r[a_pred] + np.max(Q_pred_mmse[x_k])
             else:
-                print("R_cal:", R_cal)
-                print("Old:", Q_func_upd[x_k][a_true], "UPD:", Q_pred_mmse[x_k][a_true] - r[x_k])
+                #print("R_cal:", R_cal)
+                #print("Old:", Q_func_upd[x_k][a_true], "UPD:", Q_pred_mmse[x_k][a_true] - r[x_k])
                 if R_cal < 0:
                     Q_func_upd[x_k][a_true] = Q_pred_mmse[x_k][a_true] - r[x_k]
+        
+        Q_pred_mmse = torch.tensor(Q_pred_mmse)
+        Q_func_upd = torch.tensor(Q_func_upd)
 
-        diff = Q_func_upd - Q_pred_mmse
-
-        #print("Diff:", np.nonzero(diff))
-
-
-
+        curr_loss = criterion(Q_func_upd, Q_pred_mmse)
+        print("Loss:", curr_loss)
 
 
 
