@@ -123,7 +123,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         
         z_rl = calc_Z(x_source_wav, y_pred_rl_wav)
         z_map = calc_Z(x_source_wav, y_pred_dnn_wav)
-        print('Z-scores:', z_rl, z_map)
+        #print('Z-scores:', z_rl, z_map)
 
         ##PEQS module returns errors
         ##Skip iteration when z-scores are nan
