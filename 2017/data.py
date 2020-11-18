@@ -30,21 +30,19 @@ def create_noisy_data(x_path, out_path, noise_path,
     target_SNRs = [0, 3, 6]
 
     fnames = os.listdir(x_path)
-    #print('fnames:', fnames)
     for s in target_SNRs:
         for f in tqdm(fnames):
             if '.wav' in f:
                 speech = read(x_path+f, fs)
                 noise = pad_noise(speech, noise)
                 blend = generate_noisy(speech, noise, s)
-                mel_spec = librosa.feature.melspectrogram(y=blend, sr=16000,
+                stft = STFT(blend, win_len, hop_size)
+                mel_spec = librosa.feature.melspectrogram(y=stft, sr=16000,
                                                             n_fft=512,
                                                             hop_length=256,
                                                             n_mels=64)
-                stft = STFT(blend, win_len, hop_size)
-                img = np.imag(stft)
+                
                 fname = f.split('.')[0]+"_"+str(s)+'.npy'
-                np.save('/N/slate/anakuzne/se_data/mel_test_img/'+fname, img)
                 np.save(out_path+fname, mel_spec)
 
 

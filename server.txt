@@ -18,3 +18,6 @@ python main.py --mode='train' --chunk_size=100 --model_path='/nobackup/anakuzne/
 
 
 python main.py --mode='test' --chunk_size=1000 --x_path='/nobackup/anakuzne/data/snr0_test_melspecs/' --test_out='/nobackup/anakuzne/data/model_log_amp_036/test_specs/' --y_path='/nobackup/anakuzne/data/snr0_train_clean/' --model_path="/nobackup/anakuzne/data/model_log_amp_036/"
+
+
+###Eagle server #####
