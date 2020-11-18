@@ -33,16 +33,9 @@ def main(args):
         inference(args.chunk_size, args.x_path, args.y_path, 
                  args.model_path, args.test_out)
     elif args.mode=='data':
-
-        WIN_LEN = 512
-        HOP_SIZE = 256
-        FS = 16000
-        noise_path = '/N/project/aspire_research_cs/Data/Corpora/Noise/cafe_16k.wav'
-        
-        create_noisy_data('/N/project/aspire_research_cs/Data/Corpora/Speech/TIMIT/test_corpus/corpus/',
-                          '/N/slate/anakuzne/se_data/snr0_test_melspecs', noise_path)
-
-        #calc_mel_wiener(args.x_path, args.y_path)
+        if args.nn=='DNN':
+            create_noisy_data(args.x_path, args.out_path, args.noise_path)
+            calc_masks(args.x_path, args.noise_path, args.y_path, mask_type='ln')
 
         '''
         calc_MMSE_labels(
@@ -114,11 +107,10 @@ if __name__ == '__main__':
     parser.add_argument('--model_path', type=str, help='Dir to save best model')
     parser.add_argument('--x_path', type=str, help='path to X files')
     parser.add_argument('--y_path', type=str, help='path to y files')
-    parser.add_argument('--loss_path', type=str, help='Dir to save losses')
-    parser.add_argument('--mode', type=str, help='Train or test', required=True)
-    parser.add_argument('--test_path', type=str, help='path to test data')
-    parser.add_argument('--test_out', type=str, help='Path to dir to save test output')
-    parser.add_argument('--clean_test_path', type=str, help='Path to reference test data')
+    parser.add_argument('--out_path', type=str, help='Path to store output of the function')
+    parser.add_argument('--mode', type=str, help='', required=True)
+    parser.add_argument('--nn', type=str, help='type of the model DNN/RL')
+    parser.add_argument('--noise_path', type=str, help='Dir where the noise wav is stored')
     parser.add_argument('--imag', type=str, help='Path to files with imaginary part')
     parser.add_argument('--feat_type', type=str, help='Features to use')
     parser.add_argument('--from_pretrained', type=str, help='true or false')

@@ -148,9 +148,9 @@ def calc_mel_wiener(x_path, y_path):
         np.save(y_path+f, w_mel)
     
 
-def calc_masks(speech_path, noise_path, fs, win_len, hop_size,
-               mask_dir,
-               mask_type='IRM',
+def calc_masks(speech_path, noise_path, mask_dir, 
+               mask_type='IRM', 
+               fs=16000, win_len=512, hop_size=256,
                stft_dir=None):
     
     noise = read(noise_path, fs)
@@ -171,6 +171,10 @@ def calc_masks(speech_path, noise_path, fs, win_len, hop_size,
 
         elif mask_type=='ln':
             target = np.log(stft_clean)
+            target = librosa.feature.melspectrogram(y=target, sr=16000,
+                                                        n_fft=512,
+                                                        hop_length=256,
+                                                        n_mels=64)
             write_npy(mask_dir, p, target)
         elif mask_type=='stft':
             write_npy(mask_dir, p, stft_clean)
