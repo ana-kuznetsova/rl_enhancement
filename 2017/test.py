@@ -19,10 +19,10 @@ from data import create_noisy_data
 from models import pretrain
 
 
-pretrain(chunk_size=500, x_path='/nobackup/anakuzne/data/TIMIT/corpus/',
-        y_path='/N/slate/anakuzne/se_data/snr0_train_clean/', 
-        model_path='/nobackup/anakuzne/data/window_test/')
 
+eval_actions(model_path='/nobackup/anakuzne/data/qlearning/',
+             x_path="/nobackup/anakuzne/data/TIMIT/corpus/",
+             a_path='/nobackup/anakuzne/data/action_labels/')
 
 '''
 MMSE_train(chunk_size=1000, x_path='/nobackup/anakuzne/data/snr036_mel_train/', 
@@ -31,7 +31,9 @@ MMSE_train(chunk_size=1000, x_path='/nobackup/anakuzne/data/snr036_mel_train/',
 MMSE_pretrain(chunk_size=5000, x_path='/nobackup/anakuzne/data/TIMIT/corpus/',
              a_path='/nobackup/anakuzne/data/action_labels/',
              model_path='/nobackup/anakuzne/data/window_test_q/')
-
+pretrain(chunk_size=500, x_path='/nobackup/anakuzne/data/TIMIT/corpus/',
+        y_path='/N/slate/anakuzne/se_data/snr0_train_clean/', 
+        model_path='/nobackup/anakuzne/data/window_test/')
 
 eval_actions(model_path='/nobackup/anakuzne/data/qfunc_pretrain/',
              x_path="/nobackup/anakuzne/data/snr0_train_melspecs/",

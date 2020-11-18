@@ -106,8 +106,8 @@ def time_weight(Y, S):
     Y: predicted spectrogram
     S: true spectrogram
     '''
-    Y = np.nan_to_num(np.log(np.abs(Y)))
-    S = np.nan_to_num(np.log(np.abs(S)))
+    Y = np.nan_to_num(np.abs(Y))
+    S = np.nan_to_num(np.abs(S))
     sum_ = np.nan_to_num((Y - S)**2)
     E_approx = np.nan_to_num(np.sum(sum_, axis=0))
     E = E_approx/np.max(E_approx)
@@ -484,7 +484,7 @@ def eval_actions(model_path, x_path, a_path):
     torch.cuda.set_device(0) #change to 2 if on Ada
 
     q_func_pretrained = DNN_RL()
-    q_func_pretrained.load_state_dict(torch.load(model_path+'rl_dnn_best.pth'))
+    q_func_pretrained.load_state_dict(torch.load(model_path+'qfunc_model.pth'))
     q_func_pretrained.cuda()
 
     start = 3234
@@ -494,7 +494,7 @@ def eval_actions(model_path, x_path, a_path):
     X_val, A_val, batch_indices = make_windows(x_path, a_path,
                                         [start, end], P=5, 
                                         win_len=512, 
-                                        hop_size=256, fs=16000)
+                                        hop_size=256, fs=16000, nn_type='qfunc')
 
     dataset = QDataSet(X_val, A_val, batch_indices)
     val_loader = data.DataLoader(dataset, batch_size=1)
