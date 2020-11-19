@@ -76,7 +76,7 @@ def make_dnn_feats(fpath, noise_path, snr, P):
                                                         n_fft=512,
                                                         hop_length=256,
                                                         n_mels=64)
-    feats = window(mel_noisy, P).T
+    feats = window(mel_noisy, P)
     target = np.log(mel_clean)
 
     return {'x': feats, 't':target}
