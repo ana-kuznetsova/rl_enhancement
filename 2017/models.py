@@ -38,9 +38,9 @@ class DnnLoader(data.Dataset):
 
     def __len__(self):
         if self.mode=='Train':
-            return np.ceil(len(self.fnames)*0.7)
+            return int(len(self.fnames)*0.7)
         else:
-            return len(self.fnames) - np.ceil(len(self.fnames)*0.7)
+            return len(self.fnames) - int(len(self.fnames)*0.7)
 
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
