@@ -33,8 +33,8 @@ class DnnLoader(data.Dataset):
         self.P = P
         self.mode = mode
         self.fnames = os.listdir(x_path)
-        self.train_fnames = self.fnames[:np.ceil(len(self.fnames)*0.7)]
-        self.val_fnames = self.fnames[np.ceil(len(self.fnames)*0.7):]
+        self.train_fnames = self.fnames[:int(len(self.fnames)*0.7)]
+        self.val_fnames = self.fnames[int(len(self.fnames)*0.7):]
 
     def __len__(self):
         if self.mode=='Train':
