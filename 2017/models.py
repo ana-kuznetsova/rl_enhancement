@@ -1,52 +1,54 @@
-import torch
-import torch.nn.functional as Func
-import torch.nn as nn
 import numpy as np
-from torch.autograd import Variable
-import torch.optim as optim
-import torch.utils.data as data
 import copy
-import pickle
-import pandas as pd
 import os
 
-from data import make_windows
-from data import make_batch
-from data import make_batch_test
-from data import pad
-from metrics import eval_pesq
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.utils.data as data
 
-class QDataSet(data.Dataset):
-    def __init__(self, X_chunk, y_chunk, batch_indices):
-        self.x = X_chunk
-        self.y = y_chunk
-        self.batch_indices = batch_indices
-    def __getitem__(self, index):
-        start_idx = self.batch_indices[index]
-        end_idx = self.batch_indices[index+1]
-        return torch.from_numpy(self.x[start_idx:end_idx]).float(), torch.from_numpy(self.y[start_idx:end_idx]).float()
+
+from preproc import make_dnn_feats
+
+
+########DATA LOADERS ########
+
+class DnnLoader(data.Dataset):
+    def __init__(self, x_path, noise_path, snr, P, transform, mode='Train'):
+        '''
+        Args:
+            x_path: path to the location where all the wav files stored
+            noise_path: path to noise signal
+            snr: desired snr
+            P: window length
+            transform: func for feature generation
+            mode: Train or Val. If train, take 0.7 of the data set
+                  If validation take other 0.3.
+        '''
+
+        self.x_path = x_path
+        self.noise_path = noise_path
+        self.transform = transform
+        self.snr = snr
+        self.P = P
+        self.mode = mode
+        self.fnames = os.listdir(x_path)
+
     def __len__(self):
-        return len(self.batch_indices) - 1
+        if self.mode=='Train':
+            return np.ceil(len(self.fnames)*0.7)
+        else:
+            return len(self.fnames) - np.ceil(len(self.fnames)*0.7)
 
-class trainDataLoader(data.Dataset):
-    def __init__(self, X_chunk, y_chunk):
-        self.x = X_chunk
-        self.y = y_chunk
-    def __getitem__(self, index):
-        return torch.from_numpy(self.x[index]).float(), torch.from_numpy(self.y[index]).float()
-    def __len__(self):
-        #Number of files
-        return self.x.shape[0]
+    def __getitem__(self, idx):
+        if torch.is_tensor(idx):
+            idx = idx.tolist()
+
+        fpath = os.path.join(self.x_path, self.fnames[idx])
+        sample = self.transform(fpath, self.noise_path, self.snr, self.P)
+        return sample
 
 
-class testDataLoader(data.Dataset):
-    def __init__(self, X_chunk):
-        self.x = X_chunk
-    def __getitem__(self, index):
-        return torch.from_numpy(self.x[index]).float()
-    def __len__(self):
-        #Number of files
-        return self.x.shape[0]
 
 class Layer1(nn.Module):
     '''
