@@ -148,62 +148,38 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
 
             epoch_loss = 0.0
 
-            
-            
-                #dataset = QDataSet(X_chunk, y_chunk, batch_indices)
-                dataset = trainDataLoader(X_chunk, y_chunk)
-                loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
+            dataset = DnnLoader(x_path, noise_path, snr, P, make_dnn_feats, mode='Train')
+
+            loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
                 
-                #X_chunk = torch.tensor(X_chunk).double()
-                #y_chunk = torch.tensor(y_chunk).double()
+            for x, target in loader:
+                x = x.to(device)
+                target = target.to(device)
+                output = l1(x)
 
-                #for x, target in zip(X_chunk, y_chunk):
-                for x, target in loader:
-                    x = x.to(device)
-                    #x = x.reshape(x.shape[1], x.shape[2])
-                    target = target.to(device)
-                    #target = target.reshape(target.shape[1], target.shape[2])
-                    output = l1(x)
+                newLoss = criterion(output, target)              
+                optimizer.zero_grad()
+                newLoss.backward()
+                optimizer.step()
 
-                    newLoss = criterion(output, target)              
-                    chunk_loss += newLoss.data
-                    optimizer.zero_grad()
-                    newLoss.backward()
-                    optimizer.step()
+            loss = newLoss.detach().cpu().numpy()
+            epoch_loss+=loss
 
-                #chunk_loss = (chunk_loss.detach().cpu().numpy())/len(loader)
-                chunk_loss = (chunk_loss.detach().cpu().numpy())/X_chunk.shape[0]
-                
-                epoch_loss+=chunk_loss
-
-                print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
-
-            losses_l1.append(epoch_loss/num_chunk)
+            losses_l1.append(epoch_loss/epoch)
             np.save(model_path+"losses_l1.npy", np.asarray(losses_l1))
-            print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
+            print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/epoch))
 
             #### VALIDATION #####
         
             print('Starting validation...')
-            # Y is a clean speech spectrogram
-            start = 3697
-            end = 4622
-            X_val, A_val, batch_indices = make_windows(x_path, y_path,
-                                            [start, end], P=5, 
-                                            win_len=512, 
-                                            hop_size=256, fs=16000, nn_type='map')
-
-           
-            #dataset = QDataSet(X_val, A_val, batch_indices)
-            dataset = trainDataLoader(X_val, A_val)
+            
+            dataset = DnnLoader(x_path, noise_path, snr, P, make_dnn_feats, mode='Val')
             val_loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
             overall_val_loss=0
 
             for x, target in val_loader:
                 x = x.to(device)
-                #x = x.reshape(x.shape[1], x.shape[2])
                 target = target.to(device).float()
-                #target = target.reshape(target.shape[1], target.shape[2])
                 output = l1(x)
                 valLoss = criterion(output, target)
                 overall_val_loss+=valLoss.detach().cpu().numpy()
@@ -244,64 +220,34 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
 
         epoch_loss = 0.0
 
-        num_chunk = (12474//chunk_size) + 1
-        for chunk in range(num_chunk):
-            chunk_loss = 0
-            start = chunk*chunk_size
-            end = min(start+chunk_size, 124744)
-            print(start, end)
+        dataset = DnnLoader(x_path, noise_path, snr, P, make_dnn_feats, mode='Train')
+        loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
 
-            X_chunk, y_chunk, batch_indices = make_windows(x_path, y_path,
-                                          [start, end], P=5, 
-                                           win_len=512, 
-                                           hop_size=256, fs=16000, nn_type='map')
+        for x, target in loader:
+            x = x.to(device)
+            target = target.to(device)
+            output = l2(x)
+            newLoss = criterion(output, target)              
+            optimizer.zero_grad()
+            newLoss.backward()
+            optimizer.step()
 
-            dataset = QDataSet(X_chunk, y_chunk, batch_indices)
-            loader = data.DataLoader(dataset, batch_size=1)
+            epoch_loss+=newLoss.data.detach().cpu().numpy()
 
-            for x, target in loader:
-                x = x.to(device)
-                x = x.reshape(x.shape[1], x.shape[2])
-                target = target.to(device).float()
-                target = target.reshape(target.shape[1], target.shape[2])
-                output = l2(x)
-
-                newLoss = criterion(output, target)              
-                chunk_loss += newLoss.data
-                optimizer.zero_grad()
-                newLoss.backward()
-                optimizer.step()
-
-            chunk_loss = (chunk_loss.detach().cpu().numpy())/len(loader)
-            
-            epoch_loss+=chunk_loss
-
-            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
-
-        losses_l2.append(epoch_loss/num_chunk)
+        losses_l2.append(epoch_loss/epoch)
         np.save(model_path+"losses_l2.npy", np.asarray(losses_l2))
-        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
+        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/epoch))
 
         #### VALIDATION #####
        
         print('Starting validation...')
-        # Y is a clean speech spectrogram
-        start = 12474
-        end = 13860 
-        X_val, A_val, batch_indices = make_windows(x_path, y_path,
-                                          [start, end], P=5, 
-                                           win_len=512, 
-                                           hop_size=256, fs=16000, nn_type='map')
-
-        dataset = QDataSet(X_val, A_val, batch_indices)
-        val_loader = data.DataLoader(dataset, batch_size=1)
+        dataset = DnnLoader(x_path, noise_path, snr, P, make_dnn_feats, mode='Val')
+        val_loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
         overall_val_loss=0
 
         for x, target in val_loader:
             x = x.to(device)
-            x = x.reshape(x.shape[1], x.shape[2])
             target = target.to(device).float()
-            target = target.reshape(target.shape[1], target.shape[2])
             output = l2(x)
             valLoss = criterion(output, target)
             overall_val_loss+=valLoss.detach().cpu().numpy()
