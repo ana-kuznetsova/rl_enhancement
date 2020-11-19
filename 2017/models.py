@@ -33,6 +33,8 @@ class DnnLoader(data.Dataset):
         self.P = P
         self.mode = mode
         self.fnames = os.listdir(x_path)
+        self.train_fnames = self.fnames[:np.ceil(len(self.fnames)*0.7)]
+        self.val_fnames = self.fnames[np.ceil(len(self.fnames)*0.7):]
 
     def __len__(self):
         if self.mode=='Train':
@@ -44,7 +46,10 @@ class DnnLoader(data.Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        fpath = os.path.join(self.x_path, self.fnames[idx])
+        if self.mode=='Train':
+            fpath = os.path.join(self.x_path, self.train_fnames[idx])
+        elif self.mode=='Val':
+            fpath = os.path.join(self.x_path, self.val_fnames[idx])
         sample = self.transform(fpath, self.noise_path, self.snr, self.P)
         return sample
 
@@ -112,8 +117,7 @@ def weights(m):
         nn.init.constant_(m.bias.data,0.1)
 
 
-def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
-             , win_len=512, hop_size=256, fs=16000, resume='False'):
+def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False'):
     
     losses_l1 = []
     losses_l2 = []
@@ -144,17 +148,7 @@ def pretrain(chunk_size, model_path, x_path, y_path, num_epochs=50
 
             epoch_loss = 0.0
 
-            num_chunk = (3697//chunk_size) + 1
-            for chunk in range(num_chunk):
-                chunk_loss = 0
-                start = chunk*chunk_size
-                end = min(start+chunk_size, 3697)
-                print(start, end)
-
-                X_chunk, y_chunk, batch_indices = make_windows(x_path, y_path,
-                                            [start, end], P=5, 
-                                            win_len=512, 
-                                            hop_size=256, fs=16000, nn_type='map')
+            
             
                 #dataset = QDataSet(X_chunk, y_chunk, batch_indices)
                 dataset = trainDataLoader(X_chunk, y_chunk)
