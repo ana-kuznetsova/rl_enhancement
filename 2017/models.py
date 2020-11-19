@@ -153,8 +153,8 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
             loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
             print("loader:", len(loader))
                 
-            for x, target in loader:
-                print('x:', x.shape, "t", target.shape)
+            for sample in loader:
+                print('x:', sample[x].shape, "t", sample[t].shape)
                 x = x.to(device)
                 target = target.to(device)
                 output = l1(x)
