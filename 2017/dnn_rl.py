@@ -11,7 +11,6 @@ import torch.utils.data as data
 
 from models import weights
 from models import DNN_mel
-from models import trainDataLoader
 
 from data import mel_spec
 from data import pad
@@ -20,7 +19,6 @@ from data import make_batch
 from data import make_windows
 from utils import invert
 from metrics import calc_Z
-from models import QDataSet
 
 
 
