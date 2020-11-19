@@ -20,9 +20,10 @@ from models import pretrain
 
 
 
-eval_actions(model_path='/nobackup/anakuzne/data/qlearning/',
-             x_path="/nobackup/anakuzne/data/TIMIT/corpus/",
-             a_path='/nobackup/anakuzne/data/action_labels/')
+pretrain('/nobackup/anakuzne/data/koizumi17_timit/TIMIT/corpus/', 
+        '/nobackup/anakuzne/data/koizumi17_timit/config_test', 50,
+        '/nobackup/anakuzne/data/koizumi17_timit/cafe_16k.wav', 0, 5)
+
 
 '''
 MMSE_train(chunk_size=1000, x_path='/nobackup/anakuzne/data/snr036_mel_train/', 
