@@ -2,15 +2,8 @@ import os
 import librosa
 import numpy as np
 from utils import read
+from utils import pad
 
-
-
-
-
-def pad_inf(vec, maxlen):
-    if vec.shape[1] == maxlen:
-        return vec
-    return np.pad(vec, ((0, 0), (0, maxlen-vec.shape[1])), 'constant', constant_values=(np.inf))
 
 def pad_noise(speech, noise):
     '''
@@ -83,10 +76,9 @@ def make_dnn_feats(fpath, noise_path, snr, P, maxlen=1339):
                                                         n_fft=512,
                                                         hop_length=256,
                                                         n_mels=64)
-    pad_ind = mel_noisy.shape[1]
-    feats = pad_inf(window(mel_noisy, P), maxlen)
-    print('Feats:', feats)
-    target = pad_inf(np.log(mel_clean), maxlen)
-    #print("target:", target.shape)
-
-    return {'x': feats, 't':target, 'pad_i':pad_ind}
+    
+    feats = pad(window(mel_noisy, P), maxlen)
+    target = pad(np.log(mel_clean), maxlen)
+    mask = pad(np.ones((feats.shapw[0], feats.shape[1])), maxlen)
+    print("mask:", mask)
+    return {'x': feats, 't':target, 'mask':mask}
