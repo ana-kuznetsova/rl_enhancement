@@ -10,7 +10,7 @@ from utils import read
 def pad_inf(vec, maxlen):
     if vec.shape[1] == maxlen:
         return vec
-    return np.pad(vec, ((0, 0), (0, maxlen-vec.shape[1])), 'constant', constant_values=(-inf))
+    return np.pad(vec, ((0, 0), (0, maxlen-vec.shape[1])), 'constant', constant_values=(np.inf))
 
 def pad_noise(speech, noise):
     '''
