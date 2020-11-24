@@ -116,6 +116,16 @@ def weights(m):
         nn.init.xavier_normal_(m.weight.data)
         nn.init.constant_(m.bias.data,0.1)
 
+class MaskedMSELoss(torch.nn.Module):
+    def __init__(self):
+        super(MaskedMSELoss, self).__init__()
+
+    def forward(self, predict, target, mask):
+        predict = torch.flatten(predict)
+        target = torch.flatten(target)
+        mask = torch.flatten(mask)
+        err = torch.sum(((predict-target)*mask)**2.0)  / torch.sum(mask)
+        return err
 
 def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False'):
     
@@ -130,7 +140,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
         l1 = Layer1()
         l1 = l1.double()
         l1.apply(weights)
-        criterion = nn.MSELoss()
+        criterion = MaskedMSELoss()
         optimizer = optim.SGD(l1.parameters(), lr=0.01, momentum=0.9)
         device = torch.device("cuda")
         l1.cuda()
@@ -159,7 +169,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
                 target = target.to(device)
                 mask = batch["mask"]
                 output = l1(x)
-                newLoss = criterion(output, target)
+                newLoss = criterion(output, target, mask)
                 print("Newloss:", newLoss)              
                 #optimizer.zero_grad()
                 #newLoss.backward()
