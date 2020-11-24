@@ -128,7 +128,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
     if resume=='False':
     
         l1 = Layer1()
-        #l1 = l1.double()
+        l1 = l1.double()
         l1.apply(weights)
         criterion = nn.MSELoss()
         optimizer = optim.SGD(l1.parameters(), lr=0.01, momentum=0.9)
