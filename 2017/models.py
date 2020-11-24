@@ -151,12 +151,12 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
             dataset = DnnLoader(x_path, noise_path, snr, P, make_dnn_feats, mode='Train')
 
             loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
-            print("Sample:", dataset[0])
             for sample in loader:
                 #print('x:', sample["x"].shape, "t", sample["t"].shape)
                 x = x.to(device)
                 target = target.to(device)
                 output = l1(x)
+                print("output:", output)
 
                 newLoss = criterion(output, target)              
                 optimizer.zero_grad()

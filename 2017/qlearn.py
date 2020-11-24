@@ -183,3 +183,22 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         opt_RMSprop.zero_grad()
         curr_loss.backward()
         opt_RMSprop.step()
+
+
+def qlean_predict(model_path, x_path, out_path):
+    torch.cuda.empty_cache() 
+    device = torch.device('cuda:0') #change to 2 if on Ada
+    torch.cuda.set_device(0) #change to 2 if on Ada
+
+    q_func_pretrained = DNN_RL()
+    q_func_pretrained.load_state_dict(torch.load(model_path+'qfunc_model.pth'))
+    q_func_pretrained.cuda()
+
+    start = 3234
+    end = 4620
+    #end = 3334
+        
+    X_val, A_val, batch_indices = make_windows(x_path, a_path,
+                                        [start, end], P=5, 
+                                        win_len=512, 
+                                        hop_size=256, fs=16000, nn_type='qfunc')
