@@ -153,6 +153,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
             loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
             for batch in loader:
                 x = batch["x"]
+                print("x:", x)
                 x = x.to(device)
                 target = batch["t"]
                 target = target.to(device)
