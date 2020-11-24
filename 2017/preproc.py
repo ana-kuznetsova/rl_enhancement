@@ -80,6 +80,4 @@ def make_dnn_feats(fpath, noise_path, snr, P, maxlen=1339):
     feats = pad(window(mel_noisy, P), maxlen)
     target = pad(np.log(mel_clean), maxlen)
     mask = pad(np.ones((feats.shape[0], feats.shape[1])), maxlen)
-    print("mask:", mask.shape)
-    print(feats)
     return {'x': feats, 't':target, 'mask':mask}

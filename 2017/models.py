@@ -63,7 +63,7 @@ class Layer1(nn.Module):
         super().__init__()
         self.fc1 = nn.Linear(704, 128)
         self.drop = nn.Dropout(0.3)
-        self.out = nn.Linear(128, 64)
+        self.out = nn.Linear(128, 128)
 
     def forward(self, x):
         x = torch.sigmoid(self.fc1(x))
@@ -152,7 +152,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
 
             loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
             for sample in loader:
-                #print('x:', sample["x"].shape, "t", sample["t"].shape)
+                print('x:', sample["x"].shape, "t", sample["t"].shape, "mask:", sample["mask"].shape)
                 x = x.to(device)
                 print("X:", x.shape)
                 target = target.to(device)
