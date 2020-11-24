@@ -161,10 +161,10 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
                 output = l1(x)
                 print("output:", output)
 
-                newLoss = criterion(output, target)              
-                optimizer.zero_grad()
-                newLoss.backward()
-                optimizer.step()
+                #newLoss = criterion(output, target)              
+                #optimizer.zero_grad()
+                #newLoss.backward()
+                #optimizer.step()
 
             loss = newLoss.detach().cpu().numpy()
             epoch_loss+=loss
