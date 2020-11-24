@@ -79,6 +79,7 @@ def make_dnn_feats(fpath, noise_path, snr, P, maxlen=1339):
                                                         n_mels=64)
     
     feats = pad(window(mel_noisy, P), maxlen).T
-    target = pad(np.log(mel_clean), maxlen).T
+    target = np.log(mel_clean)
     mask = pad(np.ones((target.shape[0], target.shape[1])), maxlen).T
+    target = pad(target, maxlen).T
     return {'x': torch.tensor(feats), 't':torch.tensor(target), 'mask':torch.tensor(mask)}
