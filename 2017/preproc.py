@@ -5,6 +5,13 @@ from utils import read
 
 
 
+
+
+def pad_inf(vec, maxlen):
+    if vec.shape[1] == maxlen:
+        return vec
+    return np.pad(vec, ((0, 0), (0, maxlen-vec.shape[1])), 'constant', constant_values=(-inf))
+
 def pad_noise(speech, noise):
     '''
     Cuts noise vector if speech vec is shorter
@@ -76,9 +83,10 @@ def make_dnn_feats(fpath, noise_path, snr, P, maxlen=1339):
                                                         n_fft=512,
                                                         hop_length=256,
                                                         n_mels=64)
-    feats = window(mel_noisy, P).T
-    print('Feats:', feats.shape)
-    target = np.log(mel_clean).T
-    print("target:", target.shape)
+    pad_ind = mel_noisy.shape[1]
+    feats = pad_inf(window(mel_noisy, P), maxlen)
+    print('Feats:', feats)
+    target = pad_inf(np.log(mel_clean), maxlen)
+    #print("target:", target.shape)
 
-    return {'x': feats, 't':target}
+    return {'x': feats, 't':target, 'pad_i':pad_ind}
