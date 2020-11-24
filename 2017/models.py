@@ -151,12 +151,12 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
             dataset = DnnLoader(x_path, noise_path, snr, P, make_dnn_feats, mode='Train')
 
             loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
-            for sample in loader:
-                print('x:', sample["x"].shape, "t", sample["t"].shape, "mask:", sample["mask"].shape)
+            for batch in loader:
+                x = batch["x"]
                 x = x.to(device)
-                print("X:", x.shape)
+                target = batch["t"]
                 target = target.to(device)
-                print("t:", target.shape)
+                mask = batch["mask"]
                 output = l1(x)
                 print("output:", output)
 
