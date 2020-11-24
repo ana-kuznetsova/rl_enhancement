@@ -162,7 +162,11 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
             dataset = DnnLoader(x_path, noise_path, snr, P, make_dnn_feats, mode='Train')
 
             loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
-            for batch in tqdm(loader):
+            num_steps = len(loader)
+            step = 0
+            for batch in loader:
+                step+=1
+                print("Step:", step, "/", num_steps)
                 x = batch["x"]
                 #print("x:", x)
                 x = x.to(device)
