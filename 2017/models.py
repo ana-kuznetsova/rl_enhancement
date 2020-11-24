@@ -172,7 +172,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
                 newLoss = criterion(output, target, mask)             
                 optimizer.zero_grad()
                 newLoss.backward()
-                #optimizer.step()
+                optimizer.step()
 
             loss = newLoss.detach().cpu().numpy()
             epoch_loss+=loss
