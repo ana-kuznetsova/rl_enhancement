@@ -80,7 +80,7 @@ class Layer_1_2(nn.Module):
             self.fc1 = nn.Linear(704, 128)
         self.drop = nn.Dropout(0.3)
         self.fc2 = nn.Linear(128, 128)
-        self.out = nn.Linear(128, 257)
+        self.out = nn.Linear(128, 64)
 
     def forward(self, x):
         x = torch.sigmoid(self.fc1(x))
@@ -100,7 +100,7 @@ class DNN_mel(nn.Module):
             self.fc2 = nn.Linear(128, 128)
         self.fc3 = nn.Linear(128, 128)
         self.drop = nn.Dropout(0.3)
-        self.out = nn.Linear(128, 257)
+        self.out = nn.Linear(128, 64)
         
     def forward(self, x):
         x = torch.sigmoid(self.fc1(x))
@@ -166,9 +166,8 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
             step = 0
             for batch in loader:
                 step+=1
-                print("Step:", step, "/", num_steps)
+                #print("Step:", step, "/", num_steps)
                 x = batch["x"]
-                #print("x:", x)
                 x = x.to(device)
                 target = batch["t"]
                 target = target.to(device)
@@ -186,30 +185,33 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
             np.save(model_path+"losses_l1.npy", np.asarray(losses_l1))
             print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/epoch))
 
-            #### VALIDATION #####
+        #### VALIDATION #####
+    
+        print('Starting validation...')
         
-            print('Starting validation...')
-            
-            dataset = DnnLoader(x_path, noise_path, snr, P, make_dnn_feats, mode='Val')
-            val_loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
-            overall_val_loss=0
+        dataset = DnnLoader(x_path, noise_path, snr, P, make_dnn_feats, mode='Val')
+        val_loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
+        overall_val_loss=0
 
-            for x, target in val_loader:
-                x = x.to(device)
-                target = target.to(device).float()
-                output = l1(x)
-                valLoss = criterion(output, target)
-                overall_val_loss+=valLoss.detach().cpu().numpy()
+        for batch in val_loader:
+            x = batch["x"]
+            x = x.to(device)
+            target = batch["t"]
+            target = target.to(device)
+            mask = batch["mask"].to(device)
+            output = l1(x)
+            valLoss = criterion(output, target, mask) 
+            overall_val_loss+=valLoss.detach().cpu().numpy()
 
-            curr_val_loss = overall_val_loss/len(val_loader)
-            val_losses.append(curr_val_loss)
-            print('Validation loss: ', curr_val_loss)
-            np.save(model_path+'val_losses_l1.npy', np.asarray(val_losses))
+        curr_val_loss = overall_val_loss/len(val_loader)
+        val_losses.append(curr_val_loss)
+        print('Validation loss: ', curr_val_loss)
+        np.save(model_path+'val_losses_l1.npy', np.asarray(val_losses))
 
-            if curr_val_loss < prev_val:
-                torch.save(best_l1, model_path+'dnn_map_l1_best.pth')
-                prev_val = curr_val_loss
-            torch.save(best_l1, model_path+"dnn_map_l1_last.pth")
+        if curr_val_loss < prev_val:
+            torch.save(best_l1, model_path+'dnn_map_l1_best.pth')
+            prev_val = curr_val_loss
+        torch.save(best_l1, model_path+"dnn_map_l1_last.pth")
 
     ###### TRAIN SECOND LAYER ##########
     prev_val=99999
@@ -219,7 +221,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
     l1.load_state_dict(torch.load(model_path+'dnn_map_l1_last.pth'))
 
     l2 = Layer_1_2(l1)
-    criterion = nn.MSELoss()
+    criterion = MaskedMSELoss()
     optimizer = optim.SGD(l2.parameters(), lr=0.01, momentum=0.9)
     device = torch.device("cuda")
     l2.cuda()
@@ -241,10 +243,13 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
         loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
 
         for x, target in loader:
+            x = batch["x"]
             x = x.to(device)
+            target = batch["t"]
             target = target.to(device)
-            output = l2(x)
-            newLoss = criterion(output, target)              
+            mask = batch["mask"].to(device)
+            output = l1(x)
+            newLoss = criterion(output, target, mask)             
             optimizer.zero_grad()
             newLoss.backward()
             optimizer.step()
@@ -262,11 +267,14 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
         val_loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
         overall_val_loss=0
 
-        for x, target in val_loader:
+        for batch in val_loader:
+            x = batch["x"]
             x = x.to(device)
-            target = target.to(device).float()
-            output = l2(x)
-            valLoss = criterion(output, target)
+            target = batch["t"]
+            target = target.to(device)
+            mask = batch["mask"].to(device)
+            output = l1(x)
+            valLoss = criterion(output, target, mask) 
             overall_val_loss+=valLoss.detach().cpu().numpy()
 
         curr_val_loss = overall_val_loss/len(val_loader)
