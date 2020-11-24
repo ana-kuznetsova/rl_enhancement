@@ -159,9 +159,8 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
                 target = target.to(device)
                 mask = batch["mask"]
                 output = l1(x)
-                print("output:", output)
-
-                #newLoss = criterion(output, target)              
+                newLoss = criterion(output, target)
+                print("Newloss:", newLoss)              
                 #optimizer.zero_grad()
                 #newLoss.backward()
                 #optimizer.step()
