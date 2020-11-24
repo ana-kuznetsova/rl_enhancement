@@ -62,7 +62,7 @@ def window(stft, P):
     return spec_windows
 
 
-def make_dnn_feats(fpath, noise_path, snr, P):
+def make_dnn_feats(fpath, noise_path, snr, P, maxlen=1339):
     speech = read(fpath)
     noise = read(noise_path)
     noise = pad_noise(speech, noise)
@@ -77,8 +77,8 @@ def make_dnn_feats(fpath, noise_path, snr, P):
                                                         hop_length=256,
                                                         n_mels=64)
     feats = window(mel_noisy, P).T
-    #print('Feats:', feats.shape)
+    print('Feats:', feats.shape)
     target = np.log(mel_clean).T
-    #print("target:", target.shape)
+    print("target:", target.shape)
 
     return {'x': feats, 't':target}
