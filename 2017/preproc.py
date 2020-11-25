@@ -115,7 +115,7 @@ def precalc_Wiener(x_path, noise_path, out_path):
                                                         n_mels=64)
 
         w_filter = Wiener(mel_clean, mel_noise)
-        np.save(w_filter, os.path.join(out_path, f))
+        np.save(os.path.join(out_path, f), w_filter)
 
 
 def KMeans(target_path, out_path):
