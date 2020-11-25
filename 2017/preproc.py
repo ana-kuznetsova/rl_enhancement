@@ -1,6 +1,7 @@
 import os
 import librosa
 import numpy as np
+from tqdm import tqdm
 from utils import read
 from utils import pad
 import torch
@@ -88,3 +89,28 @@ def make_dnn_feats(fpath, noise_path, snr, P, maxlen=1339):
 def invert_mel(mel_spec):
     inv = librosa.feature.inverse.mel_to_stft(mel_spec, sr=16000, n_fft=512)
     return inv
+
+
+def Wiener(speech, noise):
+    t = (np.abs(speech)**2)/(np.abs(speech)**2+np.abs(noise)**2)
+    return t
+
+def precalc_Wiener(x_path, noise_path, out_path):
+    fnames = os.listdir(x_path)
+    noise = read(noise_path)
+
+    for f in tqdm(fnames):
+        speech = read(os.path.join(x_path, f))
+        noise = pad_noise(speech, noise)
+        mel_clean = librosa.feature.melspectrogram(y=speech, sr=16000,
+                                                        n_fft=512,
+                                                        hop_length=256,
+                                                        n_mels=64)
+
+        mel_noise = librosa.feature.melspectrogram(y=noise, sr=16000,
+                                                        n_fft=512,
+                                                        hop_length=256,
+                                                        n_mels=64)
+
+        w_filter = Wiener(mel_clean, mel_noise)
+        np.save(w_filter, os.path.join(out_path, f))
