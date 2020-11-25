@@ -220,6 +220,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
     l1 = Layer1().double()
 
     l1.load_state_dict(torch.load(model_path+'dnn_map_l1_last.pth'))
+    l1 = l1.to(device)
 
     l2 = Layer_1_2(l1)
     l2 = l2.double()
