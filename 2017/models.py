@@ -135,6 +135,8 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
     val_losses = []
     prev_val = 9999
 
+    device = torch.device("cuda")
+
     ############# PRETRAIN FIRST LAYER ################
     '''
     if resume=='False':
@@ -144,7 +146,6 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
         l1.apply(weights)
         criterion = MaskedMSELoss()
         optimizer = optim.SGD(l1.parameters(), lr=0.01, momentum=0.9)
-        device = torch.device("cuda")
         l1.cuda()
         l1 = l1.to(device)
         criterion.cuda()
