@@ -136,4 +136,4 @@ def KMeans(target_path, out_path):
         kmeans = kmeans.partial_fit(w)
 
     centers = kmeans.cluster_centers_
-    np.save(out_path+'kmeans_centers.npy', centers)
+    np.save(os.path.join(out_path, 'kmeans_centers.npy'), centers)
