@@ -221,6 +221,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
     l1.load_state_dict(torch.load(model_path+'dnn_map_l1_last.pth'))
 
     l2 = Layer_1_2(l1)
+    l2 = l2.double()
     criterion = MaskedMSELoss()
     optimizer = optim.SGD(l2.parameters(), lr=0.01, momentum=0.9)
     device = torch.device("cuda")
