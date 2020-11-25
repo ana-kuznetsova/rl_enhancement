@@ -2,6 +2,8 @@ import os
 import librosa
 import numpy as np
 from tqdm import tqdm
+from sklearn.cluster import MiniBatchKMeans
+
 from utils import read
 from utils import pad
 import torch
@@ -114,3 +116,23 @@ def precalc_Wiener(x_path, noise_path, out_path):
 
         w_filter = Wiener(mel_clean, mel_noise)
         np.save(w_filter, os.path.join(out_path, f))
+
+
+def KMeans(target_path, out_path):
+    '''
+    Args:
+        target_path: directory with precalculated Wiener filters
+        out_path: directory to save cluster centers
+    '''
+    kmeans = MiniBatchKMeans(n_clusters=32, 
+                             batch_size=128,
+                             max_iter=100)
+
+    fnames = os.listdir(target_path)
+    
+    for f in tqdm(fnames):
+        w = np.load(os.path.join(target_path, f)).T
+        kmeans = kmeans.partial_fit(w)
+
+    centers = kmeans.cluster_centers_
+    np.save(out_path+'kmeans_centers.npy', centers)
