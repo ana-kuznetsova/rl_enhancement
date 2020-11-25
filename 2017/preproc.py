@@ -137,3 +137,33 @@ def KMeans(target_path, out_path):
 
     centers = kmeans.cluster_centers_
     np.save(os.path.join(out_path, 'kmeans_centers.npy'), centers)
+
+
+def labels_transform(fname, noise_path, snr,  cluster_path, maxlen=1339):
+    G_mat = np.load(cluster_path).T
+    A_t = []
+    
+    speech = read(fname)
+    noise = read(noise_path)
+    noise = pad_noise(speech, noise)
+    blend = generate_noisy(speech, noise, snr)
+
+    mel_clean = librosa.feature.melspectrogram(y=speech, sr=16000,
+                                                        n_fft=512,
+                                                        hop_length=256,
+                                                        n_mels=64)
+    mel_noisy = librosa.feature.melspectrogram(y=blend, sr=16000,
+                                                        n_fft=512,
+                                                        hop_length=256,
+                                                        n_mels=64)
+    for timestep in range(mel_noisy.shape[1]):
+        sums = []
+        for a in range(G_mat.shape[1]):
+            diff = np.sum(mel_clean[:,timestep] - np.multiply(G_mat[:,a], mel_noisy[:, timestep]))
+            sums.append(diff)
+        sums = np.asarray(sums)
+        A_t.append(np.argmin(sums))
+    A_t = np.asarray(A_t)
+    padded = np.pad(A_t, ((0, 0), (0, maxlen-A_t.shape[1])), 
+                    mode='constant', constant_values=(-1, -1))
+    return padded
