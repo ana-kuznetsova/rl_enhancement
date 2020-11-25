@@ -5,11 +5,15 @@ from tqdm import tqdm
 import argparse
 
 from preproc import precalc_Wiener
+from preproc import KMeans
 
 def main(args):
     if args.mode=='data':
         #Precalculate Wiener target
-        precalc_Wiener(args.x_path, args.noise_path, args.out_path)
+        #precalc_Wiener(args.x_path, args.noise_path, args.out_path)
+        #Calculate cluster centers
+        KMeans(args.x_path, args.out_path)
+
 
 
 if __name__ == '__main__':
