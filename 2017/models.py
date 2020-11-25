@@ -187,31 +187,31 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
 
         #### VALIDATION #####
     
-        print('Starting validation...')
-        
-        dataset = DnnLoader(x_path, noise_path, snr, P, make_dnn_feats, mode='Val')
-        val_loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
-        overall_val_loss=0
+            print('Starting validation...')
+            
+            dataset = DnnLoader(x_path, noise_path, snr, P, make_dnn_feats, mode='Val')
+            val_loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
+            overall_val_loss=0
 
-        for batch in val_loader:
-            x = batch["x"]
-            x = x.to(device)
-            target = batch["t"]
-            target = target.to(device)
-            mask = batch["mask"].to(device)
-            output = l1(x)
-            valLoss = criterion(output, target, mask) 
-            overall_val_loss+=valLoss.detach().cpu().numpy()
+            for batch in val_loader:
+                x = batch["x"]
+                x = x.to(device)
+                target = batch["t"]
+                target = target.to(device)
+                mask = batch["mask"].to(device)
+                output = l1(x)
+                valLoss = criterion(output, target, mask) 
+                overall_val_loss+=valLoss.detach().cpu().numpy()
 
-        curr_val_loss = overall_val_loss/len(val_loader)
-        val_losses.append(curr_val_loss)
-        print('Validation loss: ', curr_val_loss)
-        np.save(model_path+'val_losses_l1.npy', np.asarray(val_losses))
+            curr_val_loss = overall_val_loss/len(val_loader)
+            val_losses.append(curr_val_loss)
+            print('Validation loss: ', curr_val_loss)
+            np.save(model_path+'val_losses_l1.npy', np.asarray(val_losses))
 
-        if curr_val_loss < prev_val:
-            torch.save(best_l1, model_path+'dnn_map_l1_best.pth')
-            prev_val = curr_val_loss
-        torch.save(best_l1, model_path+"dnn_map_l1_last.pth")
+            if curr_val_loss < prev_val:
+                torch.save(best_l1, model_path+'dnn_map_l1_best.pth')
+                prev_val = curr_val_loss
+            torch.save(best_l1, model_path+"dnn_map_l1_last.pth")
 
     ###### TRAIN SECOND LAYER ##########
     prev_val=99999
