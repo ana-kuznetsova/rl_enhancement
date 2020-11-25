@@ -10,6 +10,7 @@ import torch.utils.data as data
 
 
 from preproc import make_dnn_feats
+from preproc import invert_mel
 
 
 ########DATA LOADERS ########
@@ -54,6 +55,34 @@ class DnnLoader(data.Dataset):
         sample = self.transform(fpath, self.noise_path, self.snr, self.P)
         return sample
 
+class DnnTestLoader(data.Dataset):
+    def __init__(self, x_path, noise_path, snr, P, transform):
+        '''
+        Args:
+            x_path: path to the location where all the wav files stored
+            noise_path: path to noise signal
+            snr: desired snr
+            P: window length
+            transform: func for feature generation
+        '''
+
+        self.x_path = x_path
+        self.noise_path = noise_path
+        self.transform = transform
+        self.snr = snr
+        self.P = P
+        self.fnames = os.listdir(x_path)
+
+    def __len__(self):
+        return int(len(self.fnames))
+
+    def __getitem__(self, idx):
+        if torch.is_tensor(idx):
+            idx = idx.tolist()
+
+        fpath = os.path.join(self.x_path, self.fnames[idx])
+        sample = self.transform(fpath, self.noise_path, self.snr, self.P)
+        return sample, fpath
 
 
 class Layer1(nn.Module):
@@ -187,7 +216,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
             np.save(model_path+"losses_l1.npy", np.asarray(losses_l1))
             print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/epoch))
 
-        #### VALIDATION #####
+            #### VALIDATION #####
     
             print('Starting validation...')
             
@@ -296,19 +325,17 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
 
 def train_dnn(x_path, model_path, num_epochs, noise_path, snr, P, from_pretrained='True', resume='False'):
     
-    num_epochs = 50
-    
     if from_pretrained=='True':
         print("Loading pretrained weights...")
         l1 = Layer1()
         l1.load_state_dict(torch.load(model_path+'dnn_map_l1_best.pth'))
         l1_2 = Layer_1_2(l1)
         l1_2.load_state_dict(torch.load(model_path+'dnn_map_l2_best.pth'))
-        model = DNN_mel(l1_2)
+        model = DNN_mel(l1_2).double()
 
     elif resume=="True":
         model = DNN_mel()
-        model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
+        model.load_state_dict(torch.load(model_path+'dnn_map_best.pth')).double()
 
     criterion = MaskedMSELoss()
     optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
@@ -379,31 +406,20 @@ def train_dnn(x_path, model_path, num_epochs, noise_path, snr, P, from_pretraine
 
 
 
-def inference(chunk_size, x_path, y_path, model_path,
-              test_out,
-              win_len=512, hop_size=256, fs=16000):
-
+def inference(x_path, model_path, num_epochs, noise_path, snr, P, out_path):
     
     device = torch.device("cuda")
     model = DNN_mel()
-    model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
+    model.load_state_dict(torch.load(model_path+'dnn_map_best.pth')).double()
     model.cuda()
     model = model.to(device)
 
-    fnames = os.listdir(x_path)
+    dataset = DnnTestLoader(x_path, noise_path, snr, P, make_dnn_feats)
+    loader = data.DataLoader(dataset, batch_size=1339, shuffle=True)
 
-    X_test, y_test, batch_indices = make_windows(x_path, y_path,
-                                            [0, len(fnames)], P=5, 
-                                            win_len=512, 
-                                            hop_size=256, fs=16000, nn_type='map')
-
-    dataset = QDataSet(X_test, y_test, batch_indices)
-    test_loader = data.DataLoader(dataset, batch_size=1)
-
-    for i, (x, target) in enumerate(test_loader):
+    for batch in loader:
+        x = batch["x"]
         x = x.to(device)
-        x = x.reshape(x.shape[1], x.shape[2])
-        target = target.to(device).float()
-        target = target.reshape(target.shape[1], target.shape[2])
-        output = model(x).cpu().data.numpy().T
-        np.save(test_out+fnames[i], output)
+        output = model(x).detach().cpu().numpy()
+        output = np.exp(invert_mel(output))
+            
