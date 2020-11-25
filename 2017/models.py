@@ -138,7 +138,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
     device = torch.device("cuda")
 
     ############# PRETRAIN FIRST LAYER ################
-    '''
+
     if resume=='False':
     
         l1 = Layer1()
@@ -214,7 +214,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
                 torch.save(best_l1, model_path+'dnn_map_l1_best.pth')
                 prev_val = curr_val_loss
             torch.save(best_l1, model_path+"dnn_map_l1_last.pth")
-    '''
+
     ###### TRAIN SECOND LAYER ##########
     prev_val=99999
     val_losses = []
