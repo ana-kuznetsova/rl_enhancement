@@ -167,8 +167,9 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
 
             dataset = QDnnLoader(x_path, noise_path, cluster_path, snr, P, q_transform, 'Train')
             loader = data.DataLoader(dataset, batch_size=32, shuffle=True, num_workers=0)
-
-            for batch in loader:
+            
+            num_steps = len(loader)
+            for i, batch in enumerate(loader):
                 x = batch['x']
                 x = x.to(device)
                 target = batch['t']
@@ -179,6 +180,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
                 optimizer.zero_grad()
                 newLoss.backward()
                 optimizer.step()
+                print('Step {}/{}'.format(i, num_steps))
             
             losses_l1.append(epoch_loss/epoch)
             np.save(os.path.join(model_path, "qlosses_l1.npy"), np.array(losses_l1))
