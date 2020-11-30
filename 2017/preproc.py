@@ -147,6 +147,8 @@ def q_transform(fname, noise_path, snr,  cluster_path, P, maxlen=1339):
     speech = read(fname)
     noise = read(noise_path)
     noise = pad_noise(speech, noise)
+    print("Speech:", speech.shape)
+    print("noise:", noise.shape)
     blend = generate_noisy(speech, noise, snr)
 
     mel_clean = librosa.feature.melspectrogram(y=speech, sr=16000,

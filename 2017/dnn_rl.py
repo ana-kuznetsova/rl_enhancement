@@ -115,7 +115,7 @@ class DNN_RL(nn.Module):
 
 ##### TRAINING FUNCTIONS #####
 
-def q_pretrain(x_path, noise_path, cluster_path, model_path, 
+def q_pretrain(x_path, y_path, noise_path, cluster_path, model_path, 
                num_epochs=100, snr=0, P=5, maxlen=1339, resume=False):
     P=5 #Window size
     torch.cuda.empty_cache() 
