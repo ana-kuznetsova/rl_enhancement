@@ -175,7 +175,8 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
                 x = x.to(device)
                 target = batch['t']
                 target = target.to(device).long()
-                target = torch.flatten(target)
+                #target = torch.flatten(target)
+                print("T", target.shape)
                 output = l1(x)
                 newLoss = criterion(output, target)            
                 epoch_loss += newLoss.data.detach().cpu().numpy()
