@@ -143,8 +143,7 @@ def KMeans(target_path, out_path):
 def q_transform(fname, noise_path, cluster_path, snr, P, maxlen=1339):
     G_mat = np.load(cluster_path).T
     A_t = []
-    
-    print("SNR", snr)
+
     speech = read(fname)
     noise = read(noise_path)
     noise = pad_noise(speech, noise)
