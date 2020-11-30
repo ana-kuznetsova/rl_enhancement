@@ -120,9 +120,8 @@ class CrossEntropyCustom(nn.Module):
         batch_loss = []
         for i in range(x.shape[0]):
             curr_loss = loss(x[i], t[i].squeeze(1))
-            print(curr_loss)
             batch_loss.append(curr_loss)
-        avg_loss = torch.sum(torch.tensor(batch_loss), requires_grad=True)/x.shape[0]
+        avg_loss = torch.sum(torch.tensor(batch_loss, requires_grad=True))/x.shape[0]
         print(avg_loss)
         return avg_loss
 
