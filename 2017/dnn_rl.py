@@ -188,8 +188,8 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
                 x = x.to(device)
                 target = batch['t']
                 target = target.to(device).long()
-                print("x:", x.shape, "t:", target.shape)
                 output = l1(x)
+                print("Out:", output.shape)
                 valLoss = criterion(output, target)
                 overall_val_loss+=valLoss.detach().cpu().numpy()
 
