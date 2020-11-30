@@ -180,7 +180,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
                 optimizer.zero_grad()
                 newLoss.backward()
                 optimizer.step()
-                print('Step {}/{}'.format(i, num_steps), newLoss)
+                #print('Step {}/{}'.format(i, num_steps), newLoss)
             
             losses_l1.append(epoch_loss/epoch)
             np.save(os.path.join(model_path, "qlosses_l1.npy"), np.array(losses_l1))
@@ -197,13 +197,11 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
 
             for batch in val_loader:
                 x = batch['x']
-                print("X:", x.shape)
                 x = x.to(device)
                 target = batch['t']
-                print("T:", target.shape)
-                target = target.to(device).long()
+                target = target.to(device).squeeze(1).long()
                 output = l1(x)
-                print("Out:", output.shape)
+                newLoss = criterion(output, target)            
                 valLoss = criterion(output, target)
                 overall_val_loss+=valLoss.detach().cpu().numpy()
 
