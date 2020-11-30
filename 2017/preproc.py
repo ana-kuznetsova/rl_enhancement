@@ -1,8 +1,12 @@
 import os
 import librosa
 import numpy as np
-from utils import read
+from tqdm import tqdm
+from sklearn.cluster import MiniBatchKMeans
 
+from utils import read
+from utils import pad
+import torch
 
 def pad(vec, maxlen):
     if vec.shape[1] == maxlen:
@@ -67,7 +71,7 @@ def window(stft, P):
     return spec_windows
 
 
-def make_dnn_feats(fpath, noise_path, snr, P, max_len):
+def make_dnn_feats(fpath, noise_path, snr, P, maxlen=1339):
     speech = read(fpath)
     noise = read(noise_path)
     noise = pad_noise(speech, noise)
@@ -81,9 +85,90 @@ def make_dnn_feats(fpath, noise_path, snr, P, max_len):
                                                         n_fft=512,
                                                         hop_length=256,
                                                         n_mels=64)
-    feats = window(mel_noisy, P).T
-    #print('Feats:', feats.shape)
-    target = np.log(mel_clean).T
-    #print("target:", target.shape)
+    
+    feats = pad(window(mel_noisy, P), maxlen).T
+    target = np.log(mel_clean)
+    mask = pad(np.ones((target.shape[0], target.shape[1])), maxlen).T
+    target = pad(target, maxlen).T
+    return {'x': torch.tensor(feats), 't':torch.tensor(target), 'mask':torch.tensor(mask)}
 
-    return {'x': feats, 't':target}
+
+def invert_mel(mel_spec):
+    inv = librosa.feature.inverse.mel_to_stft(mel_spec, sr=16000, n_fft=512)
+    return inv
+
+
+def Wiener(speech, noise):
+    t = (np.abs(speech)**2)/(np.abs(speech)**2+np.abs(noise)**2)
+    return t
+
+def precalc_Wiener(x_path, noise_path, out_path):
+    fnames = os.listdir(x_path)
+    noise = read(noise_path)
+
+    for f in tqdm(fnames):
+        speech = read(os.path.join(x_path, f))
+        noise = pad_noise(speech, noise)
+        mel_clean = librosa.feature.melspectrogram(y=speech, sr=16000,
+                                                        n_fft=512,
+                                                        hop_length=256,
+                                                        n_mels=64)
+
+        mel_noise = librosa.feature.melspectrogram(y=noise, sr=16000,
+                                                        n_fft=512,
+                                                        hop_length=256,
+                                                        n_mels=64)
+
+        w_filter = Wiener(mel_clean, mel_noise)
+        f = f.split('.')[0]+'.npy'
+        np.save(os.path.join(out_path, f), w_filter)
+
+
+def KMeans(target_path, out_path):
+    '''
+    Args:
+        target_path: directory with precalculated Wiener filters
+        out_path: directory to save cluster centers
+    '''
+    kmeans = MiniBatchKMeans(n_clusters=32, 
+                             batch_size=128,
+                             max_iter=100)
+
+    fnames = os.listdir(target_path)
+    
+    for f in tqdm(fnames):
+        w = np.load(os.path.join(target_path, f)).T
+        kmeans = kmeans.partial_fit(w)
+
+    centers = kmeans.cluster_centers_
+    np.save(os.path.join(out_path, 'kmeans_centers.npy'), centers)
+
+
+def labels_transform(fname, noise_path, snr,  cluster_path, maxlen=1339):
+    G_mat = np.load(cluster_path).T
+    A_t = []
+    
+    speech = read(fname)
+    noise = read(noise_path)
+    noise = pad_noise(speech, noise)
+    blend = generate_noisy(speech, noise, snr)
+
+    mel_clean = librosa.feature.melspectrogram(y=speech, sr=16000,
+                                                        n_fft=512,
+                                                        hop_length=256,
+                                                        n_mels=64)
+    mel_noisy = librosa.feature.melspectrogram(y=blend, sr=16000,
+                                                        n_fft=512,
+                                                        hop_length=256,
+                                                        n_mels=64)
+    for timestep in range(mel_noisy.shape[1]):
+        sums = []
+        for a in range(G_mat.shape[1]):
+            diff = np.sum(mel_clean[:,timestep] - np.multiply(G_mat[:,a], mel_noisy[:, timestep]))
+            sums.append(diff)
+        sums = np.asarray(sums)
+        A_t.append(np.argmin(sums))
+    A_t = np.asarray(A_t)
+    padded = np.pad(A_t, ((0, 0), (0, maxlen-A_t.shape[1])), 
+                    mode='constant', constant_values=(-1, -1))
+    return padded

@@ -1,6 +1,7 @@
 import numpy as np
 import copy
 import os
+import tqdm as tqdm
 
 import torch
 import torch.nn as nn
@@ -9,6 +10,7 @@ import torch.utils.data as data
 
 
 from preproc import make_dnn_feats
+from preproc import invert_mel
 
 
 ########DATA LOADERS ########
@@ -53,6 +55,34 @@ class DnnLoader(data.Dataset):
         sample = self.transform(fpath, self.noise_path, self.snr, self.P)
         return sample
 
+class DnnTestLoader(data.Dataset):
+    def __init__(self, x_path, noise_path, snr, P, transform):
+        '''
+        Args:
+            x_path: path to the location where all the wav files stored
+            noise_path: path to noise signal
+            snr: desired snr
+            P: window length
+            transform: func for feature generation
+        '''
+
+        self.x_path = x_path
+        self.noise_path = noise_path
+        self.transform = transform
+        self.snr = snr
+        self.P = P
+        self.fnames = os.listdir(x_path)
+
+    def __len__(self):
+        return int(len(self.fnames))
+
+    def __getitem__(self, idx):
+        if torch.is_tensor(idx):
+            idx = idx.tolist()
+
+        fpath = os.path.join(self.x_path, self.fnames[idx])
+        sample = self.transform(fpath, self.noise_path, self.snr, self.P)
+        return sample, fpath
 
 
 class Layer1(nn.Module):
@@ -63,7 +93,7 @@ class Layer1(nn.Module):
         super().__init__()
         self.fc1 = nn.Linear(704, 128)
         self.drop = nn.Dropout(0.3)
-        self.out = nn.Linear(128, 257)
+        self.out = nn.Linear(128, 64)
 
     def forward(self, x):
         x = torch.sigmoid(self.fc1(x))
@@ -79,7 +109,7 @@ class Layer_1_2(nn.Module):
             self.fc1 = nn.Linear(704, 128)
         self.drop = nn.Dropout(0.3)
         self.fc2 = nn.Linear(128, 128)
-        self.out = nn.Linear(128, 257)
+        self.out = nn.Linear(128, 64)
 
     def forward(self, x):
         x = torch.sigmoid(self.fc1(x))
@@ -99,7 +129,7 @@ class DNN_mel(nn.Module):
             self.fc2 = nn.Linear(128, 128)
         self.fc3 = nn.Linear(128, 128)
         self.drop = nn.Dropout(0.3)
-        self.out = nn.Linear(128, 257)
+        self.out = nn.Linear(128, 64)
         
     def forward(self, x):
         x = torch.sigmoid(self.fc1(x))
@@ -116,6 +146,16 @@ def weights(m):
         nn.init.xavier_normal_(m.weight.data)
         nn.init.constant_(m.bias.data,0.1)
 
+class MaskedMSELoss(torch.nn.Module):
+    def __init__(self):
+        super(MaskedMSELoss, self).__init__()
+
+    def forward(self, predict, target, mask):
+        predict = torch.flatten(predict)
+        target = torch.flatten(target)
+        mask = torch.flatten(mask)
+        err = torch.sum(((predict-target)*mask)**2.0)  / torch.sum(mask)
+        return err
 
 def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False'):
     
@@ -124,15 +164,17 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
     val_losses = []
     prev_val = 9999
 
+    device = torch.device("cuda")
+
     ############# PRETRAIN FIRST LAYER ################
+
     if resume=='False':
     
         l1 = Layer1()
-        #l1 = l1.double()
+        l1 = l1.double()
         l1.apply(weights)
-        criterion = nn.MSELoss()
+        criterion = MaskedMSELoss()
         optimizer = optim.SGD(l1.parameters(), lr=0.01, momentum=0.9)
-        device = torch.device("cuda")
         l1.cuda()
         l1 = l1.to(device)
         criterion.cuda()
@@ -151,14 +193,18 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
             dataset = DnnLoader(x_path, noise_path, snr, P, make_dnn_feats, mode='Train')
 
             loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
-            print("Sample:", dataset[0])
-            for sample in loader:
-                #print('x:', sample["x"].shape, "t", sample["t"].shape)
+            num_steps = len(loader)
+            step = 0
+            for batch in loader:
+                step+=1
+                #print("Step:", step, "/", num_steps)
+                x = batch["x"]
                 x = x.to(device)
+                target = batch["t"]
                 target = target.to(device)
+                mask = batch["mask"].to(device)
                 output = l1(x)
-
-                newLoss = criterion(output, target)              
+                newLoss = criterion(output, target, mask)             
                 optimizer.zero_grad()
                 newLoss.backward()
                 optimizer.step()
@@ -171,18 +217,21 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
             print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/epoch))
 
             #### VALIDATION #####
-        
+    
             print('Starting validation...')
             
             dataset = DnnLoader(x_path, noise_path, snr, P, make_dnn_feats, mode='Val')
             val_loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
             overall_val_loss=0
 
-            for x, target in val_loader:
+            for batch in val_loader:
+                x = batch["x"]
                 x = x.to(device)
-                target = target.to(device).float()
+                target = batch["t"]
+                target = target.to(device)
+                mask = batch["mask"].to(device)
                 output = l1(x)
-                valLoss = criterion(output, target)
+                valLoss = criterion(output, target, mask) 
                 overall_val_loss+=valLoss.detach().cpu().numpy()
 
             curr_val_loss = overall_val_loss/len(val_loader)
@@ -198,12 +247,14 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
     ###### TRAIN SECOND LAYER ##########
     prev_val=99999
     val_losses = []
-    l1 = Layer1()
+    l1 = Layer1().double()
 
-    l1.load_state_dict(torch.load(model_path+'dnn_map_l1_last.pth'))
+    l1.load_state_dict(torch.load(model_path+'dnn_map_l1_best.pth'))
+    l1 = l1.to(device)
 
     l2 = Layer_1_2(l1)
-    criterion = nn.MSELoss()
+    l2 = l2.double()
+    criterion = MaskedMSELoss()
     optimizer = optim.SGD(l2.parameters(), lr=0.01, momentum=0.9)
     device = torch.device("cuda")
     l2.cuda()
@@ -224,11 +275,14 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
         dataset = DnnLoader(x_path, noise_path, snr, P, make_dnn_feats, mode='Train')
         loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
 
-        for x, target in loader:
+        for batch in loader:
+            x = batch["x"]
             x = x.to(device)
+            target = batch["t"]
             target = target.to(device)
-            output = l2(x)
-            newLoss = criterion(output, target)              
+            mask = batch["mask"].to(device)
+            output = l1(x)
+            newLoss = criterion(output, target, mask)             
             optimizer.zero_grad()
             newLoss.backward()
             optimizer.step()
@@ -246,11 +300,14 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
         val_loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
         overall_val_loss=0
 
-        for x, target in val_loader:
+        for batch in val_loader:
+            x = batch["x"]
             x = x.to(device)
-            target = target.to(device).float()
-            output = l2(x)
-            valLoss = criterion(output, target)
+            target = batch["t"]
+            target = target.to(device)
+            mask = batch["mask"].to(device)
+            output = l1(x)
+            valLoss = criterion(output, target, mask) 
             overall_val_loss+=valLoss.detach().cpu().numpy()
 
         curr_val_loss = overall_val_loss/len(val_loader)
@@ -266,29 +323,21 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
             
 
 
-def train_dnn(chunk_size,
-              model_path, x_path, y_path,  pretrain_path, from_pretrained='False',
-              maxlen=1339, win_len=512, hop_size=256, fs=16000, resume='False'):
-    
-    num_epochs = 50
+def train_dnn(x_path, model_path, num_epochs, noise_path, snr, P, from_pretrained='True', resume='False'):
     
     if from_pretrained=='True':
         print("Loading pretrained weights...")
         l1 = Layer1()
-        l1.load_state_dict(torch.load(pretrain_path+'dnn_map_l1_best.pth'))
+        l1.load_state_dict(torch.load(model_path+'dnn_map_l1_best.pth'))
         l1_2 = Layer_1_2(l1)
-        l1_2.load_state_dict(torch.load(pretrain_path+'dnn_map_l2_best.pth'))
-        model = DNN_mel(l1_2)
+        l1_2.load_state_dict(torch.load(model_path+'dnn_map_l2_best.pth'))
+        model = DNN_mel(l1_2).double()
 
     elif resume=="True":
         model = DNN_mel()
-        model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
+        model.load_state_dict(torch.load(model_path+'dnn_map_best.pth')).double()
 
-    else:
-        model = DNN_mel()
-        model.apply(weights)
-
-    criterion = nn.MSELoss()
+    criterion = MaskedMSELoss()
     optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
     device = torch.device("cuda")
     model.cuda()
@@ -306,66 +355,43 @@ def train_dnn(chunk_size,
         print('Epoch {}/{}'.format(epoch, num_epochs))
         epoch_loss = 0
         
-        num_chunk = (12474//chunk_size) + 1
-        for chunk in range(num_chunk):
-            chunk_loss = 0
-            start = chunk*chunk_size
-            end = min(start+chunk_size, 12474)
-            print(start, end)
+        dataset = DnnLoader(x_path, noise_path, snr, P, make_dnn_feats, mode='Train')
+        loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
+        
 
-            X_chunk, y_chunk, batch_indices = make_windows(x_path, y_path,
-                                          [start, end], P=5, 
-                                           win_len=512, 
-                                           hop_size=256, fs=16000, nn_type='map')
+        for batch in loader:
+            x = batch["x"]
+            x = x.to(device)
+            target = batch["t"]
+            target = target.to(device)
+            mask = batch["mask"].to(device)
+            output = l1(x)
+            newLoss = criterion(output, target, mask)             
+            optimizer.zero_grad()
+            newLoss.backward()
+            optimizer.step()
 
-            dataset = QDataSet(X_chunk, y_chunk, batch_indices)
-            loader = data.DataLoader(dataset, batch_size=1)
-
-            for x, target in loader:
-                x = x.to(device)
-                x = x.reshape(x.shape[1], x.shape[2])
-                target = target.to(device).float()
-                target = target.reshape(target.shape[1], target.shape[2])
-                output = model(x)
-
-                newLoss = criterion(output, target)              
-                chunk_loss += newLoss.data
-                optimizer.zero_grad()
-                newLoss.backward()
-                optimizer.step()
-
-            chunk_loss = (chunk_loss.detach().cpu().numpy())/len(loader)
-            
-            epoch_loss+=chunk_loss
-
-            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
-
-        losses.append(epoch_loss/num_chunk)
+        losses.append(epoch_loss/epoch)
         np.save(model_path+"losses.npy", losses)
-        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
+        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/epoch))
 
         #### VALIDATION #####
        
         print('Starting validation...')
         prev_val = 9999
-        start = 12474
-        end = 13860
-        X_val, A_val, batch_indices = make_windows(x_path, y_path,
-                                            [start, end], P=5, 
-                                            win_len=512, 
-                                            hop_size=256, fs=16000, nn_type='map')
 
-        dataset = QDataSet(X_val, A_val, batch_indices)
-        val_loader = data.DataLoader(dataset, batch_size=1)
+        dataset = DnnLoader(x_path, noise_path, snr, P, make_dnn_feats, mode='Val')
+        val_loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
         overall_val_loss=0
 
-        for x, target in val_loader:
+        for batch in val_loader:
+            x = batch["x"]
             x = x.to(device)
-            x = x.reshape(x.shape[1], x.shape[2])
-            target = target.to(device).float()
-            target = target.reshape(target.shape[1], target.shape[2])
-            output = model(x)
-            valLoss = criterion(output, target)
+            target = batch["t"]
+            target = target.to(device)
+            mask = batch["mask"].to(device)
+            output = l1(x)
+            valLoss = criterion(output, target, mask) 
             overall_val_loss+=valLoss.detach().cpu().numpy()
 
         curr_val_loss = overall_val_loss/len(val_loader)
@@ -380,31 +406,20 @@ def train_dnn(chunk_size,
 
 
 
-def inference(chunk_size, x_path, y_path, model_path,
-              test_out,
-              win_len=512, hop_size=256, fs=16000):
-
+def inference(x_path, model_path, num_epochs, noise_path, snr, P, out_path):
     
     device = torch.device("cuda")
     model = DNN_mel()
-    model.load_state_dict(torch.load(model_path+'dnn_map_best.pth'))
+    model.load_state_dict(torch.load(model_path+'dnn_map_best.pth')).double()
     model.cuda()
     model = model.to(device)
 
-    fnames = os.listdir(x_path)
+    dataset = DnnTestLoader(x_path, noise_path, snr, P, make_dnn_feats)
+    loader = data.DataLoader(dataset, batch_size=1339, shuffle=True)
 
-    X_test, y_test, batch_indices = make_windows(x_path, y_path,
-                                            [0, len(fnames)], P=5, 
-                                            win_len=512, 
-                                            hop_size=256, fs=16000, nn_type='map')
-
-    dataset = QDataSet(X_test, y_test, batch_indices)
-    test_loader = data.DataLoader(dataset, batch_size=1)
-
-    for i, (x, target) in enumerate(test_loader):
+    for batch in loader:
+        x = batch["x"]
         x = x.to(device)
-        x = x.reshape(x.shape[1], x.shape[2])
-        target = target.to(device).float()
-        target = target.reshape(target.shape[1], target.shape[2])
-        output = model(x).cpu().data.numpy().T
-        np.save(test_out+fnames[i], output)
+        output = model(x).detach().cpu().numpy()
+        output = np.exp(invert_mel(output))
+            

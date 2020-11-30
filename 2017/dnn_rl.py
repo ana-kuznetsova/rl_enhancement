@@ -21,6 +21,45 @@ from utils import invert
 from metrics import calc_Z
 
 
+class QDnnLoader(data.Dataset):
+    def __init__(self, x_path, noise_path, snr, P, transforms, mode='Train'):
+        '''
+        Args:
+            x_path: path to the location where all the wav files stored
+            noise_path: path to noise signal
+            snr: desired snr
+            P: window length
+            transforms: list of transforms done with input
+            mode: Train or Val. If train, take 0.7 of the data set
+                  If validation take other 0.3.
+        '''
+
+        self.x_path = x_path
+        self.noise_path = noise_path
+        self.transforms = transforms
+        self.snr = snr
+        self.P = P
+        self.mode = mode
+        self.fnames = os.listdir(x_path)
+        self.train_fnames = self.fnames[:int(len(self.fnames)*0.7)]
+        self.val_fnames = self.fnames[int(len(self.fnames)*0.7):]
+
+    def __len__(self):
+        if self.mode=='Train':
+            return int(len(self.fnames)*0.7)
+        else:
+            return len(self.fnames) - int(len(self.fnames)*0.7)
+
+    def __getitem__(self, idx):
+        if torch.is_tensor(idx):
+            idx = idx.tolist()
+
+        if self.mode=='Train':
+            fpath = os.path.join(self.x_path, self.train_fnames[idx])
+        elif self.mode=='Val':
+            fpath = os.path.join(self.x_path, self.val_fnames[idx])
+        sample = self.transform(fpath, self.noise_path, self.snr, self.P)
+        return sample
 
 #### LAYERS FOR RL PRETRAINING ###
 
