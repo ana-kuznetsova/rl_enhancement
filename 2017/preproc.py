@@ -38,7 +38,7 @@ def generate_noisy(speech, noise, desired_snr):
     E_noise = np.sum(np.power(noise, 2))
     
     #calculate b coeff
-    b = np.sqrt((E_speech/(np.power(10, (desired_snr/10))))/E_noise)    
+    b = np.sqrt((E_speech/(np.power(10, desired_snr/10)))/E_noise)    
     return speech + b*noise
 
 
@@ -144,11 +144,10 @@ def q_transform(fname, noise_path, snr,  cluster_path, P, maxlen=1339):
     G_mat = np.load(cluster_path).T
     A_t = []
     
+    print("SNR", snr)
     speech = read(fname)
     noise = read(noise_path)
     noise = pad_noise(speech, noise)
-    print("Speech:", speech.shape)
-    print("noise:", noise.shape)
     blend = generate_noisy(speech, noise, snr)
 
     mel_clean = librosa.feature.melspectrogram(y=speech, sr=16000,
