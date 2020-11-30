@@ -178,7 +178,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
             # Y is a clean speech spectrogram
             
             dataset = QDnnLoader(x_path, noise_path, snr, cluster_path, P, q_transform, 'Val')
-            val_loader = data.DataLoader(dataset, batch_size=32)
+            val_loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
             overall_val_loss=0
 
             for batch in val_loader:
