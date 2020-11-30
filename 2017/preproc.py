@@ -4,6 +4,11 @@ import numpy as np
 from utils import read
 
 
+def pad(vec, maxlen):
+    if vec.shape[1] == maxlen:
+        return vec
+    return np.pad(vec, ((0, 0), (0, maxlen-vec.shape[1])), 'constant')
+
 
 def pad_noise(speech, noise):
     '''
@@ -62,7 +67,7 @@ def window(stft, P):
     return spec_windows
 
 
-def make_dnn_feats(fpath, noise_path, snr, P):
+def make_dnn_feats(fpath, noise_path, snr, P, max_len):
     speech = read(fpath)
     noise = read(noise_path)
     noise = pad_noise(speech, noise)
