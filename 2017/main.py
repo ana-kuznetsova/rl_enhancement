@@ -6,6 +6,7 @@ import argparse
 
 from preproc import precalc_Wiener
 from preproc import KMeans
+from dnn_rl import q_pretrain
 
 def main(args):
     if args.mode=='data':
@@ -14,6 +15,10 @@ def main(args):
         #Calculate cluster centers
         KMeans(args.x_path, args.out_path)
         #Calculate ground truth labels for pretraining
+    elif args.mode=='qpretrain':
+        q_pretrain(args.x_path, args.noise_path, args.cluster_path,
+                    args.model_path, args.num_epochs, args.resume)
+
 
 
 
