@@ -180,7 +180,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
                 optimizer.zero_grad()
                 newLoss.backward()
                 optimizer.step()
-                print('Step {}/{}'.format(i, num_steps))
+                print('Step {}/{}'.format(i, num_steps), newLoss)
             
             losses_l1.append(epoch_loss/epoch)
             np.save(os.path.join(model_path, "qlosses_l1.npy"), np.array(losses_l1))
