@@ -122,7 +122,6 @@ class CrossEntropyCustom(nn.Module):
             curr_loss = loss(x[i], t[i].squeeze(1))
             batch_loss+=curr_loss
         avg_loss = batch_loss/x.shape[0]
-        print(avg_loss)
         return avg_loss
 
 ##### TRAINING FUNCTIONS #####
