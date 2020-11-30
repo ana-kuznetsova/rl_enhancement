@@ -164,6 +164,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
                 print("X:", x.shape, "t:", target.shape)
                 target = torch.flatten(target)
                 output = l1(x)
+                print("out:", output.shape)
 
                 newLoss = criterion(output, target)            
                 epoch_loss += newLoss.data.detach().cpu().numpy()
