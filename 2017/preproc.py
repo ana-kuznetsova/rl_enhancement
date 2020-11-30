@@ -140,7 +140,7 @@ def KMeans(target_path, out_path):
     np.save(os.path.join(out_path, 'kmeans_centers.npy'), centers)
 
 
-def q_transform(fname, noise_path, snr,  cluster_path, P, maxlen=1339):
+def q_transform(fname, noise_path, cluster_path, snr, P, maxlen=1339):
     G_mat = np.load(cluster_path).T
     A_t = []
     

@@ -13,7 +13,7 @@ from preproc import q_transform
 
 
 class QDnnLoader(data.Dataset):
-    def __init__(self, x_path, noise_path, snr, cluster_path, P, transform, mode='Train'):
+    def __init__(self, x_path, noise_path, cluster_path, snr, P, transform, mode='Train'):
         '''
         Args:
             x_path: path to the location where all the wav files stored
@@ -50,7 +50,7 @@ class QDnnLoader(data.Dataset):
             fpath = os.path.join(self.x_path, self.train_fnames[idx])
         elif self.mode=='Val':
             fpath = os.path.join(self.x_path, self.val_fnames[idx])
-        sample = self.transform(fpath, self.noise_path, self.snr, self.cluster_path, self.P)
+        sample = self.transform(fpath, self.noise_path, self.cluster_path, self.snr, self.P)
         return sample
 
 #### LAYERS FOR RL PRETRAINING ###
@@ -151,7 +151,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
             print('Epoch {}/{}'.format(epoch, num_epochs))
             epoch_loss = 0.0
 
-            dataset = QDnnLoader(x_path, noise_path, snr, cluster_path, P, q_transform, 'Train')
+            dataset = QDnnLoader(x_path, noise_path, cluster_path, snr, P, q_transform, 'Train')
             loader = data.DataLoader(dataset, batch_size=32, shuffle=True, num_workers=0)
 
             for batch in loader:
