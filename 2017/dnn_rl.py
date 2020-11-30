@@ -161,6 +161,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
                 x = x.to(device)
                 target = batch['t']
                 target = target.to(device).long()
+                print("X:", x.shape, "t:", target.shape)
                 target = torch.flatten(target)
                 output = l1(x)
 
