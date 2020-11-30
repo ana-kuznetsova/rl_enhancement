@@ -167,7 +167,7 @@ def q_transform(fname, noise_path, cluster_path, snr, P, maxlen=1339):
     A_t = np.asarray(A_t)
     
     feats = pad(window(mel_noisy, P), maxlen).T
-    target = np.pad(A_t, ((0, 0), (0, maxlen-A_t.shape)), 
+    target = np.pad(A_t, ((0, 0), (0, maxlen-A_t.shape[0])), 
                     mode='constant', constant_values=(-1, -1))
     print("T", target)
     return {"x":feats, "t":target}
