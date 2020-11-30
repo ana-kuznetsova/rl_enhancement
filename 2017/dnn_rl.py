@@ -112,6 +112,18 @@ class DNN_RL(nn.Module):
         x = self.soft(x)
         return x 
 
+class CrossEntropyCustom(nn.Module):
+    def __init__(self):
+        super().__init__()
+    def forward(self, x, t):
+        loss = nn.CrossEntropyLoss(ignore_index=-1)
+        batch_loss = []
+        for i in range(x.shape[0]):
+            curr_loss = loss(x[i], t[i])
+            batch_loss.append(curr_loss)
+        avg_loss = torch.sum(torch.tensor(batch_loss))/x.shape[0]
+        print("batch loss:", avg_loss)
+        return avg_loss
 
 ##### TRAINING FUNCTIONS #####
 
@@ -130,7 +142,8 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
    
     device = torch.device('cuda:0') #change to 2 if on Ada
     torch.cuda.set_device(0) #change to 2 if on Ada
-    criterion = nn.CrossEntropyLoss(ignore_index=-1)
+    #criterion = nn.CrossEntropyLoss(ignore_index=-1)
+    criterion = CrossEntropyCustom()
     
 
     if resume==False:
