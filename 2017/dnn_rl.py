@@ -185,8 +185,10 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
 
             for batch in val_loader:
                 x = batch['x']
+                print("X:", x.shape)
                 x = x.to(device)
                 target = batch['t']
+                print("T:", target.shape)
                 target = target.to(device).long()
                 output = l1(x)
                 print("Out:", output.shape)
