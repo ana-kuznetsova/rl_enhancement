@@ -8,10 +8,6 @@ from utils import read
 from utils import pad
 import torch
 
-def pad(vec, maxlen):
-    if vec.shape[1] == maxlen:
-        return vec
-    return np.pad(vec, ((0, 0), (0, maxlen-vec.shape[1])), 'constant')
 
 
 def pad_noise(speech, noise):

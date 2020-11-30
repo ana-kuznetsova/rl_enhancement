@@ -154,7 +154,7 @@ class MaskedMSELoss(torch.nn.Module):
         predict = torch.flatten(predict)
         target = torch.flatten(target)
         mask = torch.flatten(mask)
-        err = torch.sum(((predict-target)*mask)**2.0)  / torch.sum(mask)
+        err = torch.sum(((predict-target)*mask)**2.0)/torch.sum(mask)
         return err
 
 def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False'):
@@ -180,7 +180,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
         criterion.cuda()
 
         best_l1 = copy.deepcopy(l1.state_dict())
-
+        '''
         print('---------------------------------')
         print("Start PRETRAINING first layer...")
         print('--------------------------------')
@@ -243,7 +243,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
                 torch.save(best_l1, model_path+'dnn_map_l1_best.pth')
                 prev_val = curr_val_loss
             torch.save(best_l1, model_path+"dnn_map_l1_last.pth")
-
+    '''
     ###### TRAIN SECOND LAYER ##########
     prev_val=99999
     val_losses = []
@@ -281,7 +281,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
             target = batch["t"]
             target = target.to(device)
             mask = batch["mask"].to(device)
-            output = l1(x)
+            output = l2(x)
             newLoss = criterion(output, target, mask)             
             optimizer.zero_grad()
             newLoss.backward()
@@ -306,7 +306,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
             target = batch["t"]
             target = target.to(device)
             mask = batch["mask"].to(device)
-            output = l1(x)
+            output = l2(x)
             valLoss = criterion(output, target, mask) 
             overall_val_loss+=valLoss.detach().cpu().numpy()
 
@@ -330,7 +330,8 @@ def train_dnn(x_path, model_path, num_epochs, noise_path, snr, P, from_pretraine
         l1 = Layer1()
         l1.load_state_dict(torch.load(model_path+'dnn_map_l1_best.pth'))
         l1_2 = Layer_1_2(l1)
-        l1_2.load_state_dict(torch.load(model_path+'dnn_map_l2_best.pth'))
+        #l1_2.load_state_dict(torch.load(model_path+'dnn_map_l2_best.pth'))
+        l1_2 = l1_2.apply(weights)
         model = DNN_mel(l1_2).double()
 
     elif resume=="True":
