@@ -17,7 +17,7 @@ def main(args):
         #Calculate ground truth labels for pretraining
     elif args.mode=='qpretrain':
         q_pretrain(args.x_path, args.noise_path, args.cluster_path,
-                    args.model_path, args.num_epochs, args.resume)
+                    args.model_path)
 
 
 
