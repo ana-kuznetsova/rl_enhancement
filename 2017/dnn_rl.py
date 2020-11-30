@@ -119,6 +119,7 @@ class CrossEntropyCustom(nn.Module):
         loss = nn.CrossEntropyLoss(ignore_index=-1)
         batch_loss = []
         for i in range(x.shape[0]):
+            print("Xi:", x[i].shape, t[i].shape)
             curr_loss = loss(x[i], t[i])
             batch_loss.append(curr_loss)
         avg_loss = torch.sum(torch.tensor(batch_loss))/x.shape[0]
