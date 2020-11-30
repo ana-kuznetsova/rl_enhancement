@@ -22,7 +22,7 @@ from metrics import calc_Z
 
 
 class QDnnLoader(data.Dataset):
-    def __init__(self, x_path, noise_path, snr, P, transforms, mode='Train'):
+    def __init__(self, x_path, noise_path, snr, cluster_path, P, transform, mode='Train'):
         '''
         Args:
             x_path: path to the location where all the wav files stored
@@ -36,11 +36,12 @@ class QDnnLoader(data.Dataset):
 
         self.x_path = x_path
         self.noise_path = noise_path
-        self.transforms = transforms
+        self.cluster_path = cluster_path
         self.snr = snr
         self.P = P
         self.mode = mode
         self.fnames = os.listdir(x_path)
+        self.transform = transform
         self.train_fnames = self.fnames[:int(len(self.fnames)*0.7)]
         self.val_fnames = self.fnames[int(len(self.fnames)*0.7):]
 
@@ -58,7 +59,7 @@ class QDnnLoader(data.Dataset):
             fpath = os.path.join(self.x_path, self.train_fnames[idx])
         elif self.mode=='Val':
             fpath = os.path.join(self.x_path, self.val_fnames[idx])
-        sample = self.transform(fpath, self.noise_path, self.snr, self.P)
+        sample = self.transform(fpath, self.noise_path, self.snr, self.cluster_path, self.P)
         return sample
 
 #### LAYERS FOR RL PRETRAINING ###

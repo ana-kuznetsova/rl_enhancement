@@ -140,7 +140,7 @@ def KMeans(target_path, out_path):
     np.save(os.path.join(out_path, 'kmeans_centers.npy'), centers)
 
 
-def labels_transform(fname, noise_path, snr,  cluster_path, maxlen=1339):
+def q_transform(fname, noise_path, snr,  cluster_path, P, maxlen=1339):
     G_mat = np.load(cluster_path).T
     A_t = []
     
@@ -165,6 +165,8 @@ def labels_transform(fname, noise_path, snr,  cluster_path, maxlen=1339):
         sums = np.asarray(sums)
         A_t.append(np.argmin(sums))
     A_t = np.asarray(A_t)
-    padded = np.pad(A_t, ((0, 0), (0, maxlen-A_t.shape[1])), 
+    
+    feats = pad(window(mel_noisy, P), maxlen).T
+    target = np.pad(A_t, ((0, 0), (0, maxlen-A_t.shape[1])), 
                     mode='constant', constant_values=(-1, -1))
-    return padded
+    return {"x":feats, "t":target}
