@@ -148,7 +148,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
         best_l1 = copy.deepcopy(l1.state_dict())
 
         print('###### Pretraining RL_L1 #######')
-        print("Num ep:", num_epochs)
+      
         for epoch in range(1, num_epochs+1):
             print('Epoch {}/{}'.format(epoch, num_epochs))
             epoch_loss = 0.0
