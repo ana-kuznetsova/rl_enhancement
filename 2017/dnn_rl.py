@@ -120,7 +120,7 @@ class CrossEntropyCustom(nn.Module):
         batch_loss = []
         for i in range(x.shape[0]):
             print("Xi:", x[i].shape, t[i].shape)
-            curr_loss = loss(x[i], t[i])
+            curr_loss = loss()(x[i], t[i])
             batch_loss.append(curr_loss)
         avg_loss = torch.sum(torch.tensor(batch_loss))/x.shape[0]
         print("batch loss:", avg_loss)
@@ -175,11 +175,8 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
                 x = x.to(device)
                 target = batch['t']
                 target = target.to(device).long()
-                print("X:", x.shape, "t:", target.shape)
                 target = torch.flatten(target)
                 output = l1(x)
-                print("out:", output.shape)
-
                 newLoss = criterion(output, target)            
                 epoch_loss += newLoss.data.detach().cpu().numpy()
                 optimizer.zero_grad()
