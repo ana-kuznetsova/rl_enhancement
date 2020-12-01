@@ -180,7 +180,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
         criterion.cuda()
 
         best_l1 = copy.deepcopy(l1.state_dict())
-        '''
+        
         print('---------------------------------')
         print("Start PRETRAINING first layer...")
         print('--------------------------------')
@@ -243,7 +243,6 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
                 torch.save(best_l1, model_path+'dnn_map_l1_best.pth')
                 prev_val = curr_val_loss
             torch.save(best_l1, model_path+"dnn_map_l1_last.pth")
-    '''
     ###### TRAIN SECOND LAYER ##########
     prev_val=99999
     val_losses = []
@@ -323,14 +322,15 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
             
 
 
-def train_dnn(x_path, model_path, num_epochs, noise_path, snr, P, from_pretrained='True', resume='False'):
+def train_dnn(x_path, model_path, num_epochs, noise_path, snr, P, 
+             from_pretrained='True', resume='False'):
     
     if from_pretrained=='True':
         print("Loading pretrained weights...")
         l1 = Layer1()
         l1.load_state_dict(torch.load(model_path+'dnn_map_l1_best.pth'))
         l1_2 = Layer_1_2(l1)
-        #l1_2.load_state_dict(torch.load(model_path+'dnn_map_l2_best.pth'))
+        l1_2.load_state_dict(torch.load(model_path+'dnn_map_l2_best.pth'))
         l1_2 = l1_2.apply(weights)
         model = DNN_mel(l1_2).double()
 
@@ -366,7 +366,7 @@ def train_dnn(x_path, model_path, num_epochs, noise_path, snr, P, from_pretraine
             target = batch["t"]
             target = target.to(device)
             mask = batch["mask"].to(device)
-            output = l1(x)
+            output = model(x)
             newLoss = criterion(output, target, mask)             
             optimizer.zero_grad()
             newLoss.backward()
@@ -391,7 +391,7 @@ def train_dnn(x_path, model_path, num_epochs, noise_path, snr, P, from_pretraine
             target = batch["t"]
             target = target.to(device)
             mask = batch["mask"].to(device)
-            output = l1(x)
+            output = model_path(x)
             valLoss = criterion(output, target, mask) 
             overall_val_loss+=valLoss.detach().cpu().numpy()
 

@@ -12,14 +12,14 @@ from models import Layer_1_2
 from models import DNN_mel
 
 #from dnn_rl import q_learning
-from dnn_rl import MMSE_pretrain
 from dnn_rl import MMSE_train
 from dnn_rl import eval_actions
 from data import create_noisy_data
 from models import pretrain
+from models import train_dnn
 
 
 
-pretrain('/nobackup/anakuzne/data/koizumi17_timit/TIMIT/corpus/', 
+train_dnn('/nobackup/anakuzne/data/koizumi17_timit/TIMIT/corpus/', 
         '/nobackup/anakuzne/data/koizumi17_timit/config_test/', 100,
         '/nobackup/anakuzne/data/koizumi17_timit/cafe_16k.wav', 0, 5)
