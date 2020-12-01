@@ -193,11 +193,8 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
             dataset = DnnLoader(x_path, noise_path, snr, P, make_dnn_feats, mode='Train')
 
             loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
-            num_steps = len(loader)
-            step = 0
+   
             for batch in loader:
-                step+=1
-                #print("Step:", step, "/", num_steps)
                 x = batch["x"]
                 x = x.to(device)
                 target = batch["t"]
@@ -212,9 +209,9 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
             loss = newLoss.detach().cpu().numpy()
             epoch_loss+=loss
 
-            losses_l1.append(epoch_loss/epoch)
+            losses_l1.append(epoch_loss/len(loader))
             np.save(model_path+"losses_l1.npy", np.asarray(losses_l1))
-            print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/epoch))
+            print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/len(loader)))
 
             #### VALIDATION #####
     
@@ -288,9 +285,9 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
 
             epoch_loss+=newLoss.data.detach().cpu().numpy()
 
-        losses_l2.append(epoch_loss/epoch)
+        losses_l2.append(epoch_loss/len(loader))
         np.save(model_path+"losses_l2.npy", np.asarray(losses_l2))
-        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/epoch))
+        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/len(loader)))
 
         #### VALIDATION #####
        
@@ -373,9 +370,9 @@ def train_dnn(x_path, model_path, num_epochs, noise_path, snr, P,
             newLoss.backward()
             optimizer.step()
 
-        losses.append(epoch_loss/epoch)
+        losses.append(epoch_loss/len(loader))
         np.save(model_path+"losses.npy", losses)
-        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/epoch))
+        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/len(loader)))
 
         #### VALIDATION #####
        
