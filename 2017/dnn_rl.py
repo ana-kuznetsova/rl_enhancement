@@ -178,7 +178,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
                 output = l1(x)
                 output = torch.transpose(output, 1, 2)
                 print("output:", output.shape)
-                newLoss = criterion(output, target.squeeze(1))  
+                newLoss = criterion(output, target.squeeze(2))  
                 print(newLoss)          
                 epoch_loss += newLoss.data.detach().cpu().numpy()
                 optimizer.zero_grad()
