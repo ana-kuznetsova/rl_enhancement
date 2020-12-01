@@ -20,6 +20,6 @@ from models import train_dnn
 
 
 
-train_dnn('/nobackup/anakuzne/data/koizumi17_timit/TIMIT/corpus/', 
+pretrain('/nobackup/anakuzne/data/koizumi17_timit/TIMIT/corpus/', 
         '/nobackup/anakuzne/data/koizumi17_timit/config_test/', 100,
         '/nobackup/anakuzne/data/koizumi17_timit/cafe_16k.wav', 0, 5)
