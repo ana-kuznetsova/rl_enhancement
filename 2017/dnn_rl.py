@@ -176,6 +176,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
                 target = target.to(device).squeeze(1).long()
                 print("x:", x.shape, "t:", target.shape)
                 output = l1(x)
+                print("output:", output.shape)
                 newLoss = criterion(output, target)            
                 epoch_loss += newLoss.data.detach().cpu().numpy()
                 optimizer.zero_grad()
