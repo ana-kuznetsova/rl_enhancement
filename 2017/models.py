@@ -206,8 +206,8 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
                 newLoss.backward()
                 optimizer.step()
 
-            loss = newLoss.detach().cpu().numpy()
-            epoch_loss+=loss
+                loss = newLoss.detach().cpu().numpy()
+                epoch_loss+=loss
 
             losses_l1.append(epoch_loss/len(loader))
             np.save(model_path+"losses_l1.npy", np.asarray(losses_l1))
@@ -282,7 +282,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
             optimizer.zero_grad()
             newLoss.backward()
             optimizer.step()
-
+            
             epoch_loss+=newLoss.data.detach().cpu().numpy()
 
         losses_l2.append(epoch_loss/len(loader))
