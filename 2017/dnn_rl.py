@@ -141,8 +141,8 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
    
     device = torch.device('cuda:0') #change to 2 if on Ada
     torch.cuda.set_device(0) #change to 2 if on Ada
-    #criterion = nn.CrossEntropyLoss(ignore_index=-1)
-    criterion = CrossEntropyCustom()
+    criterion = nn.CrossEntropyLoss(ignore_index=-1)
+    #criterion = CrossEntropyCustom()
     
 
     if resume==False:
@@ -174,6 +174,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
                 x = x.to(device)
                 target = batch['t']
                 target = target.to(device).squeeze(1).long()
+                print("x:", x.shape, "t:", target.shape)
                 output = l1(x)
                 newLoss = criterion(output, target)            
                 epoch_loss += newLoss.data.detach().cpu().numpy()
