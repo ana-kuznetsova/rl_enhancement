@@ -368,7 +368,7 @@ def train_dnn(x_path, model_path, num_epochs, noise_path, snr, P,
             mask = batch["mask"].to(device)
             output = model(x)
             newLoss = criterion(output, target, mask)
-            print("Loss", newLoss)             
+            epoch_loss+=newLoss.detach().cpu().numpy()           
             optimizer.zero_grad()
             newLoss.backward()
             optimizer.step()
