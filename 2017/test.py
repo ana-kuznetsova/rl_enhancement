@@ -21,5 +21,5 @@ from models import train_dnn
 
 
 pretrain('/nobackup/anakuzne/data/koizumi17_timit/TIMIT/corpus/', 
-        '/nobackup/anakuzne/data/koizumi17_timit/config_test/', 100,
+        '/nobackup/anakuzne/data/koizumi17_timit/config_test/', 50,
         '/nobackup/anakuzne/data/koizumi17_timit/cafe_16k.wav', 0, 5)
