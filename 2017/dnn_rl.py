@@ -130,8 +130,6 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
     device = torch.device('cuda:0') #change to 2 if on Ada
     torch.cuda.set_device(0) #change to 2 if on Ada
     criterion = nn.CrossEntropyLoss(ignore_index=-1)
-    #criterion = CrossEntropyCustom()
-    
 
     if resume==False:
     ######## PRETRAIN FIRST RL-LAYER #########
@@ -163,7 +161,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
                 target = target.to(device).long()
                 output = l1(x)
                 output = torch.transpose(output, 1, 2)   
-                newLoss = criterion(output, target)    
+                newLoss = criterion(output, target.squeeze(2))    
                 epoch_loss += newLoss.data.detach().cpu().numpy()
                 optimizer.zero_grad()
                 newLoss.backward()
@@ -188,7 +186,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
                 target = target.to(device).long()
                 output = l1(x)
                 output = torch.transpose(output, 1, 2)
-                valLoss = criterion(output, target)
+                valLoss = criterion(output, target.squeeze(2))
                 overall_val_loss+=valLoss.detach().cpu().numpy()
 
 
@@ -232,7 +230,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
             target = target.to(device).long()
             output = l2(x)
             output = torch.transpose(output, 1, 2)   
-            newLoss = criterion(output, target)    
+            newLoss = criterion(output, target.squeeze(2))    
             epoch_loss += newLoss.data.detach().cpu().numpy()
             optimizer.zero_grad()
             newLoss.backward()
@@ -257,7 +255,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
             target = target.to(device).long()
             output = l2(x)
             output = torch.transpose(output, 1, 2)
-            valLoss = criterion(output, target)
+            valLoss = criterion(output, target.squeeze(2))
             overall_val_loss+=valLoss.detach().cpu().numpy()
         
         curr_val_loss = overall_val_loss/len(val_loader)
