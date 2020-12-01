@@ -170,7 +170,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
             losses_l1.append(epoch_loss/len(loader))
             np.save(os.path.join(model_path, "qlosses_l1.npy"), np.array(losses_l1))
             
-            print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/epoch))
+            print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/len(loader)))
 
             ##Validation
             print('Starting validation...') 
@@ -239,7 +239,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
         losses_l2.append(epoch_loss/len(loader))
         np.save(os.path.join(model_path, "qlosses_l2.npy"), np.array(losses_l2))
             
-        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/epoch))
+        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/len(loader)))
 
         ##Validation
         print('Starting validation...')
@@ -269,9 +269,6 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
         
         ##Save last model
         torch.save(best_l2, model_path+'rl_dnn_l2_last.pth')
-
-        prev_val = 999999
-        val_losses = []
     
 ########################################################
 
