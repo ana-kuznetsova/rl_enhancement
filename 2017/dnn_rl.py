@@ -162,7 +162,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
                 output = l1(x)
                 output = torch.transpose(output, 1, 2)   
                 newLoss = criterion(output, target.squeeze(2))    
-                epoch_loss += newLoss.data.detach().cpu().numpy()
+                epoch_loss += newLoss.detach().cpu().numpy()
                 optimizer.zero_grad()
                 newLoss.backward()
                 optimizer.step()
@@ -175,7 +175,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
             ##Validation
             print('Starting validation...') 
             
-            dataset = QDnnLoader(x_path, noise_path, snr, cluster_path, P, q_transform, 'Val')
+            dataset = QDnnLoader(x_path, noise_path, cluster_path, snr, P, q_transform, 'Val')
             val_loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
             overall_val_loss=0
 
@@ -244,7 +244,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
         ##Validation
         print('Starting validation...')
 
-        dataset = QDnnLoader(x_path, noise_path, snr, cluster_path, P, q_transform, 'Val')
+        dataset = QDnnLoader(x_path, noise_path, cluster_path, snr, P, q_transform, 'Val')
         val_loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
         overall_val_loss=0
 
