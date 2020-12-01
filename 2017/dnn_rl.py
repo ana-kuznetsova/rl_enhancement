@@ -112,18 +112,6 @@ class DNN_RL(nn.Module):
         x = self.soft(x)
         return x 
 
-class CrossEntropyCustom(nn.Module):
-    def __init__(self):
-        super().__init__()
-    def forward(self, x, t):
-        loss = nn.CrossEntropyLoss(ignore_index=-1)
-        batch_loss = 0
-        for i in range(x.shape[0]):
-            curr_loss = loss(x[i], t[i].squeeze(1))
-            batch_loss+=curr_loss
-        avg_loss = batch_loss/x.shape[0]
-        return avg_loss
-
 ##### TRAINING FUNCTIONS #####
 
 def q_pretrain(x_path, noise_path, cluster_path, model_path, 
@@ -168,32 +156,26 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
             dataset = QDnnLoader(x_path, noise_path, cluster_path, snr, P, q_transform, 'Train')
             loader = data.DataLoader(dataset, batch_size=32, shuffle=True, num_workers=0)
             
-            num_steps = len(loader)
-            for i, batch in enumerate(loader):
+            for batch in loader:
                 x = batch['x']
                 x = x.to(device)
                 target = batch['t']
                 target = target.to(device).long()
-                print("x:", x.shape, "t:", target.shape)
                 output = l1(x)
-                output = torch.transpose(output, 1, 2)
-                print("output:", output.shape)
-                newLoss = criterion(output, target.squeeze(2))  
-                print(newLoss)          
+                output = torch.transpose(output, 1, 2)   
+                newLoss = criterion(output, target)    
                 epoch_loss += newLoss.data.detach().cpu().numpy()
                 optimizer.zero_grad()
                 newLoss.backward()
                 optimizer.step()
-                #print('Step {}/{}'.format(i, num_steps), newLoss)
             
-            losses_l1.append(epoch_loss/epoch)
+            losses_l1.append(epoch_loss/len(loader))
             np.save(os.path.join(model_path, "qlosses_l1.npy"), np.array(losses_l1))
             
             print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/epoch))
 
             ##Validation
             print('Starting validation...') 
-            # Y is a clean speech spectrogram
             
             dataset = QDnnLoader(x_path, noise_path, snr, cluster_path, P, q_transform, 'Val')
             val_loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
@@ -203,9 +185,9 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
                 x = batch['x']
                 x = x.to(device)
                 target = batch['t']
-                target = target.to(device).squeeze(1).long()
+                target = target.to(device).long()
                 output = l1(x)
-                newLoss = criterion(output, target)            
+                output = torch.transpose(output, 1, 2)
                 valLoss = criterion(output, target)
                 overall_val_loss+=valLoss.detach().cpu().numpy()
 
@@ -228,10 +210,8 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
     ######## PRETRAIN SECOND LAYER ############
     
     l1 = RL_L1()
-
     l1.load_state_dict(torch.load(model_path+'rl_dnn_l1_best.pth'))
-
-    l2 = RL_L2()
+    l2 = RL_L2().double()
     optimizer = optim.SGD(l2.parameters(), lr=0.01, momentum=0.9)
     l2.cuda()
     best_l2 = copy.deepcopy(l2.state_dict())
@@ -241,74 +221,49 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
     for epoch in range(1, num_epochs+1):
         print('Epoch {}/{}'.format(epoch, num_epochs))
         epoch_loss = 0.0
-        ##Training 
-        num_chunk = (12474//chunk_size) + 1
-        for chunk in range(num_chunk):
-            chunk_loss = 0
-            start = chunk*chunk_size
-            end = min(start+chunk_size, 12474)
-            print(start, end)
-            #returns both training examples and true labels 
-            X_chunk, A_chunk, batch_indices = make_windows(x_path, a_path,
-                                          [start, end], P, 
-                                           win_len, 
-                                           hop_size, fs)
+
+        dataset = QDnnLoader(x_path, noise_path, cluster_path, snr, P, q_transform, 'Train')
+        loader = data.DataLoader(dataset, batch_size=32, shuffle=True, num_workers=0)
+
+        for batch in loader:
+            x = batch['x']
+            x = x.to(device)
+            target = batch['t']
+            target = target.to(device).long()
+            output = l2(x)
+            output = torch.transpose(output, 1, 2)   
+            newLoss = criterion(output, target)    
+            epoch_loss += newLoss.data.detach().cpu().numpy()
+            optimizer.zero_grad()
+            newLoss.backward()
+            optimizer.step()
+
+        losses_l2.append(epoch_loss/len(loader))
+        np.save(os.path.join(model_path, "qlosses_l2.npy"), np.array(losses_l2))
             
-            
-            dataset = QDataSet(X_chunk, A_chunk, batch_indices)
-            loader = data.DataLoader(dataset, batch_size=1)
-    
-            for x, target in loader:
-                x = x.to(device)
-                x = x.reshape(x.shape[1], x.shape[2])
-                target = target.to(device).long()
-                target = torch.flatten(target)
-                output = l2(x)
-                newLoss = criterion(output, target)             
-                chunk_loss += newLoss.data
-                optimizer.zero_grad()
-                newLoss.backward()
-                optimizer.step()
-
-
-            chunk_loss = (chunk_loss.detach().cpu().numpy())/len(X_chunk)
-            
-            epoch_loss+=chunk_loss
-
-            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
-
-        
-        losses_l2.append(epoch_loss/num_chunk)
-        pickle.dump(losses_l2, open(model_path+"losses_l2.p", "wb" ) )
-        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
+        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/epoch))
 
         ##Validation
         print('Starting validation...')
-        start = 12474
-        end = 13860
-        X_val, A_val, batch_indices = make_windows(x_path, a_path,
-                                          [start, end], P, 
-                                           win_len, 
-                                           hop_size, fs)
-        
-        dataset = QDataSet(X_val, A_val, batch_indices)
-        val_loader = data.DataLoader(dataset, batch_size=1)
+
+        dataset = QDnnLoader(x_path, noise_path, snr, cluster_path, P, q_transform, 'Val')
+        val_loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
         overall_val_loss=0
 
-        for x, target in val_loader:
+        for batch in val_loader:
+            x = batch['x']
             x = x.to(device)
-            x.requires_grad=True
-            x = x.reshape(x.shape[1], x.shape[2])
+            target = batch['t']
             target = target.to(device).long()
-            target = torch.flatten(target)
             output = l2(x)
-            valLoss = criterion(output, target)     
+            output = torch.transpose(output, 1, 2)
+            valLoss = criterion(output, target)
             overall_val_loss+=valLoss.detach().cpu().numpy()
         
         curr_val_loss = overall_val_loss/len(val_loader)
         val_losses.append(curr_val_loss)
         print('Validation loss: ', curr_val_loss)
-        np.save(model_path+'val_losses_l2.npy', np.asarray(val_losses))
+        np.save(model_path+'val_losses_l2.npy', np.array(val_losses))
 
         if curr_val_loss < prev_val:
             torch.save(best_l2, model_path+'rl_dnn_l2_best.pth')
@@ -317,6 +272,9 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
         ##Save last model
         torch.save(best_l2, model_path+'rl_dnn_l2_last.pth')
 
+        prev_val = 999999
+        val_losses = []
+    
 ########################################################
 
 def MMSE_train(chunk_size, x_path, a_path, model_path,
