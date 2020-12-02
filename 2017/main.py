@@ -16,7 +16,7 @@ def main(args):
         precalc_Wiener(args.x_path, args.noise_path, args.out_path)
         #Calculate cluster centers
         KMeans(args.x_path, args.out_path)
-        #Calculate ground truth labels for pretraining
+
     elif args.mode=='qpretrain':
         q_pretrain(args.x_path, args.noise_path, args.cluster_path,
                     args.model_path)
@@ -27,11 +27,8 @@ def main(args):
         eval_actions(args.model_path, args.x_path, args.noise_path, args.cluster_path)
 
 
-
-
-
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='')
     parser.add_argument('--num_epochs', type=int, help='Number of epochs')
     parser.add_argument('--model_path', type=str, help='Dir to save best model')
     parser.add_argument('--x_path', type=str, help='path to X files')

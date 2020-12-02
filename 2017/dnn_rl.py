@@ -386,7 +386,7 @@ def eval_actions(model_path, x_path, noise_path, cluster_path, snr=0, P=5):
     device = torch.device('cuda') 
 
     q_func_pretrained = DNN_RL()
-    q_func_pretrained.load_state_dict(torch.load(model_path+'qfunc_model.pth'))
+    q_func_pretrained.load_state_dict(torch.load(model_path+'rl_dnn_best.pth'))
     q_func_pretrained.cuda()
 
     dataset = QTestLoader(x_path, noise_path, cluster_path, snr, P, q_transform)
