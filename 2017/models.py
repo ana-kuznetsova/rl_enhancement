@@ -389,7 +389,7 @@ def train_dnn(x_path, model_path, num_epochs, noise_path, snr, P,
             target = batch["t"]
             target = target.to(device)
             mask = batch["mask"].to(device)
-            output = model_path(x)
+            output = model(x)
             valLoss = criterion(output, target, mask) 
             overall_val_loss+=valLoss.detach().cpu().numpy()
 
