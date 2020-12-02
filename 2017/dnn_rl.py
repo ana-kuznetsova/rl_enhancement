@@ -286,7 +286,7 @@ def q_train(x_path, noise_path, cluster_path, model_path,
     layers = RL_L2()
     layers.load_state_dict(torch.load(model_path+'rl_dnn_l2_best.pth'))
 
-    q_func_pretrained = DNN_RL(layers)
+    q_func_pretrained = DNN_RL(layers).double()
 
     optimizer = optim.SGD(q_func_pretrained.parameters(), lr=0.0001, momentum=0.8)
     q_func_pretrained.cuda()
