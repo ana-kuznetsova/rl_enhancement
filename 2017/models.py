@@ -328,7 +328,6 @@ def train_dnn(x_path, model_path, num_epochs, noise_path, snr, P,
         l1.load_state_dict(torch.load(model_path+'dnn_map_l1_best.pth'))
         l1_2 = Layer_1_2(l1)
         l1_2.load_state_dict(torch.load(model_path+'dnn_map_l2_best.pth'))
-        l1_2 = l1_2.apply(weights)
         model = DNN_mel(l1_2).double()
 
     elif resume=="True":
