@@ -301,7 +301,7 @@ def q_train(x_path, noise_path, cluster_path, model_path,
         loader = data.DataLoader(dataset, batch_size=32, shuffle=True, num_workers=0)
 
         for batch in loader:
-            x = batch['x']
+            x = batch['x'].double()
             x = x.to(device)
             target = batch['t']
             target = target.to(device).long()
