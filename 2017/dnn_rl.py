@@ -290,6 +290,7 @@ def q_train(x_path, noise_path, cluster_path, model_path,
 
     optimizer = optim.SGD(q_func_pretrained.parameters(), lr=0.0001, momentum=0.8)
     q_func_pretrained.cuda()
+    q_func_pretrained = q_func_pretrained.double()
     best_q = copy.deepcopy(q_func_pretrained.state_dict())
 
     for epoch in range(1, num_epochs+1):
@@ -301,7 +302,7 @@ def q_train(x_path, noise_path, cluster_path, model_path,
         loader = data.DataLoader(dataset, batch_size=32, shuffle=True, num_workers=0)
 
         for batch in loader:
-            x = batch['x'].double()
+            x = batch['x']
             x = x.to(device)
             target = batch['t']
             target = target.to(device).long()
