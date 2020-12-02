@@ -8,6 +8,7 @@ from preproc import precalc_Wiener
 from preproc import KMeans
 from dnn_rl import q_pretrain
 from dnn_rl import q_train
+from dnn_rl import eval_actions
 
 def main(args):
     if args.mode=='data':
@@ -22,6 +23,9 @@ def main(args):
     elif args.mode=='qtrain':
         q_train(args.x_path, args.noise_path, args.cluster_path,
                     args.model_path)
+    elif args.mode=='eval_actions':
+        eval_actions(args.model_path, args.x_path, args.noise_path, args.cluster_path)
+
 
 
 

@@ -80,8 +80,6 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         x_files = os.listdir(x_path)
         x_name = np.random.choice(x_files)
 
-        #phase = pad(np.load(imag_path+x_name), maxlen)
-
         x_source = np.load(x_path+x_name)
         x = window(x_source, P).T
         x = torch.tensor(x).float().to(device)

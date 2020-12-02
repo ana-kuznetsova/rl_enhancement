@@ -53,6 +53,37 @@ class QDnnLoader(data.Dataset):
         sample = self.transform(fpath, self.noise_path, self.cluster_path, self.snr, self.P)
         return sample
 
+
+class QTestLoader(data.Dataset):
+    def __init__(self, x_path, noise_path, cluster_path, snr, P, transform):
+        '''
+        Args:
+            x_path: path to the location where all the wav files stored
+            noise_path: path to noise signal
+            snr: desired snr
+            P: window length
+            transforms: list of transforms done with input
+        '''
+
+        self.x_path = x_path
+        self.noise_path = noise_path
+        self.cluster_path = cluster_path
+        self.snr = snr
+        self.P = P
+        self.fnames = os.listdir(x_path)
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.fnames)
+
+    def __getitem__(self, idx):
+        if torch.is_tensor(idx):
+            idx = idx.tolist()
+
+        fpath = os.path.join(self.x_path, self.fnames[idx])
+        sample = self.transform(fpath, self.noise_path, self.cluster_path, self.snr, self.P)
+        return sample
+
 #### LAYERS FOR RL PRETRAINING ###
 
 class RL_L1(nn.Module):
@@ -350,36 +381,27 @@ def q_train(x_path, noise_path, cluster_path, model_path,
 
 
 
-def eval_actions(model_path, x_path, a_path):
+def eval_actions(model_path, x_path, noise_path, cluster_path, snr=0, P=5):
     torch.cuda.empty_cache() 
-    device = torch.device('cuda:0') 
-    torch.cuda.set_device(0) 
+    device = torch.device('cuda') 
 
     q_func_pretrained = DNN_RL()
     q_func_pretrained.load_state_dict(torch.load(model_path+'qfunc_model.pth'))
     q_func_pretrained.cuda()
 
-    start = 3234
-    end = 4620
-    #end = 3334
-        
-    X_val, A_val, batch_indices = make_windows(x_path, a_path,
-                                        [start, end], P=5, 
-                                        win_len=512, 
-                                        hop_size=256, fs=16000, nn_type='qfunc')
-
-    dataset = QDataSet(X_val, A_val, batch_indices)
-    val_loader = data.DataLoader(dataset, batch_size=1)
+    dataset = QTestLoader(x_path, noise_path, cluster_path, snr, P, q_transform)
+    val_loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
 
     pred_actions = []
     true_actions = []
 
-    for x, target in val_loader:
+    for batch in val_loader:
+        x = batch['x']
         x = x.to(device)
-        x.requires_grad=True
-        x = x.reshape(x.shape[1], x.shape[2])
+        target = batch['t']
+        target = target.to(device).long()
         output = q_func_pretrained(x)
-        target = torch.flatten(target)
+        target = torch.flatten(target).detach().cpu().numpy()
         pred_qfunc = output.detach().cpu().numpy()
 
     
