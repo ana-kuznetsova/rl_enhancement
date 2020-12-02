@@ -415,7 +415,11 @@ def dnn_predict(x_path, noise_path, model_path, out_path, snr=0, P=5):
     loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
 
     print("Predicting outputs...")
+    num_steps = len(loader)
+    step = 0
     for batch, fnames in loader:
+        step+=1
+        print('Step:{:4}/{:4}'.format(step, num_steps))
         x = batch["x"]
         x = x.to(device)
         masks = batch["mask"]
