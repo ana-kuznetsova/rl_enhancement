@@ -272,7 +272,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
     
 ########################################################
 
-def MMSE_train(chunk_size, x_path, a_path, model_path,
+def q_train(chunk_size, x_path, a_path, model_path,
                 win_len=512,
                 hop_size=256, fs=16000, resume=False):
 
