@@ -381,7 +381,7 @@ def q_train(x_path, noise_path, cluster_path, model_path,
 
 
 
-def eval_actions(model_path, x_path, noise_path, cluster_path, snr=0, P=5):
+def eval_actions(x_path, noise_path, cluster_path, model_path, snr=0, P=5):
     torch.cuda.empty_cache() 
     device = torch.device('cuda') 
 

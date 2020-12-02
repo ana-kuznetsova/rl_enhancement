@@ -24,7 +24,7 @@ def main(args):
         q_train(args.x_path, args.noise_path, args.cluster_path,
                     args.model_path)
     elif args.mode=='eval_actions':
-        eval_actions(args.model_path, args.x_path, args.noise_path, args.cluster_path)
+        eval_actions(args.x_path, args.noise_path, args.cluster_path, args.model_path)
 
 
 if __name__ == '__main__':
