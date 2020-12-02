@@ -82,7 +82,7 @@ class DnnTestLoader(data.Dataset):
 
         fpath = os.path.join(self.x_path, self.fnames[idx])
         sample = self.transform(fpath, self.noise_path, self.snr, self.P)
-        return sample, fpath
+        return sample, self.fnames[idx]
 
 
 class Layer1(nn.Module):
@@ -404,8 +404,7 @@ def train_dnn(x_path, model_path, num_epochs, noise_path, snr, P,
 
 
 
-def inference(x_path, model_path, num_epochs, noise_path, snr, P, out_path):
-    
+def dnn_predict(x_path, noise_path, model_path, out_path, snr=0, P=5):
     device = torch.device("cuda")
     model = DNN_mel()
     model.load_state_dict(torch.load(model_path+'dnn_map_best.pth')).double()
@@ -413,11 +412,18 @@ def inference(x_path, model_path, num_epochs, noise_path, snr, P, out_path):
     model = model.to(device)
 
     dataset = DnnTestLoader(x_path, noise_path, snr, P, make_dnn_feats)
-    loader = data.DataLoader(dataset, batch_size=1339, shuffle=True)
+    loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
 
-    for batch in loader:
+    print("Predicting outputs...")
+    for batch, fnames in loader:
         x = batch["x"]
         x = x.to(device)
-        output = model(x).detach().cpu().numpy()
-        output = np.exp(invert_mel(output))
+        masks = batch["mask"]
+        output = model(x)
+        for i, ex in enumerate(output):
+            mask = masks[i]
+            pad_ind = torch.sum(mask, dim=1).detach().cpu().numpy()[-1]
+            ex = np.exp(ex.detach().cpu().numpy())[:, pad_ind]
+            fname = fnames[i]
+            np.save(os.path.join(out_path, fname), ex)
             
