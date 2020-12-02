@@ -277,7 +277,7 @@ def q_train(x_path, noise_path, cluster_path, model_path,
 
     torch.cuda.empty_cache() 
     device = torch.device('cuda')
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss(ignore_index=-1)
 
     losses = []
     val_losses = []
