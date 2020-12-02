@@ -337,7 +337,7 @@ def train_dnn(x_path, model_path, num_epochs, noise_path, snr, P,
 
     criterion = MaskedMSELoss()
     optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
-    device = torch.device("cuda")
+    device = torch.device("cuda:3")
     model.cuda()
     model = model.to(device)
     criterion.cuda()
