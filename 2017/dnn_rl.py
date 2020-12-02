@@ -272,16 +272,11 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
     
 ########################################################
 
-def q_train(chunk_size, x_path, a_path, model_path,
-                win_len=512,
-                hop_size=256, fs=16000, resume=False):
+def q_train(x_path, noise_path, cluster_path, model_path, 
+            num_epochs=100, snr=0, P=5, maxlen=1339, resume=False):
 
-    num_epochs = 50
-    P=5 #Window size
     torch.cuda.empty_cache() 
-   
-    device = torch.device('cuda:0') #change to 2 if on Ada
-    torch.cuda.set_device(0) #change to 2 if on Ada
+    device = torch.device('cuda')
     criterion = nn.CrossEntropyLoss()
 
     losses = []
@@ -300,71 +295,45 @@ def q_train(chunk_size, x_path, a_path, model_path,
     for epoch in range(1, num_epochs+1):
         print('Epoch {}/{}'.format(epoch, num_epochs))
         epoch_loss = 0.0
-        ##Training 
-        num_chunk = (12474//chunk_size) + 1
-        for chunk in range(num_chunk):
-            chunk_loss = 0
-            start = chunk*chunk_size
-            end = min(start+chunk_size, 12474)
-            print(start, end)
-            #returns both training examples and true labels 
-            X_chunk, A_chunk, batch_indices = make_windows(x_path, a_path,
-                                          [start, end], P, 
-                                           win_len, 
-                                           hop_size, fs)
+
+
+        dataset = QDnnLoader(x_path, noise_path, cluster_path, snr, P, q_transform, 'Train')
+        loader = data.DataLoader(dataset, batch_size=32, shuffle=True, num_workers=0)
+
+        for batch in loader:
+            x = batch['x']
+            x = x.to(device)
+            target = batch['t']
+            target = target.to(device).long()
+            output = q_func_pretrained(x)
+            output = torch.transpose(output, 1, 2)   
+            newLoss = criterion(output, target.squeeze(2))    
+            epoch_loss += newLoss.data.detach().cpu().numpy()
+            optimizer.zero_grad()
+            newLoss.backward()
+            optimizer.step()
+
+        losses.append(epoch_loss/len(loader))
+        np.save(os.path.join(model_path, "q_pretrain_losses.npy"), np.array(losses))
             
-            
-            dataset = QDataSet(X_chunk, A_chunk, batch_indices)
-            loader = data.DataLoader(dataset, batch_size=1)
+        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/len(loader)))
 
-            for x, target in loader:
-                x = x.to(device)
-                x = x.reshape(x.shape[1], x.shape[2])
-                target = target.to(device).long()
-                target = torch.flatten(target)
-                output = q_func_pretrained(x)
-                newLoss = criterion(output, target)             
-                chunk_loss += newLoss.data
-                optimizer.zero_grad()
-                newLoss.backward()
-                optimizer.step()
-
-
-            chunk_loss = (chunk_loss.detach().cpu().numpy())/len(X_chunk)
-            
-            epoch_loss+=chunk_loss
-
-            print('Chunk:{:2} Training loss:{:>4f}'.format(chunk+1, chunk_loss))
-
-        losses.append(epoch_loss/num_chunk)
-        np.save(model_path+"qpretrain_losses.npy", losses)
-        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/num_chunk))
-    
         ##Validation
         print('Starting validation...')
-        
-        start = 12474
-        end = 13860
-        
-        X_val, A_val, batch_indices = make_windows(x_path, a_path,
-                                            [start, end], P, 
-                                            win_len, 
-                                            hop_size, fs)
-        
-        dataset = QDataSet(X_val, A_val, batch_indices)
-        val_loader = data.DataLoader(dataset, batch_size=1)
+
+        dataset = QDnnLoader(x_path, noise_path, cluster_path, snr, P, q_transform, 'Val')
+        val_loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
         overall_val_loss=0
 
-        for x, target in val_loader:
+        for batch in val_loader:
+            x = batch['x']
             x = x.to(device)
-            x.requires_grad=True
-            x = x.reshape(x.shape[1], x.shape[2])
+            target = batch['t']
             target = target.to(device).long()
-            target = torch.flatten(target)
             output = q_func_pretrained(x)
-            valLoss = criterion(output, target)     
+            output = torch.transpose(output, 1, 2)
+            valLoss = criterion(output, target.squeeze(2))
             overall_val_loss+=valLoss.detach().cpu().numpy()
-                
         
         curr_val_loss = overall_val_loss/len(val_loader)
         val_losses.append(curr_val_loss)
