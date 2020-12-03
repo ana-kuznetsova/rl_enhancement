@@ -9,6 +9,8 @@ from preproc import KMeans
 from dnn_rl import q_pretrain
 from dnn_rl import q_train
 from dnn_rl import eval_actions
+from models import dnn_predict
+
 
 def main(args):
     if args.mode=='data':
@@ -25,6 +27,8 @@ def main(args):
                     args.model_path)
     elif args.mode=='eval_actions':
         eval_actions(args.x_path, args.noise_path, args.cluster_path, args.model_path)
+    elif args.mode=='dnn_pred':
+        dnn_predict(args.x_path, args.noise_path, args.model_path, args.out_path)
 
 
 if __name__ == '__main__':
