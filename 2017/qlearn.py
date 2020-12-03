@@ -11,7 +11,6 @@ import torch.utils.data as data
 
 from models import weights
 from models import DNN_mel
-from models import trainDataLoader
 
 from metrics import calc_Z
 from dnn_rl import DNN_RL
