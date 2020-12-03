@@ -430,7 +430,7 @@ def dnn_predict(x_path, noise_path, model_path, out_path, snr=0, P=5):
             mask = masks[i]
             pad_ind = int(torch.sum(mask, dim=0).detach().cpu().numpy()[0])
             ex = ex.T[:, :pad_ind]
-            print("before", ex.shape)
+            print("before", ex.shape, ex.get_device())
             ex = transforms.InverseMelScale(n_stft=512, n_mels=64)(ex)
             print("after:", ex.shape)
 
