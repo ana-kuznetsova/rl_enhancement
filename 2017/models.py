@@ -432,6 +432,7 @@ def dnn_predict(x_path, noise_path, model_path, out_path, snr=0, P=5):
             ex = ex.T[:, :pad_ind]
             print("before", ex.shape, ex.get_device())
             ex = transforms.InverseMelScale(n_stft=512, n_mels=64)(ex)
+            print("device:", ex.get_device())
             print("after:", ex.shape)
 
             #fname = fnames[i]
