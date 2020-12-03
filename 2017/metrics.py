@@ -5,8 +5,7 @@ import os
 import soundfile as sf
 import librosa
 import numpy as np
-from data import pad
-from utils import collect_paths
+from utils import pad
 
 def eval_pesq(predicted_path, noisy_test, clean_test, out_path, 
     img_path='/u/anakuzne/data/snr0_test_img/', 
