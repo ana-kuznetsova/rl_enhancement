@@ -415,6 +415,7 @@ def dnn_predict(x_path, noise_path, model_path, out_path, snr=0, P=5):
 
     dataset = DnnTestLoader(x_path, noise_path, snr, P, make_dnn_feats)
     loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
+    inv_mel =  = transforms.InverseMelScale(n_stft=512, n_mels=64).to(device)
 
     print("Predicting outputs...")
     num_steps = len(loader)
@@ -429,10 +430,9 @@ def dnn_predict(x_path, noise_path, model_path, out_path, snr=0, P=5):
         for i, ex in enumerate(output):
             mask = masks[i]
             pad_ind = int(torch.sum(mask, dim=0).detach().cpu().numpy()[0])
-            ex = ex.T[:, :pad_ind]
-            print("before", ex.shape, ex.get_device())
-            ex = transforms.InverseMelScale(n_stft=512, n_mels=64)(ex)
-            print("device:", ex.get_device())
+            ex = ex.T[:, :pad_ind].detach().cpu().numpy()
+            print("before", ex.shape)
+            ex = invert_mel(ex)
             print("after:", ex.shape)
 
             #fname = fnames[i]
