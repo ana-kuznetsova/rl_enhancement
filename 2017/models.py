@@ -424,10 +424,11 @@ def dnn_predict(x_path, noise_path, model_path, out_path, snr=0, P=5):
         x = x.to(device)
         masks = batch["mask"]
         output = model(x)
+        output = output.detach().cpu().numpy()
         for i, ex in enumerate(output):
             mask = masks[i]
-            pad_ind = int(torch.sum(mask, dim=0).detach().cpu().numpy()[0])
-            ex = ex.T[:, :pad_ind].detach().cpu().numpy()
+            pad_ind = int(np.sum(mask, axis=0)[0])
+            ex = ex.T[:, :pad_ind]
             ex = invert_mel(ex)
             fname = fnames[i]
             np.save(os.path.join(out_path, fname), ex)
