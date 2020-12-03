@@ -8,7 +8,15 @@ from utils import read
 from utils import pad
 import torch
 
+def pad(vec, maxlen):
+    if vec.shape[1] == maxlen:
+        return vec
+    return np.pad(vec, ((0, 0), (0, maxlen-vec.shape[1])), 'constant')
 
+def invert(spec):
+    istft = librosa.istft(spec, hop_length=256, win_length=512)
+    istft_res = librosa.core.resample(istft, 16000, 44000)
+    return istft_res
 
 def pad_noise(speech, noise):
     '''

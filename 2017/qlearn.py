@@ -15,13 +15,12 @@ from models import trainDataLoader
 
 from metrics import calc_Z
 from dnn_rl import DNN_RL
-from utils import invert
-from utils import read
 from dnn_rl import reward
 from dnn_rl import R
 from dnn_rl import time_weight
 from preproc import q_transform
 from preproc import invert_mel
+from preproc import invert
 
 
 def q_learning(x_path, noise_path, cluster_path, model_path,
