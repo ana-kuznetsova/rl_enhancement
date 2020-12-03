@@ -156,7 +156,7 @@ class MaskedMSELoss(torch.nn.Module):
         err = torch.sum(((predict-target)*mask)**2.0)/torch.sum(mask)
         return err
 
-def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False'):
+def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume=False):
     
     losses_l1 = []
     losses_l2 = []
@@ -167,7 +167,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
 
     ############# PRETRAIN FIRST LAYER ################
 
-    if resume=='False':
+    if resume==False:
     
         l1 = Layer1()
         l1 = l1.double()
@@ -319,9 +319,9 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
 
 
 def train_dnn(x_path, model_path, num_epochs, noise_path, snr, P, 
-             from_pretrained='True', resume='False'):
+             from_pretrained=True, resume=False):
     
-    if from_pretrained=='True':
+    if from_pretrained==True:
         print("Loading pretrained weights...")
         l1 = Layer1()
         l1.load_state_dict(torch.load(model_path+'dnn_map_l1_best.pth'))
@@ -329,7 +329,7 @@ def train_dnn(x_path, model_path, num_epochs, noise_path, snr, P,
         l1_2.load_state_dict(torch.load(model_path+'dnn_map_l2_best.pth'))
         model = DNN_mel(l1_2).double()
 
-    elif resume=="True":
+    elif resume==True:
         model = DNN_mel()
         model.load_state_dict(torch.load(model_path+'dnn_map_best.pth')).double()
 

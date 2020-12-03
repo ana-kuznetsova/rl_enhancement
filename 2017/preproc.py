@@ -8,10 +8,6 @@ from utils import read
 from utils import pad
 import torch
 
-def pad(vec, maxlen):
-    if vec.shape[1] == maxlen:
-        return vec
-    return np.pad(vec, ((0, 0), (0, maxlen-vec.shape[1])), 'constant')
 
 def invert(spec):
     istft = librosa.istft(spec, hop_length=256, win_length=512)
@@ -127,13 +123,13 @@ def precalc_Wiener(x_path, noise_path, out_path):
         np.save(os.path.join(out_path, f), w_filter)
 
 
-def KMeans(target_path, out_path):
+def KMeans(target_path, out_path, k=32):
     '''
     Args:
         target_path: directory with precalculated Wiener filters
         out_path: directory to save cluster centers
     '''
-    kmeans = MiniBatchKMeans(n_clusters=32, 
+    kmeans = MiniBatchKMeans(n_clusters=k, 
                              batch_size=128,
                              max_iter=100)
 
