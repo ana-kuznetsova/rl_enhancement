@@ -1,1 +1,1 @@
-python main.py --mode='pretrain' --chunk_size=100 --model_path='/nobackup/anakuzne/data/model_log_amp_036/' --x_path='/nobackup/anakuzne/data/snr036_mel_train/' --y_path='/nobackup/anakuzne/data/snr0_train_clean/' --resume='False'
+python main.py --mode='dnn_pred' --x_path='/nobackup/anakuzne/data/koizumi17_timit/TIMIT/corpus/' --noise_path='/nobackup/anakuzne/data/koizumi17_timit/cafe_16k.wav' --model_path='/nobackup/anakuzne/data/koizumi17_timit/config_test/' --out_path='/nobackup/anakuzne/data/koizumi17_timit/config_test/preds/'

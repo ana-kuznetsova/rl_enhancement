@@ -407,9 +407,10 @@ def train_dnn(x_path, model_path, num_epochs, noise_path, snr, P,
 def dnn_predict(x_path, noise_path, model_path, out_path, snr=0, P=5):
     device = torch.device("cuda")
     model = DNN_mel()
-    model.load_state_dict(torch.load(model_path+'dnn_map_best.pth')).double()
+    model.load_state_dict(torch.load(os.path.join(model_path, 'dnn_map_best.pth')))
     model.cuda()
     model = model.to(device)
+    model = model.double()
 
     dataset = DnnTestLoader(x_path, noise_path, snr, P, make_dnn_feats)
     loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
