@@ -422,7 +422,7 @@ def dnn_predict(x_path, noise_path, model_path, out_path, snr=0, P=5):
         print('Step:{:4}/{:4}'.format(step, num_steps))
         x = batch["x"]
         x = x.to(device)
-        masks = batch["mask"]
+        masks = batch["mask"].detach().cpu().numpy()
         output = model(x)
         output = output.detach().cpu().numpy()
         for i, ex in enumerate(output):
