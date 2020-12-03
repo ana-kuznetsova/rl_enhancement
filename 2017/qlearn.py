@@ -24,7 +24,7 @@ from preproc import q_transform
 from preproc import invert_mel
 
 
-def q_learning(x_path, noise_path, cluster_path, model_path, clean_path, 
+def q_learning(x_path, noise_path, cluster_path, model_path,
                num_episodes=10000,
                epsilon=0.01, 
                win_len=512,
@@ -36,9 +36,7 @@ def q_learning(x_path, noise_path, cluster_path, model_path, clean_path,
         num_episodes: num of updates to the target q function
         x_path: path to the training examples
         y_path: path to the cluster centers
-        a_path: path where ground truth actions are stored
-        model_path: path where the models are stored
-        clean_path: path to clean reference (stft)
+        model_path: path where the pretrained models are stored
     '''
     ### Initialization ###
 

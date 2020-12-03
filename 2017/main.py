@@ -10,6 +10,7 @@ from dnn_rl import q_pretrain
 from dnn_rl import q_train
 from dnn_rl import eval_actions
 from models import dnn_predict
+from qlearn import q_learning
 
 
 def main(args):
@@ -29,7 +30,8 @@ def main(args):
         eval_actions(args.x_path, args.noise_path, args.cluster_path, args.model_path)
     elif args.mode=='dnn_pred':
         dnn_predict(args.x_path, args.noise_path, args.model_path, args.out_path)
-
+    elif args.mode=='qlearn':
+        q_learning(args.x_path, args.noise_path, args.cluster_path, args.model_path)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='')
