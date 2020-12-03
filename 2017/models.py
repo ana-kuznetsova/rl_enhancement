@@ -415,7 +415,7 @@ def dnn_predict(x_path, noise_path, model_path, out_path, snr=0, P=5):
 
     dataset = DnnTestLoader(x_path, noise_path, snr, P, make_dnn_feats)
     loader = data.DataLoader(dataset, batch_size=32, shuffle=True)
-    inv_mel =  = transforms.InverseMelScale(n_stft=512, n_mels=64).to(device)
+    #inv_mel =  = transforms.InverseMelScale(n_stft=512, n_mels=64).to(device)
 
     print("Predicting outputs...")
     num_steps = len(loader)
