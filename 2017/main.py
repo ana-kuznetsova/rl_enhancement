@@ -11,7 +11,7 @@ from dnn_rl import q_train
 from dnn_rl import eval_actions
 from models import dnn_predict
 from models import pretrain
-from models improt train_dnn
+from models import train_dnn
 from qlearn import q_learning
 
 
