@@ -430,6 +430,6 @@ def dnn_predict(x_path, noise_path, model_path, out_path, snr=0, P=5):
             pad_ind = int(np.sum(mask, axis=0)[0])
             ex = ex.T[:, :pad_ind]
             ex = invert_mel(ex)
-            fname = fnames[i]
+            fname = fnames[i].split(".")[0]
             np.save(os.path.join(out_path, fname), ex)
             
