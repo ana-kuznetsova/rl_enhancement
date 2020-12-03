@@ -429,6 +429,7 @@ def dnn_predict(x_path, noise_path, model_path, out_path, snr=0, P=5):
         for i, ex in enumerate(output):
             mask = masks[i]
             pad_ind = torch.sum(mask, dim=1).detach().cpu().numpy()[-1]
+            print("mask:", mask.shape, pad_ind)
             ex = np.exp(ex.detach().cpu().numpy())[:, pad_ind]
             fname = fnames[i]
             np.save(os.path.join(out_path, fname), ex)
