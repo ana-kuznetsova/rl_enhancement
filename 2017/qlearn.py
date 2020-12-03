@@ -8,13 +8,11 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.utils.data as data
-from torchaudio.transforms import InverseMelScale
 
 from models import weights
 from models import DNN_mel
 from models import trainDataLoader
 
-from data import window
 from metrics import calc_Z
 from dnn_rl import DNN_RL
 from utils import invert
@@ -22,10 +20,12 @@ from utils import read
 from dnn_rl import reward
 from dnn_rl import R
 from dnn_rl import time_weight
+from preproc import q_transform
+from preproc import invert_mel
 
 
-def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path, 
-               a_path,
+def q_learning(x_path, noise_path, cluster_path, model_path, clean_path, 
+               num_episodes=10000,
                epsilon=0.01, 
                win_len=512,
                hop_size=256,
@@ -66,7 +66,6 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
     ##Loss
     criterion = nn.MSELoss()
     opt_RMSprop = optim.RMSprop(q_func_mmse.parameters(), lr = 0.001, alpha = 0.9)
-    #optimizer = optim.SGD(l1.parameters(), lr=0.01, momentum=0.9)
     criterion.cuda()
 
 
@@ -80,9 +79,9 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
         x_files = os.listdir(x_path)
         x_name = np.random.choice(x_files)
 
-        x_source = np.load(x_path+x_name)
-        x = window(x_source, P).T
-        x = torch.tensor(x).float().to(device)
+        sample = q_transform(os.path.join(x_path, x_name), noise_path, cluster_path, 0, 5)
+        x = torch.tensor(sample['x']).to(device)
+        true_actions = sample['t']
 
         ####### PREDICT DNN-RL AND DNN-MAPPING OUTPUT #######
         Q_pred_mmse = q_func_mmse(x).detach().cpu().numpy() 
@@ -91,9 +90,6 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
         #Predicted actions
         Q_pred_argmax = np.argmax(Q_pred_mmse, axis=1)
-
-        #Load true actions
-        true_actions = np.load(a_path + x_name.split('_')[0]+'.npy')
 
         #Select template index, predict Wiener filter
         for i, action in enumerate(Q_pred_argmax):
@@ -108,20 +104,19 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
             wiener_rl[i] = G_k_pred
 
         wiener_rl = wiener_rl.T
-        y_pred_rl = torch.tensor(np.multiply(x_source, wiener_rl)).float()
+        y_pred_rl = torch.tensor(np.multiply(x, wiener_rl)).float()
         y_pred_dnn = dnn_map(x).T.detach().cpu().numpy()
     
         ##### Calculate reward ######
 
-        x_source_clean = np.load(clean_path+x_name.split('_')[0]+'.npy')
-        x_source_wav = invert(x_source_clean)
-        y_pred_rl = InverseMelScale(n_stft=257, n_mels=64)(y_pred_rl).detach().cpu().numpy()
+        x_clean = librosa.core.load(os.path.join(x_path, x_name), 16000, mono=True)
+        y_pred_rl = invert_mel(y_pred_rl)
 
         y_pred_dnn_wav =  invert(y_pred_dnn)
         y_pred_rl_wav = invert(y_pred_rl)
         
-        z_rl = calc_Z(x_source_wav, y_pred_rl_wav)
-        z_map = calc_Z(x_source_wav, y_pred_dnn_wav)
+        z_rl = calc_Z(x_clean, y_pred_rl_wav)
+        z_map = calc_Z(x_clean, y_pred_dnn_wav)
         #print('Z-scores:', z_rl, z_map)
 
         ##PEQS module returns errors
@@ -130,7 +125,7 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
             print("Skipping iteration...")
             continue
 
-        E = time_weight(y_pred_rl, x_source_clean)
+        E = time_weight(y_pred_rl, x_clean)
         r = reward(z_rl, z_map, E)
 
         #### UPDATE Q-FUNCS ####
@@ -185,18 +180,8 @@ def q_learning(num_episodes, x_path, cluster_path, model_path, clean_path,
 
 def qlean_predict(model_path, x_path, out_path):
     torch.cuda.empty_cache() 
-    device = torch.device('cuda:0') #change to 2 if on Ada
-    torch.cuda.set_device(0) #change to 2 if on Ada
+    device = torch.device('cuda')
 
     q_func_pretrained = DNN_RL()
     q_func_pretrained.load_state_dict(torch.load(model_path+'qfunc_model.pth'))
     q_func_pretrained.cuda()
-
-    start = 3234
-    end = 4620
-    #end = 3334
-        
-    X_val, A_val, batch_indices = make_windows(x_path, a_path,
-                                        [start, end], P=5, 
-                                        win_len=512, 
-                                        hop_size=256, fs=16000, nn_type='qfunc')

@@ -88,7 +88,6 @@ def make_dnn_feats(fpath, noise_path, snr, P, maxlen=1339):
     target = pad(target, maxlen).T
     return {'x': torch.tensor(feats), 't':torch.tensor(target), 'mask':torch.tensor(mask)}
 
-
 def invert_mel(mel_spec):
     inv = librosa.feature.inverse.mel_to_stft(mel_spec, sr=16000, n_fft=512)
     return inv
