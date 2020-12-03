@@ -1,1 +1,0 @@
-python main.py --mode='qpretrain' --x_path='/nobackup/anakuzne/data/koizumi17_timit/TIMIT/corpus/' --noise_path='/nobackup/anakuzne/data/koizumi17_timit/cafe_16k.wav' --cluster_path='/nobackup/anakuzne/data/koizumi17_timit/kmeans_centers.npy' --model_path='/nobackup/anakuzne/data/koizumi17_timit/config_test_qfunc/' --num_epochs=100

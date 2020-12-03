@@ -2,6 +2,16 @@
 
 ### Data preprocessing
 
-1. Create noisy mel spectrograms and log-amplitude target for DNN-mapping:
+All the data preprocessing happens inside the data loaders using transform functions `make_dnn_feats` and `q_transform` defined in `preproc.py`. However, K-means clusters and Wiener filters still need to be precalculated and saved on hard drive with the following command:
 
-```python 2017/main.py --mode='data' --nn='DNN' --x_path="/PATH/TO/CLEAN/WAV/" --out_path="DIR/TO/STORE/NOISY/SPECTROGRAMS/" --noise_path="/PATH/TO/NOISE/WAV/" --y_path="DIR/TO/STORE/TARGET/SPECS/```
+```bash
+python main.py --mode='data' --x_path='' --noise_path='' --out_path='' --k 5
+```
+To see the definitions of the arguments run:
+
+```bash
+python main.py -h
+```
+### Pretraining steps
+
+For both DNN and Q-function the pretraining is discriminative: each layer of the network is trained separately and then all of the layers are pretrained at ones.
