@@ -425,12 +425,12 @@ def dnn_predict(x_path, noise_path, model_path, out_path, snr=0, P=5):
         x = x.to(device)
         masks = batch["mask"]
         output = model(x)
-        print("out:", output.shape)
         for i, ex in enumerate(output):
             mask = masks[i]
-            pad_ind = torch.sum(mask, dim=0).detach().cpu().numpy()[0]
-            print("mask:", mask.shape, pad_ind)
-            ex = np.exp(ex.detach().cpu().numpy())[:, pad_ind]
-            fname = fnames[i]
-            np.save(os.path.join(out_path, fname), ex)
+            pad_ind = int(torch.sum(mask, dim=0).detach().cpu().numpy()[0])
+            ex = ex.T[:, :pad_ind]
+            print(ex.shape)
+
+            #fname = fnames[i]
+            #np.save(os.path.join(out_path, fname), ex)
             
