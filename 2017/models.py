@@ -95,7 +95,8 @@ class Layer1(nn.Module):
         self.out = nn.Linear(128, 64)
 
     def forward(self, x):
-        x = torch.sigmoid(self.fc1(x))
+        #x = torch.sigmoid(self.fc1(x))
+        x = nn.functional.relu(self.fc1(x))
         x = self.drop(x)
         return self.out(x)
 
@@ -111,9 +112,9 @@ class Layer_1_2(nn.Module):
         self.out = nn.Linear(128, 64)
 
     def forward(self, x):
-        x = torch.sigmoid(self.fc1(x))
+        x = nn.functional.relu(self.fc1(x))
         x = self.drop(x)
-        x = torch.sigmoid(self.fc2(x))
+        x = nn.functional.relu(self.fc2(x))
         x = self.drop(x)
         return self.out(x)
 
@@ -131,9 +132,9 @@ class DNN_mel(nn.Module):
         self.out = nn.Linear(128, 64)
         
     def forward(self, x):
-        x = torch.sigmoid(self.fc1(x))
+        x = nn.functional.relu(self.fc1(x))
         x = self.drop(x)
-        x = torch.sigmoid(self.fc2(x))
+        x = nn.functional.relu(self.fc2(x))
         x = self.drop(x)
         x = self.fc3(x)
         x = self.out(x)
