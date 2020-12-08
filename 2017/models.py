@@ -166,6 +166,8 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
     prev_val = 9999
 
     device = torch.device("cuda")
+    if torch.cuda.device_count() > 1:
+        print("Using", torch.cuda.device_count(), "GPUs...")
 
     ############# PRETRAIN FIRST LAYER ################
 
@@ -177,6 +179,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
         criterion = MaskedMSELoss()
         optimizer = optim.SGD(l1.parameters(), lr=0.01, momentum=0.9)
         l1.cuda()
+        l1 = nn.DataParallel(l1)
         l1 = l1.to(device)
         criterion.cuda()
 

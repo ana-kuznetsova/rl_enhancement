@@ -1,1 +1,4 @@
 python main.py --mode='dnn_pred' --x_path='/nobackup/anakuzne/data/koizumi17_timit/TIMIT/test_corpus/corpus' --noise_path='/nobackup/anakuzne/data/koizumi17_timit/cafe_16k.wav' --model_path='/nobackup/anakuzne/data/koizumi17_timit/config_test/' --out_path='/nobackup/anakuzne/data/koizumi17_timit/config_test/preds/'
+
+python main.py --mode=='dnn_pretrain' --x_path='/nobackup/anakuzne/data/subjectiveevaluationspeechdata/VOiCES/noisy/', --model_path='/nobackup/anakuzne/data/experiments/speech_enhancement/0/' --num_epochs 100 --noise_path
+
