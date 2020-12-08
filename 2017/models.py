@@ -179,7 +179,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
         criterion = MaskedMSELoss()
         optimizer = optim.SGD(l1.parameters(), lr=0.01, momentum=0.9)
         l1.cuda()
-        l1 = nn.DataParallel(l1)
+        l1 = nn.DataParallel(l1, device_ids=[0, 1])
         l1 = l1.to(device)
         criterion.cuda()
 
