@@ -146,7 +146,7 @@ class DNN_RL(nn.Module):
 ##### TRAINING FUNCTIONS #####
 
 def q_pretrain(x_path, noise_path, cluster_path, model_path, 
-               num_epochs=100, snr=0, P=5, maxlen=1339, resume=False):
+               num_epochs=100, snr=0, P=5, maxlen=1339, resume='False'):
     P=5 #Window size
     num_epochs = 50
     snr=0
@@ -162,7 +162,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
     torch.cuda.set_device(0) #change to 2 if on Ada
     criterion = nn.CrossEntropyLoss(ignore_index=-1)
 
-    if resume==False:
+    if resume=='False':
     ######## PRETRAIN FIRST RL-LAYER #########
 
         l1 = RL_L1()
