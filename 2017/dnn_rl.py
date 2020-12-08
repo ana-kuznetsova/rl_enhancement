@@ -167,7 +167,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
         l1 = RL_L1()
     
         l1.cuda()
-        l1 = nn.DataParallel(l1, device_ids=[2, 3])
+        l1 = nn.DataParallel(l1, device_ids=[2, 3], output_device=2)
         l1 = l1.to(device).double()
         criterion.cuda()
         l1.apply(weights)
