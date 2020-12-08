@@ -158,17 +158,15 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
 
     prev_val = 99999
    
-    #device = torch.device('cuda') #change to 2 if on Ada
+    device = torch.device('cuda:2') #change to 2 if on Ada
     criterion = nn.CrossEntropyLoss(ignore_index=-1)
 
     if resume=='False':
     ######## PRETRAIN FIRST RL-LAYER #########
 
         l1 = RL_L1()
-
-        l1 = nn.DataParallel(l1, device_ids=[2, 3], output_device=2)
         l1.cuda()
-        #l1 = l1.to(device).double()
+        l1 = l1.to(device).double()
         criterion.cuda()
         l1.apply(weights).double()
 
@@ -187,10 +185,9 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
             
             for batch in loader:
                 x = batch['x']
-                #x = x.to(device)
+                x = x.to(device)
                 target = batch['t']
-                #target = target.to(device).long()
-                target = target.long()
+                target = target.to(device).long()
                 output = l1(x)
                 output = torch.transpose(output, 1, 2)   
                 newLoss = criterion(output, target.squeeze(2)) 
