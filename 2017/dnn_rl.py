@@ -165,12 +165,12 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
     ######## PRETRAIN FIRST RL-LAYER #########
 
         l1 = RL_L1()
-        l1.apply(weights)
     
         l1.cuda()
         l1 = nn.DataParallel(l1, device_ids=[2, 3])
         l1 = l1.to(device).double()
         criterion.cuda()
+        l1.apply(weights)
 
         optimizer = optim.SGD(l1.parameters(), lr=0.001, momentum=0.9)
 
