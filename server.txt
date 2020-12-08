@@ -1,0 +1,3 @@
+python main.py --mode='qpretrain' --x_path='/nobackup/anakuzne/data/koizumi17_timit/TIMIT/corpus/' --noise_path='/nobackup/anakuzne/data/koizumi17_timit/cafe_16k.wav' --cluster_path='/nobackup/anakuzne/data/koizumi17_timit/kmeans_centers.npy'  --model_path='/nobackup/anakuzne/data/koizumi17_timit/config_test_qfunc/' --num_epochs=100 
+
+python main.py --mode='data' --x_path='/nobackup/anakuzne/data/chime3/tr05_org/' --noise_path='/nobackup/anakuzne/data/koizumi17_timit/cafe_16k.wav' --out_path='/nobackup/anakuzne/data/experiments/speech_enhancement/0/wiener/' --k 128

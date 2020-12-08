@@ -129,6 +129,7 @@ def KMeans(target_path, out_path, k=32):
         target_path: directory with precalculated Wiener filters
         out_path: directory to save cluster centers
     '''
+    print("Numer of clusters: ", k)
     kmeans = MiniBatchKMeans(n_clusters=k, 
                              batch_size=128,
                              max_iter=100)
