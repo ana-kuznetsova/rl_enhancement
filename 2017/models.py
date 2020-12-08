@@ -256,6 +256,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
     optimizer = optim.SGD(l2.parameters(), lr=0.01, momentum=0.9)
     device = torch.device("cuda")
     l2.cuda()
+    l2 = nn.DataParallel(l2, device_ids=[0, 1])
     l2 = l2.to(device)
     criterion.cuda()
 
