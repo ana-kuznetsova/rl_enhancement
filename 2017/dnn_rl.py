@@ -92,7 +92,7 @@ class RL_L1(nn.Module):
         self.fc1 = nn.Linear(704, 64)
         self.drop = nn.Dropout(0.3)
         self.soft = nn.Softmax(dim=1)
-        self.out = nn.Linear(64, 32)
+        self.out = nn.Linear(64, 128)
 
     def forward(self, x):
         x = torch.sigmoid(self.fc1(x))
@@ -109,7 +109,7 @@ class RL_L2(nn.Module):
         else:
             self.fc1 = nn.Linear(704, 64)
         self.fc2 = nn.Linear(64, 64)
-        self.out = nn.Linear(64, 32)
+        self.out = nn.Linear(64, 128)
         self.drop = nn.Dropout(0.3)
         self.soft = nn.Softmax(dim=1)
 
@@ -130,7 +130,7 @@ class DNN_RL(nn.Module):
         else:
             self.fc1 = nn.Linear(704, 64)
             self.fc2 = nn.Linear(64, 64)
-        self.out = nn.Linear(64, 32)
+        self.out = nn.Linear(64, 128)
         self.soft = nn.Softmax(dim=1)
         self.drop = nn.Dropout(0.3)
         
