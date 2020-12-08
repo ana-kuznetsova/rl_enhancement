@@ -187,9 +187,10 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
             
             for batch in loader:
                 x = batch['x']
-                x = x.to(device)
+                #x = x.to(device)
                 target = batch['t']
-                target = target.to(device).long()
+                #target = target.to(device).long()
+                target = target.long()
                 output = l1(x)
                 output = torch.transpose(output, 1, 2)   
                 newLoss = criterion(output, target.squeeze(2)) 
