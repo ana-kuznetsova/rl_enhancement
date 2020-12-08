@@ -61,6 +61,6 @@ if __name__ == '__main__':
     parser.add_argument('--from_pretrained', type=bool, help='true or false')
     parser.add_argument('--cluster_path', type=str, help='path to the k-means clusters')
     parser.add_argument('--k', type=int, help='Number of K-means clusters')
-    parser.add_argument('--resume', type=str, help='If training should be resumed from the existing checkpoint')
+    parser.add_argument('--resume', type=bool, help='If training should be resumed from the existing checkpoint')
     args = parser.parse_args()
     main(args)
