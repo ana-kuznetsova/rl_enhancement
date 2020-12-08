@@ -158,7 +158,7 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
 
     prev_val = 99999
    
-    device = torch.device('cuda:0') #change to 2 if on Ada
+    device = torch.device('cuda') #change to 2 if on Ada
     torch.cuda.set_device(0) #change to 2 if on Ada
     criterion = nn.CrossEntropyLoss(ignore_index=-1)
 
