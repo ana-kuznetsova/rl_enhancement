@@ -18,7 +18,7 @@ from qlearn import q_learning
 def main(args):
     if args.mode=='data':
         #Precalculate Wiener target
-        precalc_Wiener(args.x_path, args.noise_path, args.out_path)
+        #precalc_Wiener(args.x_path, args.noise_path, args.out_path)
         #Calculate cluster centers
         KMeans(args.x_path, args.out_path, args.k)
     elif args.mode=='dnn_pretrain':

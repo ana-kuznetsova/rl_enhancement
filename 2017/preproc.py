@@ -137,7 +137,7 @@ def KMeans(target_path, out_path, k=32):
     fnames = os.listdir(target_path)
     
     for f in tqdm(fnames):
-        w = np.load(os.path.join(target_path, f)).T
+        w = np.load(os.path.join(target_path, f), allow_pickle=True).T
         kmeans = kmeans.partial_fit(w)
 
     centers = kmeans.cluster_centers_
