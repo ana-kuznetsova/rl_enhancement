@@ -191,7 +191,6 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
                 output = l1(x)
                 output = torch.transpose(output, 1, 2)   
                 newLoss = criterion(output, target.squeeze(2)) 
-                print(newLoss)  
                 epoch_loss += newLoss.detach().cpu().numpy()
                 optimizer.zero_grad()
                 newLoss.backward()
@@ -242,7 +241,6 @@ def q_pretrain(x_path, noise_path, cluster_path, model_path,
     l2 = RL_L2().double()
     optimizer = optim.SGD(l2.parameters(), lr=0.01, momentum=0.9)
     l2.cuda()
-    l2 = nn.DataParallel(l2, device_ids=[2, 3])
     best_l2 = copy.deepcopy(l2.state_dict())
 
     print('###### Pretraining RL_L2 #######')
