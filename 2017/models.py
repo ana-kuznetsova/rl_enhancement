@@ -158,6 +158,7 @@ class MaskedMSELoss(torch.nn.Module):
         return err
 
 def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume=False):
+    print('resume arg', resume)
     
     losses_l1 = []
     losses_l2 = []
@@ -169,7 +170,7 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume=False):
     ############# PRETRAIN FIRST LAYER ################
 
     if resume==False:
-    
+
         l1 = Layer1()
         l1 = l1.double()
         l1.apply(weights)
