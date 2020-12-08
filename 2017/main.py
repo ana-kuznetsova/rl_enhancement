@@ -20,7 +20,7 @@ def main(args):
         #Precalculate Wiener target
         #precalc_Wiener(args.x_path, args.noise_path, args.out_path)
         #Calculate cluster centers
-        KMeans(args.x_path, args.out_path, args.k)
+        KMeans(args.out_path, args.out_path, args.k)
     elif args.mode=='dnn_pretrain':
         pretrain(args.x_path, args.model_path, args.num_epochs,
                  args.noise_path, args.snr, args.P, args.resume)
