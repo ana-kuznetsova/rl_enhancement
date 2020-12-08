@@ -166,8 +166,6 @@ def pretrain(x_path, model_path, num_epochs, noise_path, snr, P, resume='False')
     prev_val = 9999
 
     device = torch.device("cuda")
-    if torch.cuda.device_count() > 1:
-        print("Using", torch.cuda.device_count(), "GPUs...")
 
     ############# PRETRAIN FIRST LAYER ################
 
