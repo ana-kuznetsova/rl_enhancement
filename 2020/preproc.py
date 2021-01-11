@@ -1,6 +1,7 @@
 import torchaudio
 import torch
 import torch.utils.data as data
+import torch.nn as nn
 
 
 import os
@@ -9,6 +10,9 @@ import librosa
 from tqdm import tqdm
 
 def find_max(path):
+    '''
+    Voice-DEMAND, 28 spk: 1890  maxlen
+    '''
     fnames = os.listdir(path)
     max_len = 0
     stft = torchaudio.transforms.Spectrogram(n_fft=1024, win_length=512, hop_length=128)
@@ -20,13 +24,15 @@ def find_max(path):
     
     print("Maximum input length:", max_len)
 
-def get_feats(clean_path, noisy_path):
+def get_feats(clean_path, noisy_path, maxlen=1890):
     clean, sr = librosa.core.load(clean_path, sr=16000)
     noisy, sr = librosa.core.load(noisy_path, sr=16000)
 
     stft = torchaudio.transforms.Spectrogram(n_fft=1024, win_length=512, hop_length=128)
     clean = stft(torch.tensor(clean))
     noisy = stft(torch.tensor(noisy))
+    clean = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(clean)
+    noisy = nn.ZeroPad2d(padding=(0, maxlen-noisy.shape[1], 0, 0))(noisy)
     return {"clean":clean, "noisy":noisy}
 
 class DataLoader(data.Dataset):
@@ -52,5 +58,3 @@ class DataLoader(data.Dataset):
             idx = idx.tolist()
         sample = self.transform(self.fnames_clean[idx], self.fnames_noisy[idx])
         return sample
-
-find_max('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/')
