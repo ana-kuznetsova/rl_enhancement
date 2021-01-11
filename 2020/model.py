@@ -18,7 +18,9 @@ class Actor(nn.Module):
         #self.conv1d3 = nn.Conv1d(in_channels=60, out_channels=1)
 
     def forward(self, x):
-        pass
+        x = self.conv2d1(x)
+        x = self.conv2d2(x)
+        return x
 
 device = torch.device("cuda")
 model = Actor()
@@ -30,6 +32,7 @@ dataset = DataLoader('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28
 loader = data.DataLoader(dataset, batch_size=10, shuffle=True)
 
 for batch in loader:
-    x = batch["noisy"].unsqueeze(1)
-    t = batch["clean"].unsqueeze(1)
-    print("Noisy:", x.shape)
+    x = batch["noisy"].unsqueeze(1).to(device)
+    t = batch["clean"].unsqueeze(1).to(device)
+    out = model(x)
+    print(out.shape)
