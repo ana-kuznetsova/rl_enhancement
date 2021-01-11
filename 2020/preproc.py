@@ -21,7 +21,7 @@ class DataLoader(data.Dataset):
         self.noisy_path = noisy_path
         self.fnames_clean = self.get_samples()[0]
         self.fnames_noisy = self.get_samples()[1]
-        self.transforms = transform
+        self.transform = transform
 
     def get_samples(self):
         fnames = os.listdir(self.clean_path)
