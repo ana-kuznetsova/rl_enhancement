@@ -13,7 +13,7 @@ def find_max(path):
     stft = torchaudio.transforms.Spectrogram(n_fft=1024, win_length=512, hop_length=128)
     for f in fnames:
         speech, sr = librosa.core.load(os.path.join(path, f), sr=16000)
-        speech = stft(speech)
+        speech = stft(torch.tensor(speech))
         if speech.shape[1] > max_len:
             max_len = speech.shape[1]
     
