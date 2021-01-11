@@ -7,6 +7,18 @@ import os
 import numpy as np
 import librosa
 
+def find_max(path):
+    fnames = os.listdir(path)
+    max_len = 0
+    stft = torchaudio.transforms.Spectrogram(n_fft=1024, win_length=512, hop_length=128)
+    for f in fnames:
+        speech, sr = librosa.core.load(os.path.join(path, f), sr=16000)
+        speech = stft(speech)
+        if speech.shape[1] > max_len:
+            max_len = speech.shape[1]
+    
+    print("Maximum input length:", max_len)
+
 def get_feats(clean_path, noisy_path):
     clean, sr = librosa.core.load(clean_path, sr=16000)
     noisy, sr = librosa.core.load(noisy_path, sr=16000)
@@ -39,3 +51,5 @@ class DataLoader(data.Dataset):
             idx = idx.tolist()
         sample = self.transform(self.fnames_clean[idx], self.fnames_noisy[idx])
         return sample
+
+find_max('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/')
