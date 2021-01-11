@@ -15,16 +15,21 @@ def get_feats(clean_path, noisy_path):
     noisy = stft(noisy)
     return {"clean":clean, "noisy":noisy}
 
-
-def get_samples(num_samples, clean_path, noisy_path):
-    pass
-
 class DataLoader(data.Dataset):
-    def __init__(self, fnames_clean, fnames_noisy, transform):
-        self.fnames_clean = fnames_clean
-        self.fnames_noisy = fnames_noisy
+    def __init__(self, clean_path, noisy_path, transform):
+        self.clean_path = clean_path
+        self.noisy_path = noisy_path
+        self.fnames_clean = self.get_samples()[0]
+        self.fnames_noisy = self.get_samples()[1]
         self.transforms = transform
-    
+
+    def get_samples(self):
+        fnames = os.listdir(self.clean_path)
+        fnames = list(np.random.choice(fnames, size=1000, replace=True))
+        clean = [os.path.join(self.clean_path, n) for n in fnames]
+        noisy = [os.path.join(self.noisy_path, n) for n in fnames]
+        return (clean, noisy)
+
     def __len__(self):
         return len(self.fnames_clean)
     
