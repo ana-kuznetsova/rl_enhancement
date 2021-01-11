@@ -5,14 +5,15 @@ import torch.utils.data as data
 
 import os
 import numpy as np
+import librosa
 
 def get_feats(clean_path, noisy_path):
-    clean = torchaudio.load_wav(clean_path, sample_rate=16000)
-    noisy = torchaudio.load_wav(noisy_path, sample_rate=16000)
+    clean, sr = librosa.core.load(clean_path, sr=16000)
+    noisy, sr = librosa.core.load(noisy_path, sr=16000)
 
     stft = torchaudio.transforms.Spectrogram(win_length=512, hop_length=128)
-    clean = stft(clean)
-    noisy = stft(noisy)
+    clean = stft(torch.tensor(clean))
+    noisy = stft(torch.tensor(noisy))
     return {"clean":clean, "noisy":noisy}
 
 class DataLoader(data.Dataset):
