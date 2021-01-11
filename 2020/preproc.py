@@ -26,7 +26,7 @@ class DataLoader(data.Dataset):
 
     def get_samples(self):
         fnames = os.listdir(self.clean_path)
-        fnames = list(np.random.choice(fnames, size=1000, replace=True))
+        fnames = np.random.choice(fnames, size=1000, replace=True)
         clean = [os.path.join(self.clean_path, n) for n in fnames]
         noisy = [os.path.join(self.noisy_path, n) for n in fnames]
         return (clean, noisy)
@@ -37,5 +37,5 @@ class DataLoader(data.Dataset):
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
             idx = idx.tolist()
-        sample = self.transform(self.fnames_clean, self.fnames_noisy)
+        sample = self.transform(self.fnames_clean[idx], self.fnames_noisy[idx])
         return sample
