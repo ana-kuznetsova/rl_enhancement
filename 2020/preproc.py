@@ -11,7 +11,7 @@ def get_feats(clean_path, noisy_path):
     clean, sr = librosa.core.load(clean_path, sr=16000)
     noisy, sr = librosa.core.load(noisy_path, sr=16000)
 
-    stft = torchaudio.transforms.Spectrogram(win_length=512, hop_length=128)
+    stft = torchaudio.transforms.Spectrogram(n_fft=2048, win_length=512, hop_length=128)
     clean = stft(torch.tensor(clean))
     noisy = stft(torch.tensor(noisy))
     return {"clean":clean, "noisy":noisy}
