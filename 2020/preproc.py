@@ -6,12 +6,13 @@ import torch.utils.data as data
 import os
 import numpy as np
 import librosa
+from tqdm import tqdm
 
 def find_max(path):
     fnames = os.listdir(path)
     max_len = 0
     stft = torchaudio.transforms.Spectrogram(n_fft=1024, win_length=512, hop_length=128)
-    for f in fnames:
+    for f in tqdm(fnames):
         speech, sr = librosa.core.load(os.path.join(path, f), sr=16000)
         speech = stft(torch.tensor(speech))
         if speech.shape[1] > max_len:
