@@ -29,4 +29,7 @@ dataset = DataLoader('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28
                      '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/', get_feats)
 loader = data.DataLoader(dataset, batch_size=10, shuffle=True)
 
-print("LEN", len(loader))
+for batch in loader:
+    x = batch["noisy"]
+    t = batch["clean"]
+    print("Noisy:", x.shape)
