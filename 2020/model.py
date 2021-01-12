@@ -44,9 +44,17 @@ class Actor(nn.Module):
         for i in range(x.shape[0]):
             curr_x = self.linear2(x[i])
             x_batch.append(curr_x)
-        x = torch.stack(x_batch)
-        del x_batch
-        return x
+
+        real = []
+        imag = []
+        
+        for m in x_batch:
+            r = m[:m.shape[2],:]
+            real.append(r)
+            i = m[m.shape[2]:,:]
+            imag.append(i)
+
+        return torch.stack(real), torch.stack(imag)
 
 device = torch.device("cuda:1")
 model = Actor()
@@ -60,5 +68,5 @@ loader = data.DataLoader(dataset, batch_size=10, shuffle=True)
 for batch in loader:
     x = batch["noisy"].unsqueeze(1).to(device)
     t = batch["clean"].unsqueeze(1).to(device)
-    out = model(x)
-    print(out.shape)
+    out_r, out_i = model(x)
+    print(out_r.shape, out_i.shape)
