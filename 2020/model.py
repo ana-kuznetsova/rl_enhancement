@@ -63,8 +63,6 @@ def predict(x, model_out):
     return x*temp
 
 def inverse(t, y , m):
-
-    istft = torch.istft(n_fft=1024, win_length=512, hop_length=128)
     targets = []
     preds = []
 
@@ -74,9 +72,9 @@ def inverse(t, y , m):
         t_i = t[i][:, :pad_idx]
         print(t[i].shape)
         y_i = y[i][:, :pad_idx]
-        t_i = istft(t_i)
+        t_i = torch.istft(t_i, n_fft=1024, win_length=512, hop_length=128)
         targets.append(t_i)
-        y_i = istft(y_i)
+        y_i = torch.istft(y_i, n_fft=1024, win_length=512, hop_length=128)
         preds.append(y_i)
     return targets, preds
 
