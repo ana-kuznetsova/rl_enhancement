@@ -91,5 +91,6 @@ for batch in loader:
     out_r, out_i = model(x)
     out_r = torch.transpose(out_r, 1, 2)
     out_i = torch.transpose(out_i, 1, 2)
-    y = predict(x.squeeze(1), (out_r, out_i))
+    print(out_r.shape)
+    #y = predict(x.squeeze(1), (out_r, out_i))
     #print(y.shape)
