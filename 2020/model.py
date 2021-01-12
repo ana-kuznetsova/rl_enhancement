@@ -22,7 +22,7 @@ class Actor(nn.Module):
         x = self.conv2d2(x)
         return x
 
-device = torch.device("cuda")
+device = torch.device("cuda:1")
 model = Actor()
 model.cuda()
 model = model.to(device)
