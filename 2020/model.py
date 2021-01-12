@@ -18,7 +18,9 @@ class Actor(nn.Module):
         self.conv2d3 = nn.Conv2d(in_channels=60, out_channels=1,
                                  kernel_size=(1, 1), stride=(1,1))
         self.relu = nn.ReLU()
-        self.Linear1 = nn.Linear(513, 128)
+        self.linear1 = nn.Linear(513, 128)
+        self.bi_lstm = nn.LSTM(128, hidden_size=256, num_layers=2, 
+                               batch_first=True, dropout=0.3)
 
     def forward(self, x):
         x = self.relu(self.conv2d1(x))
@@ -30,12 +32,12 @@ class Actor(nn.Module):
 
         ##Run through linear layer
         for i in range(x.shape[0]):
-            print(x[i].T.shape)
-            curr_x = self.Linear1(x[i].T)
+            curr_x = self.linear1(x[i].T)
             x_batch.append(curr_x)
         x = torch.stack(x_batch)
         del x_batch
-
+        
+        x, (h, _) = self.bi_lstm(x)
         return x
 
 device = torch.device("cuda:1")
