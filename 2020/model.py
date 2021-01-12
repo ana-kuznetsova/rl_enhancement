@@ -88,5 +88,6 @@ for batch in loader:
     t = batch["clean"].unsqueeze(1).to(device)
     m = batch["mask"].to(device)
     out_r, out_i = model(x)
+    print(x.shape, out_r.shape)
     y = predict(x, (out_r, out_i))
     print(y.shape)
