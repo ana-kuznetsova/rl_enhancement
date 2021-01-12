@@ -20,7 +20,7 @@ class Actor(nn.Module):
         self.relu = nn.ReLU()
         self.linear1 = nn.Linear(513, 128)
         self.bi_lstm = nn.LSTM(128, hidden_size=256, num_layers=2, 
-                               batch_first=True, dropout=0.3)
+                               batch_first=True, dropout=0.3, bidirectional=True)
 
     def forward(self, x):
         x = self.relu(self.conv2d1(x))
@@ -36,7 +36,7 @@ class Actor(nn.Module):
             x_batch.append(curr_x)
         x = torch.stack(x_batch)
         del x_batch
-        
+    
         x, (h, _) = self.bi_lstm(x)
         return x
 
