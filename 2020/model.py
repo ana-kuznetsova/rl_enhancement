@@ -15,11 +15,13 @@ class Actor(nn.Module):
         self.conv2d2 = nn.Conv2d(in_channels=30, out_channels=60,
                                  kernel_size=(5, 15), stride=(1,1), 
                                  padding=(2,7))
-        #self.conv1d3 = nn.Conv1d(in_channels=60, out_channels=1)
+        self.conv2d3 = nn.Conv2d(in_channels=60, out_channels=1,
+                                 kernel_size=(1, 1), stride=(1,1), padding=(2,7))
 
     def forward(self, x):
         x = self.conv2d1(x)
         x = self.conv2d2(x)
+        x = self.conv2d3(x)
         return x
 
 device = torch.device("cuda:1")
