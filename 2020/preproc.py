@@ -38,7 +38,7 @@ def get_feats(clean_path, noisy_path, maxlen=1890):
     mask = pad_func(mask)
     clean = pad_func(clean)
     noisy = pad_func(noisy)
-    print(clean.shape, mask.shape)
+    print(clean.shape, noisy.shape, mask.shape)
     return {"clean":clean, "noisy":noisy, "mask":mask}
 
 class DataLoader(data.Dataset):
