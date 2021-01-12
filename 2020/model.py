@@ -57,6 +57,23 @@ class Actor(nn.Module):
 
         return torch.stack(real), torch.stack(imag)
 
+def predict(x, model_out):
+    temp = torch.complex(model_out[0], model_out[1])
+    return x*temp
+
+def inverse(t, y , m):
+
+    istft = torch.istft(n_fft=1024, win_length=512, hop_length=128)
+    targets = []
+    preds = []
+
+    for i in range(t.shape[0]):
+        pad_idx = torch.sum(m[i])
+        t_i = t[i][:, :pad_idx]
+        y_i = y[i][:, :pad_idx]
+        t_i = istft(t_i)
+        y_i = istft(y_i)
+
 device = torch.device("cuda:1")
 model = Actor()
 model.cuda()
@@ -70,6 +87,6 @@ for batch in loader:
     x = batch["noisy"].unsqueeze(1).to(device)
     t = batch["clean"].unsqueeze(1).to(device)
     m = batch["mask"].to(device)
-    print(m.shape)
     out_r, out_i = model(x)
-    #print(out_r.shape, out_i.shape)
+    y = predict(x, (out_r, out_i))
+    print(y.shape)
