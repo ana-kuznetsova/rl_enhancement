@@ -5,6 +5,7 @@ import torch.utils.data as data
 
 from preproc import DataLoader
 from preproc import get_feats
+from losses import SDRLoss
 
 class Actor(nn.Module):
     def __init__(self):
@@ -73,7 +74,6 @@ def inverse(t, y , m):
         y_i = y[i].squeeze(0)
         y_i = y_i[:, :pad_idx]
         t_i = torch.istft(t_i, n_fft=1024, win_length=512, hop_length=128)
-        print(t_i.shape)
         targets.append(t_i)
         y_i = torch.istft(y_i, n_fft=1024, win_length=512, hop_length=128)
         preds.append(y_i)
@@ -83,6 +83,9 @@ device = torch.device("cuda:1")
 model = Actor()
 model.cuda()
 model = model.to(device)
+
+criterion = SDRLoss()
+criterion.cuda()
 
 dataset = DataLoader('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
                      '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/', get_feats)
@@ -96,5 +99,6 @@ for batch in loader:
     out_r = torch.transpose(out_r, 1, 2)
     out_i = torch.transpose(out_i, 1, 2)
     y = predict(x.squeeze(1), (out_r, out_i))
-    
     targets, preds = inverse(t, y, m)
+    loss = criterion(targets, preds)
+    print(loss)
