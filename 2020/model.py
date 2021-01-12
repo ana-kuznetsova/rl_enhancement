@@ -67,7 +67,7 @@ def inverse(t, y , m):
     preds = []
 
     for i in range(t.shape[0]):
-        pad_idx = torch.sum(m[i])
+        pad_idx = int(torch.sum(m[i]))
         print(t[i].shape)
         t_i = t[i].squeeze(0)[:, :pad_idx]
         print(t[i].shape)
