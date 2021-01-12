@@ -7,7 +7,7 @@ class SDRLoss(nn.Module):
         super().__init__()
     
     def norm2(self, vec):
-        return torch.sum(torch.abs(vec)**2)
+        return torch.sqrt(torch.sum(torch.abs(vec)**2))
     
     def clip(self, vec, alpha=20):
         return alpha*torch.tanh(vec/alpha)
