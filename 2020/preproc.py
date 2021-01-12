@@ -32,7 +32,7 @@ def get_feats(clean_path, noisy_path, maxlen=1890):
     clean = stft(torch.tensor(clean))
     noisy = stft(torch.tensor(noisy))
 
-    pad_func = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))
+    pad_func = nn.ZeroPad2d(padding=(0, maxlen-noisy.shape[1], 0, 0))
     
     mask = torch.ones(1, clean.shape[1])
     mask = pad_func(mask)
