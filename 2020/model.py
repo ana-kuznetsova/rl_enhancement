@@ -87,6 +87,8 @@ model = model.to(device)
 criterion = SDRLoss()
 criterion.cuda()
 
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+
 dataset = DataLoader('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
                      '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/', get_feats)
 loader = data.DataLoader(dataset, batch_size=10, shuffle=True)
@@ -101,4 +103,7 @@ for batch in loader:
     y = predict(x.squeeze(1), (out_r, out_i))
     targets, preds = inverse(t, y, m)
     loss = criterion(targets, preds)
-    print(loss)
+    print("SDR Loss:", loss.data)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
