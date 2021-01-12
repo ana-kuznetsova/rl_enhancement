@@ -53,6 +53,7 @@ class Actor(nn.Module):
             real.append(r)
             i = m[:,int(m.shape[1]/2):]
             imag.append(i)
+        del x_batch
 
         return torch.stack(real), torch.stack(imag)
 
@@ -68,5 +69,7 @@ loader = data.DataLoader(dataset, batch_size=10, shuffle=True)
 for batch in loader:
     x = batch["noisy"].unsqueeze(1).to(device)
     t = batch["clean"].unsqueeze(1).to(device)
+    m = batch["mask"].to(device)
+    print(m.shape)
     out_r, out_i = model(x)
-    print(out_r.shape, out_i.shape)
+    #print(out_r.shape, out_i.shape)
