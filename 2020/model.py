@@ -49,9 +49,9 @@ class Actor(nn.Module):
         imag = []
         
         for m in x_batch:
-            r = m[:m.shape[2],:]
+            r = m[:m.shape[2]/2,:]
             real.append(r)
-            i = m[m.shape[2]:,:]
+            i = m[m.shape[2]/2:,:]
             imag.append(i)
 
         return torch.stack(real), torch.stack(imag)
