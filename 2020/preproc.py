@@ -28,9 +28,11 @@ def get_feats(clean_path, noisy_path, maxlen=1890):
     clean, sr = librosa.core.load(clean_path, sr=16000)
     noisy, sr = librosa.core.load(noisy_path, sr=16000)
 
-    stft = torchaudio.transforms.Spectrogram(n_fft=1024, win_length=512, hop_length=128)
+    stft = torch.stft(n_fft=1024, win_length=512, hop_length=128, return_complex=True)
     clean = stft(torch.tensor(clean))
     noisy = stft(torch.tensor(noisy))
+
+    print(clean.shape, noisy.shape)
     
     mask = torch.ones(1, clean.shape[1])
     mask = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(mask)
