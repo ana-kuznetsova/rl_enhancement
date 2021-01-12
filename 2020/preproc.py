@@ -28,9 +28,9 @@ def get_feats(clean_path, noisy_path, maxlen=1890):
     clean, sr = librosa.core.load(clean_path, sr=16000)
     noisy, sr = librosa.core.load(noisy_path, sr=16000)
 
-    stft = torch.stft(n_fft=1024, win_length=512, hop_length=128, return_complex=True)
-    clean = stft(torch.tensor(clean))
-    noisy = stft(torch.tensor(noisy))
+    #stft = torch.stft(n_fft=1024, win_length=512, hop_length=128, return_complex=True)
+    clean = torch.stft(torch.tensor(clean), n_fft=1024, win_length=512, hop_length=128, return_complex=True)
+    noisy = torch.stft(torch.tensor(noisy), n_fft=1024, win_length=512, hop_length=128, return_complex=True)
 
     print(clean.shape, noisy.shape)
     
