@@ -31,13 +31,12 @@ def get_feats(clean_path, noisy_path, maxlen=1890):
     #stft = torch.stft(n_fft=1024, win_length=512, hop_length=128, return_complex=True)
     clean = torch.stft(torch.tensor(clean), n_fft=1024, win_length=512, hop_length=128, return_complex=True)
     noisy = torch.stft(torch.tensor(noisy), n_fft=1024, win_length=512, hop_length=128, return_complex=True)
-
-    print(clean.shape, noisy.shape)
     
     mask = torch.ones(1, clean.shape[1])
     mask = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(mask)
     clean = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(clean)
     noisy = nn.ZeroPad2d(padding=(0, maxlen-noisy.shape[1], 0, 0))(noisy)
+    print(clean.shape, noisy.shape)
     return {"clean":clean, "noisy":noisy, "mask":mask}
 
 class DataLoader(data.Dataset):
