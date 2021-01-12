@@ -21,6 +21,7 @@ class Actor(nn.Module):
         self.linear1 = nn.Linear(513, 128)
         self.bi_lstm = nn.LSTM(128, hidden_size=256, num_layers=2, 
                                batch_first=True, dropout=0.3, bidirectional=True)
+        self.linear2 = nn.Linear(512, 2*513)
 
     def forward(self, x):
         x = self.relu(self.conv2d1(x))
@@ -38,6 +39,13 @@ class Actor(nn.Module):
         del x_batch
     
         x, (h, _) = self.bi_lstm(x)
+
+        x_batch = []
+        for i in range(x.shape[0]):
+            curr_x = self.linear2(x)
+            x_batch.append(curr_x)
+        x = torch.stack(x)
+        del x_batch
         return x
 
 device = torch.device("cuda:1")
