@@ -16,7 +16,7 @@ class Actor(nn.Module):
                                  kernel_size=(5, 15), stride=(1,1), 
                                  padding=(2,7))
         self.conv2d3 = nn.Conv2d(in_channels=60, out_channels=1,
-                                 kernel_size=(1, 1), stride=(1,1), padding=(2,7))
+                                 kernel_size=(1, 1), stride=(1,1))
 
     def forward(self, x):
         x = self.conv2d1(x)
