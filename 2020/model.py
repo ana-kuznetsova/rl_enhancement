@@ -30,6 +30,7 @@ class Actor(nn.Module):
 
         ##Run through linear layer
         for i in range(x.shape[0]):
+            print(x[i].shape)
             curr_x = self.Linear1(x[i])
             x_batch.append(curr_x)
         x = torch.stack(x_batch)
