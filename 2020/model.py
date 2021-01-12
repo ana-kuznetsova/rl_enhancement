@@ -17,11 +17,24 @@ class Actor(nn.Module):
                                  padding=(2,7))
         self.conv2d3 = nn.Conv2d(in_channels=60, out_channels=1,
                                  kernel_size=(1, 1), stride=(1,1))
+        self.relu = nn.ReLU()
+        self.Linear1 = nn.Linear(512, 128)
 
     def forward(self, x):
-        x = self.conv2d1(x)
-        x = self.conv2d2(x)
-        x = self.conv2d3(x)
+        x = self.relu(self.conv2d1(x))
+        x = self.relu(self.conv2d2(x))
+        x = self.relu(self.conv2d3(x))
+        x = x.squeeze(1)
+        
+        x_batch = []
+
+        ##Run through linear layer
+        for i in range(x.shape[0]):
+            curr_x = self.Linear1(x[i])
+            x_batch.append(curr_x)
+        x = torch.stack(x_batch)
+        del x_batch
+
         return x
 
 device = torch.device("cuda:1")
