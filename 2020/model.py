@@ -44,7 +44,7 @@ class Actor(nn.Module):
         for i in range(x.shape[0]):
             curr_x = self.linear2(x)
             x_batch.append(curr_x)
-        x = torch.stack(x)
+        x = torch.stack(x_batch)
         del x_batch
         return x
 
