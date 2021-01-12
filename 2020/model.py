@@ -24,6 +24,7 @@ class Actor(nn.Module):
         self.linear2 = nn.Linear(512, 2*513)
 
     def forward(self, x):
+        x = x.real
         x = self.relu(self.conv2d1(x))
         x = self.relu(self.conv2d2(x))
         x = self.relu(self.conv2d3(x))
