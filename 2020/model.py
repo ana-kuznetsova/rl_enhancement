@@ -70,10 +70,15 @@ def inverse(t, y , m):
 
     for i in range(t.shape[0]):
         pad_idx = torch.sum(m[i])
+        print(t[i].shape)
         t_i = t[i][:, :pad_idx]
+        print(t[i].shape)
         y_i = y[i][:, :pad_idx]
         t_i = istft(t_i)
+        targets.append(t_i)
         y_i = istft(y_i)
+        preds.append(y_i)
+    return targets, preds
 
 device = torch.device("cuda:1")
 model = Actor()
@@ -92,4 +97,5 @@ for batch in loader:
     out_r = torch.transpose(out_r, 1, 2)
     out_i = torch.transpose(out_i, 1, 2)
     y = predict(x.squeeze(1), (out_r, out_i))
-    print(y.shape)
+    
+    targets, preds = inverse(t, y, m)
