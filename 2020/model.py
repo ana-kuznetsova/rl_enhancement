@@ -94,6 +94,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
     losses = []
     val_losses = []
     best = copy.deepcopy(model.state_dict())
+    prev_val=99999
 
     for epoch in range(1, num_epochs+1):
         if epoch <= 100:
@@ -129,7 +130,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
         np.save(os.path.join(model_path, "loss_actor_pre.npy"), np.array(losses))
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/len(loader)))
 
-        if (epoch//5==0) or (epoch//5==5):
+        if epoch%5==0:
             ##Validation
             overall_val_loss = 0
 
