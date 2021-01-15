@@ -101,7 +101,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
         else:
             lr = lr/100
 
-        optimizer = optim.Adam(model.paremeters(), lr=lr)
+        optimizer = optim.Adam(model.parameters(), lr=lr)
 
         epoch_loss = 0
 
