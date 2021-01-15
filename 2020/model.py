@@ -18,7 +18,6 @@ class Actor(nn.Module):
                                  padding=(2,7))
         self.conv2d3 = nn.Conv2d(in_channels=60, out_channels=1,
                                  kernel_size=(1, 1), stride=(1,1))
-        self.relu = nn.ReLU()
         self.linear1 = nn.Linear(513, 128)
         self.bi_lstm = nn.LSTM(128, hidden_size=256, num_layers=2, 
                                batch_first=True, dropout=0.3, bidirectional=True)
@@ -26,9 +25,9 @@ class Actor(nn.Module):
 
     def forward(self, x):
         x = x.real
-        x = self.relu(self.conv2d1(x))
-        x = self.relu(self.conv2d2(x))
-        x = self.relu(self.conv2d3(x))
+        x = self.conv2d1(x)
+        x = self.conv2d2(x)
+        x = self.conv2d3(x)
         x = x.squeeze(1)
         
         x_batch = []
