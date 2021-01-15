@@ -107,7 +107,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
         epoch_loss = 0
 
         dataset = DataLoader(clean_path, noisy_path, get_feats, 1000)
-        loader = data.DataLoader(dataset, batch_size=10, shuffle=True)
+        loader = data.DataLoader(dataset, batch_size=5, shuffle=True)
 
         for batch in loader:
             x = batch["noisy"].unsqueeze(1).to(device)
@@ -135,7 +135,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             overall_val_loss = 0
 
             dataset = DataLoader(clean_path, noisy_path, get_feats, 500)
-            loader = data.DataLoader(dataset, batch_size=10, shuffle=True)
+            loader = data.DataLoader(dataset, batch_size=5, shuffle=True)
 
             for batch in loader:
                 x = batch["noisy"].unsqueeze(1).to(device)
