@@ -39,16 +39,17 @@ def get_feats(clean_path, noisy_path, maxlen=1890):
     return {"clean":clean, "noisy":noisy, "mask":mask}
 
 class DataLoader(data.Dataset):
-    def __init__(self, clean_path, noisy_path, transform):
+    def __init__(self, clean_path, noisy_path, transform, sample_size=1000):
         self.clean_path = clean_path
         self.noisy_path = noisy_path
         self.fnames_clean = self.get_samples()[0]
         self.fnames_noisy = self.get_samples()[1]
         self.transform = transform
+        self.sample_size = sample_size
 
     def get_samples(self):
         fnames = os.listdir(self.clean_path)
-        fnames = np.random.choice(fnames, size=1000, replace=True)
+        fnames = np.random.choice(fnames, size=self.sample_size, replace=True)
         clean = [os.path.join(self.clean_path, n) for n in fnames]
         noisy = [os.path.join(self.noisy_path, n) for n in fnames]
         return (clean, noisy)
