@@ -82,12 +82,17 @@ def inverse(t, y , m):
         preds.append(y_i)
     return targets, preds
 
+def init_weights(m):
+    if isinstance(m, nn.Linear) or isinstance(m, nn.Conv2d):
+        nn.init.xavier_normal_(m.weight.data)
+
 def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
     device = torch.device("cuda:1")
     model = Actor()
     model.cuda()
     model = model.to(device)
+    model.apply(init_weights)
 
     criterion = SDRLoss()
     criterion.cuda()
