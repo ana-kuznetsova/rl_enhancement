@@ -43,8 +43,9 @@ class DataLoader(data.Dataset):
         self.clean_path = clean_path
         self.noisy_path = noisy_path
         self.sample_size = sample_size
-        self.fnames_clean = self.get_samples()[0]
-        self.fnames_noisy = self.get_samples()[1]
+        self.fnames = self.get_samples()
+        self.fnames_clean = self.fnames[0]
+        self.fnames_noisy = self.fnames[1]
         self.transform = transform
 
     def get_samples(self):
