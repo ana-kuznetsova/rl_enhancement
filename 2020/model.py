@@ -181,5 +181,5 @@ def inference(clean_path, noisy_path, model_path):
         y = predict(x.squeeze(1), (out_r, out_i))
         targets, preds = inverse(t, y, m)
         
-        sf.write(os.path.join('target_', str(i), '.wav'), targets[0].detach().cpu().numpy(), 16000)
-        sf.write(os.path.join('pred_', str(i), '.wav'), preds[0].detach().cpu().numpy(), 16000)
+        sf.write('target_'+str(i)+'.wav', targets[0].detach().cpu().numpy(), 16000)
+        sf.write('pred_'+str(i)+'.wav', preds[0].detach().cpu().numpy(), 16000)
