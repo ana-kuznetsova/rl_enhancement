@@ -17,7 +17,9 @@ class SDRLoss(nn.Module):
         temp = []
         for i in range(len(t)):
             frac = self.norm2(t[i])/self.norm2((t[i]-y[i]))
+            print(frac)
             val = 10*torch.log10(frac)
+            print("Tanh:", val, torch.tanh(frac) )
             val = self.clip(val)
             temp.append(val)
         temp = torch.stack(temp)
