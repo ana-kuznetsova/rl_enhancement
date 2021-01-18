@@ -5,6 +5,7 @@ import torch.utils.data as data
 import numpy as np
 import os
 import copy
+import soundfile as sf
 
 from preproc import DataLoader
 from preproc import get_feats
@@ -159,3 +160,26 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
                 prev_val = curr_val_loss
 
             torch.save(best, os.path.join(model_path, "actor_last.pth"))
+
+
+def inference(clean_path, noisy_path, model_path):
+    device = torch.device("cuda:1")
+    model = Actor()
+    model.load_state_dict(torch.load(model_path))
+    model = model.to(device)
+   
+    dataset = DataLoader(clean_path, noisy_path, get_feats, 2)
+    loader = data.DataLoader(dataset, batch_size=1, shuffle=True)
+
+    for i, batch in enumerate(loader):
+        x = batch["noisy"].unsqueeze(1).to(device)
+        t = batch["clean"].unsqueeze(1).to(device)
+        m = batch["mask"].to(device)
+        out_r, out_i = model(x)
+        out_r = torch.transpose(out_r, 1, 2)
+        out_i = torch.transpose(out_i, 1, 2)
+        y = predict(x.squeeze(1), (out_r, out_i))
+        targets, preds = inverse(t, y, m)
+        
+        sf.write(os.path.join('target_', str(i), '.wav'), targets[0].detach().cpu().numpy(), 16000)
+        sf.write(os.path.join('pred_', str(i), '.wav'), preds[0].detach().cpu().numpy(), 16000)
