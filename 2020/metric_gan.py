@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.utils.data as data
+from torchvision import transforms as trans
 import numpy as np
 import os
 import copy
@@ -16,17 +17,27 @@ from model import predict, inverse
 class Generator(nn.Module):
     def __init__(self, num_feats):
         super().__init__()
-        #self.bnorm = nn.BatchNorm2d(num_feats)
         self.bi_lstm = nn.LSTM(num_feats, hidden_size=200, num_layers=2, 
                                batch_first=True, dropout=0.3, bidirectional=True)
         self.fc1 = nn.Linear(200*2, 300)
         self.fc2 = nn.Linear(300, 257)
         self.leaky_relu = nn.LeakyReLU()
         self.sigmoid = nn.Sigmoid()
+    
+    def normalize_input(self, batch):
+        res = []
+        for i in range(batch.shape[0]):
+            mu_i = torch.mean(batch[i], 2)
+            std_i = torch.std(batch[i], 2)
+            print(mu_i, std_i)
+            norm_i = trans.Normalize(mu_i, std_i)(batch[i])
+            res.append(norm_i)
+        return torch.stack(res)
+
 
     def forward(self, x):
-        #x = self.bnorm(x)
         x = x.real
+        x = self.normalize_input(x)
         x, (h, _) = self.bi_lstm(x)
         x = self.fc1(x)
         x = self.leaky_relu(x)
