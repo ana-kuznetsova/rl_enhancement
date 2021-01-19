@@ -81,5 +81,7 @@ for i, batch in enumerate(loader):
     y = predict(x.squeeze(1), (out_r, out_i), floor=True)
     y = torch.transpose(y, 1, 2)
     y_gen = generator(y)
+    y_gen = torch.transpose(y_gen, 1, 2).unsqueeze(1)
+    print(y_gen.shape)
     y_disc = discriminator(y_gen)
     print(y_disc.shape)
