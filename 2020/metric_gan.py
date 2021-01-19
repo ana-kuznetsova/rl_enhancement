@@ -26,7 +26,6 @@ class Generator(nn.Module):
 
     def forward(self, x):
         x = x.real
-        x = self.normalize_input(x)
         x, (h, _) = self.bi_lstm(x)
         x = self.fc1(x)
         x = self.leaky_relu(x)
