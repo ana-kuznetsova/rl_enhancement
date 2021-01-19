@@ -47,6 +47,9 @@ class Discriminator(nn.Module):
         self.leaky_relu = nn.LeakyReLU()
         self.flat = nn.Flatten()
         self.fc1 = nn.Linear(50*4*37, 50)
+        self.fc2 = nn.Linear(50, 10)
+        self.out = nn.Linear(10, 1)
+
     def forward(self, x):
         x = self.conv2d1(x)
         x = self.conv2d2(x)
@@ -54,6 +57,9 @@ class Discriminator(nn.Module):
         x = self.conv2d4(x)
         x = self.avg_pool(x)
         x = self.fc1(self.flat(x))
+        x = self.leaky_relu(x)
+        x = self.leaky_relu(self.fc2(x))
+        x = self.out(x)
         return x
 
 
@@ -84,6 +90,5 @@ for i, batch in enumerate(loader):
     y = torch.transpose(y, 1, 2)
     y_gen = generator(y)
     y_gen = torch.transpose(y_gen, 1, 2).unsqueeze(1)
-    print(y_gen.shape)
     y_disc = discriminator(y_gen)
-    print(y_disc.shape)
+    print(y_disc.shape, y_disc)
