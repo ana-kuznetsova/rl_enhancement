@@ -32,11 +32,36 @@ class Generator(nn.Module):
         x = self.sigmoid(self.fc2(x))
         return x
 
+class Discriminator(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv2d1 = nn.Conv2d(in_channels=1, out_channels=15,
+                                 kernel_size=(5, 5))
+        self.conv2d2 = nn.Conv2d(in_channels=15, out_channels=25,
+                                 kernel_size=(7, 7))
+        self.conv2d3 = nn.Conv2d(in_channels=25, out_channels=40,
+                                 kernel_size=(9, 9))
+        self.conv2d4 = nn.Conv2d(in_channels=40, out_channels=50,
+                                 kernel_size=(11, 11))
+        self.avg_pool = nn.AvgPool2d(kernel_size=(50,50))
+        self.leaky_relu = nn.LeakyReLU()
+        #self.fc1 = nn.Linear()
+    def forward(self, x):
+        x = x.real
+        x = self.conv2d1(x)
+        x = self.conv2d2(x)
+        x = self.conv2d3(x)
+        x = self.conv2d4(x)
+        return x
+
 
 device = torch.device("cuda:0")
 generator = Generator(513)
 generator.cuda()
 generator = generator.to(device)
+
+discriminator = Discriminator()
+discriminator = discriminator.to(device)
 
 actor = Actor()
 actor.load_state_dict(torch.load('/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor/actor_best.pth'))
@@ -56,4 +81,5 @@ for i, batch in enumerate(loader):
     y = predict(x.squeeze(1), (out_r, out_i), floor=True)
     y = torch.transpose(y, 1, 2)
     y_gen = generator(y)
-    print(y_gen.shape)
+    y_disc = discriminator(y_gen)
+    print(y_disc.shape)
