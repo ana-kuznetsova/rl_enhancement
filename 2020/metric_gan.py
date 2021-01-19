@@ -27,9 +27,8 @@ class Generator(nn.Module):
     def forward(self, x):
         #x = self.bnorm(x)
         x = x.real
-        x = self.bi_lstm(x)
+        x, (h, _) = self.bi_lstm(x)
         x = self.fc1(x)
-        print(x.shape)
         x = self.leaky_relu(x)
         x = self.sigmoid(self.fc2(x))
         return x
@@ -57,6 +56,6 @@ for i, batch in enumerate(loader):
     out_i = torch.transpose(out_i, 1, 2)
     y = predict(x.squeeze(1), (out_r, out_i))
     y = torch.transpose(y, 1, 2)
-    #print(y.shape)
+    print(y.shape)
     y = critic(y)
-    #print(y)
+    print(y)
