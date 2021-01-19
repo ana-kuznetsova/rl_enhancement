@@ -62,7 +62,13 @@ class Actor(nn.Module):
 
         return torch.stack(real), torch.stack(imag)
 
-def predict(x, model_out):
+def predict(x, model_out, floor=False):
+    def floor_mask(model_out, treshold=0.05):
+        m = torch.tensor(np.full(model_out[0].shape, treshold))
+        res = torch.max(m, model_out[0])
+        return [res, model_out[1]]
+    if floor:
+        model_out = floor_mask(model_out)
     temp = torch.complex(model_out[0], model_out[1])
     return x*temp
 
