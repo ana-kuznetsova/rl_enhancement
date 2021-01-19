@@ -61,6 +61,36 @@ class Actor(nn.Module):
         del x_batch
 
         return torch.stack(real), torch.stack(imag)
+    
+class Critic(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv2d1 = nn.Conv2d(in_channels=1, out_channels=15,
+                                 kernel_size=(5, 5))
+        self.conv2d2 = nn.Conv2d(in_channels=15, out_channels=25,
+                                 kernel_size=(7, 7))
+        self.conv2d3 = nn.Conv2d(in_channels=25, out_channels=40,
+                                 kernel_size=(9, 9))
+        self.conv2d4 = nn.Conv2d(in_channels=40, out_channels=50,
+                                 kernel_size=(11, 11))
+        self.avg_pool = nn.AvgPool2d(kernel_size=(50,50))
+        self.leaky_relu = nn.LeakyReLU()
+        self.flat = nn.Flatten()
+        self.fc1 = nn.Linear(50*4*37, 50)
+        self.fc2 = nn.Linear(50, 10)
+        self.out = nn.Linear(10, 1)
+
+    def forward(self, x):
+        x = self.conv2d1(x)
+        x = self.conv2d2(x)
+        x = self.conv2d3(x)
+        x = self.conv2d4(x)
+        x = self.avg_pool(x)
+        x = self.fc1(self.flat(x))
+        x = self.leaky_relu(x)
+        x = self.leaky_relu(self.fc2(x))
+        x = self.out(x)
+        return x
 
 def predict(x, model_out, floor=False):
     def floor_mask(model_out, treshold=0.05):
@@ -91,6 +121,31 @@ def inverse(t, y , m):
 def init_weights(m):
     if isinstance(m, nn.Linear) or isinstance(m, nn.Conv2d):
         nn.init.xavier_normal_(m.weight.data)
+
+def pretrain_critic():
+
+    device = torch.device("cuda:1")
+    actor = Actor()
+    actor.load_state_dict(torch.load('/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor/actor_best.pth'))
+    actor = actor.to(device)
+
+    critic = Critic()
+    critic = critic.to(device)
+
+    dataset = DataLoader('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
+                     '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/', get_feats, 1000)
+    loader = data.DataLoader(dataset, batch_size=10, shuffle=True)
+
+    for i, batch in enumerate(loader):
+        x = batch["noisy"].unsqueeze(1).to(device)
+        t = batch["clean"].unsqueeze(1).to(device)
+        m = batch["mask"].to(device)
+        out_r, out_i = actor(x)
+        out_r = torch.transpose(out_r, 1, 2)
+        out_i = torch.transpose(out_i, 1, 2)
+        y = predict(x.squeeze(1), (out_r, out_i), floor=True)
+        y = torch.transpose(y, 1, 2)
+        y_gen = critic(y)
 
 def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
