@@ -23,17 +23,6 @@ class Generator(nn.Module):
         self.fc2 = nn.Linear(300, 257)
         self.leaky_relu = nn.LeakyReLU()
         self.sigmoid = nn.Sigmoid()
-    
-    def normalize_input(self, batch):
-        res = []
-        for i in range(batch.shape[0]):
-            mu_i = torch.mean(batch[i], 1)
-            std_i = torch.std(batch[i], 1)
-            print(mu_i, std_i)
-            norm_i = trans.Normalize(mu_i, std_i)(batch[i])
-            res.append(norm_i)
-        return torch.stack(res)
-
 
     def forward(self, x):
         x = x.real
