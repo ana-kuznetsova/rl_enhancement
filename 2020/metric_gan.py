@@ -34,9 +34,9 @@ class Generator(nn.Module):
 
 
 device = torch.device("cuda:0")
-critic = Generator(513)
-critic.cuda()
-critic = critic.to(device)
+generator = Generator(513)
+generator.cuda()
+generator = generator.to(device)
 
 actor = Actor()
 actor.load_state_dict(torch.load('/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor/actor_best.pth'))
@@ -54,7 +54,5 @@ for i, batch in enumerate(loader):
     out_r = torch.transpose(out_r, 1, 2)
     out_i = torch.transpose(out_i, 1, 2)
     y = predict(x.squeeze(1), (out_r, out_i), floor=True)
-    #y = torch.transpose(y, 1, 2)
-    print(y.shape)
-    y = critic(y)
-    print(y)
+    y_gen = generator(y)
+    print(y_gen.shape)
