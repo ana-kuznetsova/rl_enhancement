@@ -47,7 +47,6 @@ class Discriminator(nn.Module):
         self.leaky_relu = nn.LeakyReLU()
         #self.fc1 = nn.Linear()
     def forward(self, x):
-        x = x.real
         x = self.conv2d1(x)
         x = self.conv2d2(x)
         x = self.conv2d3(x)
