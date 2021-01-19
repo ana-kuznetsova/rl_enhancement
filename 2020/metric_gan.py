@@ -36,13 +36,17 @@ class Discriminator(nn.Module):
     def __init__(self):
         super().__init__()
         self.conv2d1 = nn.Conv2d(in_channels=1, out_channels=15,
-                                 kernel_size=(5, 5))
+                                 kernel_size=(5, 5),stride=(1,1), 
+                                 padding=(2,7))
         self.conv2d2 = nn.Conv2d(in_channels=15, out_channels=25,
-                                 kernel_size=(7, 7))
+                                 kernel_size=(7, 7),stride=(1,1), 
+                                 padding=(2,7))
         self.conv2d3 = nn.Conv2d(in_channels=25, out_channels=40,
-                                 kernel_size=(9, 9))
+                                 kernel_size=(9, 9), stride=(1,1), 
+                                 padding=(2,7))
         self.conv2d4 = nn.Conv2d(in_channels=40, out_channels=50,
-                                 kernel_size=(11, 11))
+                                 kernel_size=(11, 11), stride=(1,1), 
+                                 padding=(2,7))
         self.avg_pool = nn.AvgPool2d(kernel_size=(50,50))
         self.leaky_relu = nn.LeakyReLU()
         #self.fc1 = nn.Linear()
