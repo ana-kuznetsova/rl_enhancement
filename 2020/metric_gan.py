@@ -9,6 +9,8 @@ import soundfile as sf
 
 from preproc import DataLoader
 from preproc import get_feats
+from model import Actor
+from model import predict, inverse
 
 
 class Generator(nn.Module):
@@ -29,10 +31,26 @@ class Generator(nn.Module):
         x = self.sigmoid(self.fc2(x))
         return x
 
+
+device = torch.device("cuda:0")
+critic = Generator(513)
+critic.cuda()
+critic = critic.to(device)
+
+actor = Actor()
+actor.load_state_dict(torch.load('/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor/'))
+actor = actor.to(device)
+
 dataset = DataLoader('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
                      '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/', get_feats, 1000)
-loader = data.DataLoader(dataset, batch_size=5, shuffle=True)
+loader = data.DataLoader(dataset, batch_size=10, shuffle=True)
 
-for batch in loader:
-    x = batch["noisy"].unsqueeze(1)
-    print(x.shape)
+for i, batch in enumerate(loader):
+    x = batch["noisy"].unsqueeze(1).to(device)
+    t = batch["clean"].unsqueeze(1).to(device)
+    m = batch["mask"].to(device)
+    out_r, out_i = actor(x)
+    out_r = torch.transpose(out_r, 1, 2)
+    out_i = torch.transpose(out_i, 1, 2)
+    y = predict(x.squeeze(1), (out_r, out_i))
+    print(y.shape)
