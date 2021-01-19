@@ -65,10 +65,8 @@ class Actor(nn.Module):
 def predict(x, model_out, floor=False):
     def floor_mask(model_out, treshold=0.05):
         temp = model_out[0]
-        print(temp[:10])
         temp[temp < treshold] = treshold
-        print(temp[:10])
-        return [res, model_out[1]]
+        return [temp, model_out[1]]
     if floor:
         model_out = floor_mask(model_out)
     temp = torch.complex(model_out[0], model_out[1])
