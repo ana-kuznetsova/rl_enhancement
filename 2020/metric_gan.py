@@ -16,7 +16,7 @@ from model import predict, inverse
 class Generator(nn.Module):
     def __init__(self, num_feats):
         super().__init__()
-        self.bnorm = nn.BatchNorm2d(num_feats)
+        #self.bnorm = nn.BatchNorm2d(num_feats)
         self.bi_lstm = nn.LSTM(num_feats, hidden_size=200, num_layers=2, 
                                batch_first=True, dropout=0.3, bidirectional=True)
         self.fc1 = nn.Linear(200*2, 300)
@@ -25,7 +25,7 @@ class Generator(nn.Module):
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
-        x = self.bnorm(x)
+        #x = self.bnorm(x)
         x = self.bi_lstm(x)
         x = self.leaky_relu(self.fc1(x))
         x = self.sigmoid(self.fc2(x))
@@ -52,6 +52,6 @@ for i, batch in enumerate(loader):
     out_r, out_i = actor(x)
     out_r = torch.transpose(out_r, 1, 2)
     out_i = torch.transpose(out_i, 1, 2)
-    y = predict(x.squeeze(1), (out_r, out_i))
-    y = critic(y.unsqueeze(1))
-    print(y)
+    y = predict(x.squeeze(1), (out_r, out_i)).unsqueeze(1)
+    print(y.shape)
+    y = critic(y)
