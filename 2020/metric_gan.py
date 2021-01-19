@@ -54,7 +54,6 @@ for i, batch in enumerate(loader):
     out_r = torch.transpose(out_r, 1, 2)
     out_i = torch.transpose(out_i, 1, 2)
     y = predict(x.squeeze(1), (out_r, out_i), floor=True)
-    #y = torch.transpose(y, 1, 2)
-    print(y.shape)
+    y = torch.transpose(y, 1, 2)
     y = critic(y)
     print(y)
