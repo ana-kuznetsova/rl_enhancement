@@ -64,8 +64,7 @@ class Actor(nn.Module):
 
 def predict(x, model_out, floor=False):
     def floor_mask(model_out, treshold=0.05):
-        m = torch.tensor(np.full(model_out[0].shape, treshold))
-        res = torch.max(m, model_out[0])
+        res = model_out[0][model_out[0] < treshold] = treshold
         return [res, model_out[1]]
     if floor:
         model_out = floor_mask(model_out)
