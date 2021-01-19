@@ -45,13 +45,15 @@ class Discriminator(nn.Module):
                                  kernel_size=(11, 11))
         self.avg_pool = nn.AvgPool2d(kernel_size=(50,50))
         self.leaky_relu = nn.LeakyReLU()
-        #self.fc1 = nn.Linear()
+        self.flat = nn.Flatten()
+        self.fc1 = nn.Linear(50*4*37, 50)
     def forward(self, x):
         x = self.conv2d1(x)
         x = self.conv2d2(x)
         x = self.conv2d3(x)
         x = self.conv2d4(x)
         x = self.avg_pool(x)
+        x = self.fc1(self.flat(x))
         return x
 
 
