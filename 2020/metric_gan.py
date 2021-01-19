@@ -26,6 +26,7 @@ class Generator(nn.Module):
 
     def forward(self, x):
         #x = self.bnorm(x)
+        x = x.real
         x = self.bi_lstm(x)
         x = self.leaky_relu(self.fc1(x))
         x = self.sigmoid(self.fc2(x))
