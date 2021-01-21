@@ -33,6 +33,7 @@ class CriticLoss(nn.Module):
         scores = []
         for i in range(x.shape[0]):
             ind = int(torch.sum(mask[i], 1))
+            print(ind)
             x = x[i][:, :ind]
             y = y[i][:, :ind]
             s = s[i][:, :ind]
@@ -55,7 +56,7 @@ class CriticLoss(nn.Module):
             x (batch): stfts of noisy speech
             y (batch): stfts of predicted speech from Actor
             s (batch): stfts of target speech
-            pred_scores: [x, y, s] predicted by Critic scored for x, y, s
+            pred_scores (batch): [x, y, s] predicted by Critic scored for x, y, s
             mask (batch): masks for signals
         '''
         final_score = None
