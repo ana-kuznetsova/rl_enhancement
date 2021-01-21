@@ -82,7 +82,7 @@ class Critic(nn.Module):
         self.out = nn.Linear(10, 1)
 
     def forward(self, x):
-        x = self.bnorm(x)
+        x = self.bnorm(x).unsqueeze(1)
         x = self.leaky_relu(self.conv2d1(x))
         x = self.leaky_relu(self.conv2d2(x))
         x = self.leaky_relu(self.conv2d3(x))
