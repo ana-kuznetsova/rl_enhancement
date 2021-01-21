@@ -83,6 +83,7 @@ class Critic(nn.Module):
 
     def forward(self, x):
         x = self.bnorm(x)
+        print(x.shape)
         x = self.conv2d1(x)
         x = self.conv2d2(x)
         x = self.conv2d3(x)
@@ -147,7 +148,6 @@ def pretrain_critic():
         out_i = torch.transpose(out_i, 1, 2)
         y = predict(x.squeeze(1), (out_r, out_i), floor=True)
         t = t.squeeze(1)
-        print(y.shape, t.shape)
         disc_input = torch.cat((y, t), 2)
         print(disc_input.shape)
 
