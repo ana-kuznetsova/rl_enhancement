@@ -83,11 +83,11 @@ class Critic(nn.Module):
 
     def forward(self, x):
         x = self.bnorm(x)
+        x = self.leaky_relu(self.conv2d1(x))
+        x = self.leaky_relu(self.conv2d2(x))
+        x = self.leaky_relu(self.conv2d3(x))
+        x = self.leaky_relu(self.conv2d4(x))
         print(x.shape)
-        x = self.conv2d1(x)
-        x = self.conv2d2(x)
-        x = self.conv2d3(x)
-        x = self.conv2d4(x)
         x = self.avg_pool(x)
         x = self.fc1(self.flat(x))
         x = self.leaky_relu(x)
