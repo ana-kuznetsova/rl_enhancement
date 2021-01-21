@@ -77,7 +77,7 @@ class Critic(nn.Module):
         self.avg_pool = nn.AvgPool2d(kernel_size=(50,50))
         self.leaky_relu = nn.LeakyReLU()
         self.flat = nn.Flatten()
-        self.fc1 = nn.Linear(50*4*37, 50)
+        self.fc1 = nn.Linear(50*9*75, 50)
         self.fc2 = nn.Linear(50, 10)
         self.out = nn.Linear(10, 1)
 
@@ -90,8 +90,7 @@ class Critic(nn.Module):
         x = self.conv2d4(x)
         x = self.avg_pool(x)
         print(x.shape)
-        #x = self.fc1(self.flat(x))
-        x = self.fc1(x)
+        x = self.fc1(self.flat(x))
         print(x.shape)
         x = self.leaky_relu(x)
         x = self.leaky_relu(self.fc2(x))
