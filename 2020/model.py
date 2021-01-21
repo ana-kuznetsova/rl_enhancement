@@ -147,6 +147,7 @@ def pretrain_critic():
         out_i = torch.transpose(out_i, 1, 2)
         y = predict(x.squeeze(1), (out_r, out_i), floor=True)
         t = t.unsqueeze(1)
+        print(y.shape, t.shape)
         disc_input = torch.cat((y, t), 2)
         print(disc_input.shape)
 
