@@ -29,6 +29,26 @@ class CriticLoss(nn.Module):
     def __init__(self):
         super().__init__()
 
+    def calc_true_pesq(self, x, y, s, mask, fs=16000):
+        scores = []
+        for i in range(x.shape[0]):
+            ind = int(torch.sum(mask[i], 1))
+            x = x[i][:, :ind]
+            y = y[i][:, :ind]
+            s = s[i][:, :ind]
+
+            x = torch.stft(x, n_fft=1024, win_length=512, hop_length=128, 
+                           normalized=True, return_complex=True)
+            y = torch.stft(y, n_fft=1024, win_length=512, hop_length=128, 
+                           normalized=True, return_complex=True)
+            s = torch.stft(s, n_fft=1024, win_length=512, hop_length=128, 
+                           normalized=True, return_complex=True)
+            score_x = pesq(s, x, fs)
+            score_y = pesq(s, y, fs)
+            score_s = pesq(s, s, fs)
+            score_s.append([score_x, score_y, score_s]) 
+            return scores
+
     def forward(self, x, y, s, pred_scores, mask):
         '''
         Args:
