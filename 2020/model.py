@@ -135,9 +135,9 @@ def pretrain_critic():
     critic = Critic()
     critic = critic.to(device)
 
-    if torch.cuda.device_count() > 1:
-        print("Let's use", torch.cuda.device_count(), "GPUs!")
-    critic = nn.DataParallel(critic)
+    #if torch.cuda.device_count() > 1:
+    #    print("Let's use", torch.cuda.device_count(), "GPUs!")
+    critic = nn.DataParallel(critic, device_ids=[0, 1])
 
     dataset = DataLoader('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
                      '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/', get_feats, 1000)
