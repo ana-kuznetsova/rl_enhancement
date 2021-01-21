@@ -65,6 +65,7 @@ class Actor(nn.Module):
 class Critic(nn.Module):
     def __init__(self):
         super().__init__()
+        self.bnorm = nn.BatchNorm1d(513)
         self.conv2d1 = nn.Conv2d(in_channels=1, out_channels=15,
                                  kernel_size=(5, 5))
         self.conv2d2 = nn.Conv2d(in_channels=15, out_channels=25,
@@ -81,6 +82,7 @@ class Critic(nn.Module):
         self.out = nn.Linear(10, 1)
 
     def forward(self, x):
+        x = self.bnorm(x)
         x = self.conv2d1(x)
         x = self.conv2d2(x)
         x = self.conv2d3(x)
