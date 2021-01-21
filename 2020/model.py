@@ -9,7 +9,7 @@ import soundfile as sf
 
 from preproc import DataLoader
 from preproc import get_feats
-from losses import SDRLoss
+from losses import SDRLoss, CriticLoss
 
 class Actor(nn.Module):
     def __init__(self):
@@ -134,6 +134,8 @@ def pretrain_critic():
 
     critic = Critic()
     critic = critic.to(device)
+    criterion = CriticLoss()
+    criterion.cuda()
     
     critic = nn.DataParallel(critic, device_ids=[0, 1])
 

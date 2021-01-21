@@ -49,7 +49,7 @@ class CriticLoss(nn.Module):
             score_s.append([score_x, score_y, score_s]) 
             return scores
 
-    def forward(self, x, y, s, pred_scores, mask):
+    def forward(self, x, y, s, mask, pred_scores):
         '''
         Args:
             x (batch): stfts of noisy speech
@@ -61,4 +61,4 @@ class CriticLoss(nn.Module):
         final_score = None
 
         for i in range(x.shape[0]):
-            pass
+            true_scores = self.calc_true_pesq(x, y, s, mask)
