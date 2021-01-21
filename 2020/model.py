@@ -150,9 +150,16 @@ def pretrain_critic():
         out_i = torch.transpose(out_i, 1, 2)
         y = predict(x.squeeze(1), (out_r, out_i), floor=True)
         t = t.squeeze(1)
-        disc_input = torch.cat((y, t), 2)
-        pred_score = critic(disc_input)
-        print(pred_score)
+        disc_input_y = torch.cat((y, t), 2)
+        disc_input_t = torch.cat((t, t), 2)
+        disc_input_x = torch.cat((x, t), 2)
+        print(disc_input_t.shape, disc_input_x.shape)
+
+        pred_scores = []
+        pred_scores.append(critic(disc_input_x))
+        pred_scores.append(critic(disc_input_y))
+        pred_scores.append(critic(disc_input_t))
+        print(pred_scores)
 
 def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
