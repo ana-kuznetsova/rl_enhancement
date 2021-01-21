@@ -33,10 +33,10 @@ class CriticLoss(nn.Module):
         scores = []
         for i in range(x.shape[0]):
             ind = int(torch.sum(mask[i], 1))
-            print(ind)
             x = x[i][:, :ind]
             y = y[i][:, :ind]
             s = s[i][:, :ind]
+            print(x.shape, y.shape, s.shape)
 
             x = torch.stft(x, n_fft=1024, win_length=512, hop_length=128, 
                            normalized=True, return_complex=True)
