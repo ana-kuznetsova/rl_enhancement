@@ -84,10 +84,10 @@ class Critic(nn.Module):
     def forward(self, x):
         x = x.real
         x = self.bnorm(x).unsqueeze(1)
-        x = self.conv2d1(x)
-        x = self.conv2d2(x)
-        x = self.conv2d3(x)
-        x = self.conv2d4(x)
+        x = self.leaky_relu(self.conv2d1(x))
+        x = self.leaky_relu(self.conv2d2(x))
+        x = self.leaky_relu(self.conv2d3(x))
+        x = self.leaky_relu(self.conv2d4(x))
         x = self.avg_pool(x)
         x = self.fc1(self.flat(x))
         x = self.leaky_relu(x)
@@ -135,8 +135,6 @@ def pretrain_critic():
     critic = Critic()
     critic = critic.to(device)
 
-    #if torch.cuda.device_count() > 1:
-    #    print("Let's use", torch.cuda.device_count(), "GPUs!")
     critic = nn.DataParallel(critic, device_ids=[0, 1])
 
     dataset = DataLoader('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
