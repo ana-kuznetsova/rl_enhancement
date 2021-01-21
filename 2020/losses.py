@@ -36,7 +36,6 @@ class CriticLoss(nn.Module):
             x = x[i][:, :ind]
             y = y[i][:, :ind]
             s = s[i][:, :ind]
-            print(x.shape, y.shape, s.shape)
 
             x = torch.stft(x, n_fft=1024, win_length=512, hop_length=128, 
                            normalized=True, return_complex=True)
@@ -44,6 +43,7 @@ class CriticLoss(nn.Module):
                            normalized=True, return_complex=True)
             s = torch.stft(s, n_fft=1024, win_length=512, hop_length=128, 
                            normalized=True, return_complex=True)
+            print(x.shape, y.shape, s.shape)
             score_x = pesq(s, x, fs)
             score_y = pesq(s, y, fs)
             score_s = pesq(s, s, fs)
