@@ -48,7 +48,7 @@ class CriticLoss(nn.Module):
             score_x = pesq(s, x, fs)
             score_y = pesq(s, y, fs)
             score_s = pesq(s, s, fs)
-            score_s.append([score_x, score_y, score_s]) 
+            scores.append([score_x, score_y, score_s]) 
             return scores
            
 
