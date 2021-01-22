@@ -158,6 +158,7 @@ def pretrain_critic():
         disc_input_x = torch.cat((x, t), 2)
 
         pred_scores = []
+        print(critic(disc_input_x))
         pred_scores.append(critic(disc_input_x))
         pred_scores.append(critic(disc_input_y))
         pred_scores.append(critic(disc_input_t))
