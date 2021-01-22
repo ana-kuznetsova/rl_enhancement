@@ -70,7 +70,6 @@ class CriticLoss(nn.Module):
             e_s = (true_scores[i][2]-pred_scores[2][i])**2
             final_score.append(e_x + e_y + e_s)
         res = sum(final_score)
-        print(res)
         res = torch.tensor(res, requires_grad=True).to(device)
         return res
             
