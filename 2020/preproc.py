@@ -8,19 +8,28 @@ import os
 import numpy as np
 import librosa
 from tqdm import tqdm
+import csv
 
 def find_max(path):
     '''
     Voice-DEMAND, 28 spk: 1890  maxlen
     '''
     fnames = os.listdir(path)
+    input_lengths = {f:0 for f in fnames}
     max_len = 0
     stft = torchaudio.transforms.Spectrogram(n_fft=1024, win_length=512, hop_length=128)
     for f in tqdm(fnames):
         speech, sr = librosa.core.load(os.path.join(path, f), sr=16000)
         speech = stft(torch.tensor(speech))
+        input_lengths[f] = speech.shape[1]
+        
         if speech.shape[1] > max_len:
             max_len = speech.shape[1]
+  
+
+    w = csv.writer(open("input_len.csv", "w"))
+    for key, val in input_lengths.items():
+        w.writerow([key, val])
     
     print("Maximum input length:", max_len)
 
@@ -63,3 +72,6 @@ class DataLoader(data.Dataset):
             idx = idx.tolist()
         sample = self.transform(self.fnames_clean[idx], self.fnames_noisy[idx])
         return sample
+
+
+find_max('/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/')
