@@ -48,7 +48,6 @@ class CriticLoss(nn.Module):
             score_x = pesq(s, x, fs)
             score_y = pesq(s, y, fs)
             score_s = pesq(s, s, fs)
-            print(score_s, score_x, score_y)
             score_s.append([score_x, score_y, score_s]) 
             return scores
            
@@ -66,4 +65,4 @@ class CriticLoss(nn.Module):
 
         for i in range(x.shape[0]):
             true_scores = self.calc_true_pesq(x, y, s, mask)
-            print(true_scores)
+            print('True scores:', true_scores)
