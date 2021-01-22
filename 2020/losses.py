@@ -38,8 +38,8 @@ class CriticLoss(nn.Module):
             s = s[i][:, :ind]
             print(x.shape)
 
-            x = torch.stft(x, n_fft=1024, win_length=512, hop_length=128, 
-                           normalized=True)
+            x = torch.istft(x, n_fft=1024, win_length=512, hop_length=128, 
+                           normalized=True, return_complex=True)
             print(x.shape)
 
             #print(x.shape, y.shape, s.shape)
