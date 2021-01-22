@@ -33,22 +33,21 @@ class CriticLoss(nn.Module):
         scores = []
         for i in range(x.shape[0]):
             ind = int(torch.sum(mask[i], 1))
-            print("ind", ind)
-            x = x[i][:, :ind]
-            y = y[i][:, :ind]
-            s = s[i][:, :ind]
+            x_i = x[i][:, :ind]
+            y_i = y[i][:, :ind]
+            s_i = s[i][:, :ind]
 
-            x = torch.istft(x, n_fft=1024, win_length=512, hop_length=128, 
+            x_i = torch.istft(x_i, n_fft=1024, win_length=512, hop_length=128, 
                            normalized=True).detach().cpu().numpy()
            
            
-            y = torch.istft(y, n_fft=1024, win_length=512, hop_length=128, 
+            y_i = torch.istft(y_i, n_fft=1024, win_length=512, hop_length=128, 
                            normalized=True).detach().cpu().numpy()
-            s = torch.istft(s, n_fft=1024, win_length=512, hop_length=128, 
+            s_i = torch.istft(s_i, n_fft=1024, win_length=512, hop_length=128, 
                            normalized=True).detach().cpu().numpy()
-            score_x = pesq(s, x, fs)
-            score_y = pesq(s, y, fs)
-            score_s = pesq(s, s, fs)
+            score_x = pesq(s_i, x_i, fs)
+            score_y = pesq(s_i, y_i, fs)
+            score_s = pesq(s_i, s_i, fs)
             scores.append([score_x, score_y, score_s]) 
         return scores
            
