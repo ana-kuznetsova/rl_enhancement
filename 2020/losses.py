@@ -38,13 +38,13 @@ class CriticLoss(nn.Module):
             s = s[i][:, :ind]
 
             x = torch.istft(x, n_fft=1024, win_length=512, hop_length=128, 
-                           normalized=True)
+                           normalized=True).detach().cpu().numpy()
            
            
             y = torch.istft(y, n_fft=1024, win_length=512, hop_length=128, 
-                           normalized=True)
+                           normalized=True).detach().cpu().numpy()
             s = torch.istft(s, n_fft=1024, win_length=512, hop_length=128, 
-                           normalized=True)
+                           normalized=True).detach().cpu().numpy()
             score_x = pesq(s, x, fs)
             score_y = pesq(s, y, fs)
             score_s = pesq(s, s, fs)
@@ -53,7 +53,7 @@ class CriticLoss(nn.Module):
             return scores
            
 
-    def forward(self, x, y, s, mask, pred_scores):
+    def forward(self, x, y, s, mask, pred_scores, device):
         '''
         Args:
             x (batch): stfts of noisy speech
