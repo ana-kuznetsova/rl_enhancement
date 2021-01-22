@@ -161,7 +161,7 @@ def pretrain_critic():
         pred_scores.append(critic(disc_input_x))
         pred_scores.append(critic(disc_input_y))
         pred_scores.append(critic(disc_input_t))
-        batch_loss = criterion(x, y, t, m, pred_scores)
+        batch_loss = criterion(x, y, t, m, pred_scores, device)
 
 def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
