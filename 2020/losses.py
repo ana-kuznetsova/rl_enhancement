@@ -33,6 +33,7 @@ class CriticLoss(nn.Module):
         scores = []
         for i in range(x.shape[0]):
             ind = int(torch.sum(mask[i], 1))
+            print("ind", ind)
             x = x[i][:, :ind]
             y = y[i][:, :ind]
             s = s[i][:, :ind]
