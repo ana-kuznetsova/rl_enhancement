@@ -142,6 +142,7 @@ def pretrain_critic():
     dataset = DataLoader('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
                      '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/', get_feats, 1000)
     loader = data.DataLoader(dataset, batch_size=10, shuffle=True)
+    optimizer = optim.Adam(critic.parameters(), lr=0.001)
 
     for i, batch in enumerate(loader):
         x = batch["noisy"].unsqueeze(1).to(device)
@@ -163,6 +164,10 @@ def pretrain_critic():
         pred_scores.append(critic(disc_input_t))
         batch_loss = criterion(x, y, t, m, pred_scores, device)
         print("Batch loss:", batch_loss)
+        optimizer.zero_grad()
+        batch_loss.backward()
+        optimizer.step()
+        
 
 def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
