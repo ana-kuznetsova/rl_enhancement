@@ -48,6 +48,9 @@ class CriticLoss(nn.Module):
             score_x = pesq(s_i, x_i, fs)
             score_y = pesq(s_i, y_i, fs)
             score_s = pesq(s_i, s_i, fs)
+            del x_i
+            del y_i
+            del s_i
             scores.append([score_x, score_y, score_s]) 
         return scores
            
@@ -69,6 +72,9 @@ class CriticLoss(nn.Module):
             e_y = (true_scores[i][1]-pred_scores[1][i])**2
             e_s = (true_scores[i][2]-pred_scores[2][i])**2
             final_score.append(e_x + e_y + e_s)
+            del e_x
+            del e_y
+            del e_s
         res = sum(final_score)
         res = torch.tensor(res, requires_grad=True).to(device)
         return res
