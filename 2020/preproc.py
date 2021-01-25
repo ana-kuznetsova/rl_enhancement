@@ -106,4 +106,5 @@ class Data(data.Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
         sample = (self.fnames_clean[idx], self.fnames_noisy[idx])
+        print("sample:", sample)
         return sample
