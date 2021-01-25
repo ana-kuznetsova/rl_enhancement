@@ -48,9 +48,9 @@ def collate_custom(data):
                 max_len = sig.shape[1]
         return int(max_len)
 
-    print("Collate data:", data)
-
-    clean_paths, noisy_paths = data
+    clean_paths = [ex[0] for ex in data]
+    noisy_paths = [ex[1] for ex in data]
+    print(clean_paths, noisy_paths)
 
     maxlen = maxlen_fn(clean_paths)
     batch_clean = []
