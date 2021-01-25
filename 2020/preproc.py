@@ -33,7 +33,7 @@ def find_max(path):
     
     print("Maximum input length:", max_len)
 
-def collate_custom(clean_paths, noisy_paths):
+def collate_custom(data):
     '''
     For batch
     '''
@@ -47,6 +47,10 @@ def collate_custom(clean_paths, noisy_paths):
             if sig.shape[1] > max_len:
                 max_len = sig.shape[1]
         return int(max_len)
+
+    print("Collate data:", data)
+
+    clean_paths, noisy_paths = data
 
     maxlen = maxlen_fn(clean_paths)
     batch_clean = []
@@ -106,5 +110,4 @@ class Data(data.Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
         sample = (self.fnames_clean[idx], self.fnames_noisy[idx])
-        print("sample:", sample)
         return sample
