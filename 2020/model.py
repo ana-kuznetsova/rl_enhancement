@@ -134,6 +134,7 @@ def pretrain_critic():
 
     critic = Critic()
     critic = critic.to(device)
+    critic.apply(init_weights)
     criterion = CriticLoss()
     criterion.cuda()
     
