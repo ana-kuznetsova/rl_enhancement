@@ -132,8 +132,6 @@ def pretrain_critic():
     actor.load_state_dict(torch.load('/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor/actor_best.pth'))
     actor = actor.to(device)
 
-    print(actor)
-
     critic = Critic()
     critic = critic.to(device)
     critic.apply(init_weights)
@@ -144,7 +142,7 @@ def pretrain_critic():
 
     dataset = DataLoader('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
                      '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/', get_feats, 1000)
-    loader = data.DataLoader(dataset, batch_size=10, shuffle=True)
+    loader = data.DataLoader(dataset, batch_size=1, shuffle=True)
     optimizer = optim.Adam(critic.parameters(), lr=0.001)
 
     for i, batch in enumerate(loader):
