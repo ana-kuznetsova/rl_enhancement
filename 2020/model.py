@@ -8,7 +8,7 @@ import copy
 import soundfile as sf
 
 from preproc import DataLoader
-from preproc import get_feats
+from preproc import get_feats, collate_custom
 from losses import SDRLoss, CriticLoss
 
 class Actor(nn.Module):
@@ -141,8 +141,8 @@ def pretrain_critic():
     critic = nn.DataParallel(critic)
 
     dataset = DataLoader('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
-                     '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/', get_feats, 1000)
-    loader = data.DataLoader(dataset, batch_size=4, shuffle=True)
+                     '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/', 1000)
+    loader = data.DataLoader(dataset, batch_size=10, shuffle=True, collate_fn=collate_custom)
     optimizer = optim.Adam(critic.parameters(), lr=0.001)
 
     for i, batch in enumerate(loader):

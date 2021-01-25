@@ -33,6 +33,41 @@ def find_max(path):
     
     print("Maximum input length:", max_len)
 
+def collate_custom(clean_paths, noisy_paths):
+    '''
+    For batch
+    '''
+    def maxlen_fn(paths):
+        max_len=0
+        for f in paths:
+            sig, sr = librosa.core.load(f, sr=16000)
+            sig = torch.stft(torch.tensor(sig), n_fft=1024, 
+                            win_length=512, hop_length=128, 
+                            normalized=True, return_complex=True)
+            if sig.shape[1] > max_len:
+                max_len = sig.shape[1]
+        return int(max_len)
+
+    maxlen = maxlen_fn(clean_paths)
+    batch_clean = []
+    batch_noisy = []
+    batch_mask = []
+    
+    for clean, noisy in zip(clean_paths, noisy_paths):
+        clean, sr = librosa.core.load(clean, sr=16000)
+        noisy, sr = librosa.core.load(noisy, sr=16000)
+        clean = torch.stft(torch.tensor(clean), n_fft=1024, win_length=512, hop_length=128, normalized=True, return_complex=True)
+        noisy = torch.stft(torch.tensor(noisy), n_fft=1024, win_length=512, hop_length=128, normalized=True, return_complex=True)
+        mask = torch.ones(1, clean.shape[1])
+        mask = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(mask)
+        clean = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(clean)
+        noisy = nn.ZeroPad2d(padding=(0, maxlen-noisy.shape[1], 0, 0))(noisy)
+        batch_clean.append(clean)
+        batch_noisy.append(noisy)
+        batch_mask.append(mask)
+    return {"clean":torch.stack(batch_clean), "noisy":torch.stack(batch_noisy), "mask":torch.stack(batch_mask)}
+
+
 def get_feats(clean_path, noisy_path, maxlen=1890):
     clean, sr = librosa.core.load(clean_path, sr=16000)
     noisy, sr = librosa.core.load(noisy_path, sr=16000)
@@ -48,14 +83,14 @@ def get_feats(clean_path, noisy_path, maxlen=1890):
     return {"clean":clean, "noisy":noisy, "mask":mask}
 
 class DataLoader(data.Dataset):
-    def __init__(self, clean_path, noisy_path, transform, sample_size=1000):
+    def __init__(self, clean_path, noisy_path, sample_size=1000):
         self.clean_path = clean_path
         self.noisy_path = noisy_path
         self.sample_size = sample_size
         self.fnames = self.get_samples()
         self.fnames_clean = self.fnames[0]
         self.fnames_noisy = self.fnames[1]
-        self.transform = transform
+        #self.transform = transform
 
     def get_samples(self):
         fnames = os.listdir(self.clean_path)
@@ -70,8 +105,5 @@ class DataLoader(data.Dataset):
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
             idx = idx.tolist()
-        sample = self.transform(self.fnames_clean[idx], self.fnames_noisy[idx])
+        sample = (self.fnames_clean[idx], self.fnames_noisy[idx])
         return sample
-
-
-#find_max('/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/')
