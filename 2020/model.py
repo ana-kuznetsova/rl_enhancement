@@ -138,7 +138,7 @@ def pretrain_critic():
     criterion = CriticLoss()
     criterion.cuda()
     
-    critic = nn.DataParallel(critic)
+    #critic = nn.DataParallel(critic)
 
     dataset = DataLoader('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
                      '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/', get_feats, 1000)
