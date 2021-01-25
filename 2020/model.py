@@ -142,8 +142,8 @@ def pretrain_critic():
 
     dataset = Data('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
                      '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/', 1000)
-    print(dataset)
-    loader = data.DataLoader(dataset, batch_size=10, shuffle=True, collate_fn=collate_custom)
+    print(len(dataset))
+    #loader = data.DataLoader(dataset, batch_size=10, shuffle=True, collate_fn=collate_custom)
     optimizer = optim.Adam(critic.parameters(), lr=0.001)
 
     for i, batch in enumerate(loader):
