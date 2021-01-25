@@ -89,17 +89,12 @@ class Critic(nn.Module):
         x = self.conv2d3(x)
         x = self.conv2d4(x)
         x = self.avg_pool(x)
-        print("Avg pool:", x.shape)
         x = self.flat(x)
-        x = nn.ZeroPad2d(padding=(0, 20000-x.shape[1], 0, 0))(x)
-        print("Flat:", x.shape)
+        x = nn.ZeroPad2d(padding=(0, 25000-x.shape[1], 0, 0))(x)
         x = self.fc1(x)
-        print("FF1:", x.shape)
         x = self.leaky_relu(x)
         x = self.leaky_relu(self.fc2(x))
-        print("FF2:", x.shape)
         x = self.out(x)
-        print("FF3:", x.shape)
         return x
 
 def predict(x, model_out, floor=False):
