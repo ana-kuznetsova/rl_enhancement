@@ -96,6 +96,7 @@ class Critic(nn.Module):
         x = self.leaky_relu(self.fc2(x))
         print("FF2:", x.shape)
         x = self.out(x)
+        print("FF3:", x.shape)
         return x
 
 def predict(x, model_out, floor=False):
