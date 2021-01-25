@@ -82,7 +82,7 @@ def get_feats(clean_path, noisy_path, maxlen=1890):
     noisy = nn.ZeroPad2d(padding=(0, maxlen-noisy.shape[1], 0, 0))(noisy)
     return {"clean":clean, "noisy":noisy, "mask":mask}
 
-class DataLoader(data.Dataset):
+class Data(data.Dataset):
     def __init__(self, clean_path, noisy_path, sample_size=1000):
         self.clean_path = clean_path
         self.noisy_path = noisy_path
