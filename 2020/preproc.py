@@ -74,4 +74,4 @@ class DataLoader(data.Dataset):
         return sample
 
 
-find_max('/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/')
+#find_max('/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/')
