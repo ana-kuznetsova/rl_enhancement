@@ -89,6 +89,7 @@ class Critic(nn.Module):
         x = self.conv2d3(x)
         x = self.conv2d4(x)
         x = self.avg_pool(x)
+        print("Avg pool:", x.shape)
         x = self.fc1(self.flat(x))
         x = self.leaky_relu(x)
         x = self.leaky_relu(self.fc2(x))
