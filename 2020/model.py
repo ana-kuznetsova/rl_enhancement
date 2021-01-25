@@ -87,14 +87,14 @@ class Critic(nn.Module):
         x = self.conv2d2(x)
         x = self.conv2d3(x)
         x = self.conv2d4(x)
-        print("C4", x.shape)
         x = self.avg_pool(x)
         print("Avg pool:", x.shape)
         x = torch.transpose(x, 1, 3)
         x = self.fc1(x)
-        print("FF:", x.shape)
+        print("FF1:", x.shape)
         x = self.leaky_relu(x)
         x = self.leaky_relu(self.fc2(x))
+        print("FF2:", x.shape)
         x = self.out(x)
         return x
 
