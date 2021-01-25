@@ -77,7 +77,7 @@ class Critic(nn.Module):
         self.avg_pool = nn.AvgPool2d(kernel_size=(50,50))
         self.leaky_relu = nn.LeakyReLU()
         self.flat = nn.Flatten()
-        self.fc1 = nn.Linear(20000, 50)
+        self.fc1 = nn.Linear(30000, 50)
         self.fc2 = nn.Linear(50, 10)
         self.out = nn.Linear(10, 1)
 
