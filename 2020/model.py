@@ -138,11 +138,11 @@ def pretrain_critic():
     criterion = CriticLoss()
     criterion.cuda()
     
-    #critic = nn.DataParallel(critic)
+    critic = nn.DataParallel(critic)
 
     dataset = DataLoader('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
                      '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/', get_feats, 1000)
-    loader = data.DataLoader(dataset, batch_size=1, shuffle=True)
+    loader = data.DataLoader(dataset, batch_size=4, shuffle=True)
     optimizer = optim.Adam(critic.parameters(), lr=0.001)
 
     for i, batch in enumerate(loader):
