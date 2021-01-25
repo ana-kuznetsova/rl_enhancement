@@ -91,6 +91,7 @@ class Critic(nn.Module):
         x = self.avg_pool(x)
         print("Avg pool:", x.shape)
         x = self.flat(x)
+        x = nn.ZeroPad2d(padding=(0, 20000-x.shape[1], 0, 0))(x)
         print("Flat:", x.shape)
         x = self.fc1(x)
         print("FF1:", x.shape)
