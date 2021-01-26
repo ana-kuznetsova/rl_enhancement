@@ -178,6 +178,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
     model.cuda()
     model = model.to(device)
     model.apply(init_weights)
+    model = nn.DataParallel(model, device_ids=[0, 1])
 
     criterion = SDRLoss()
     criterion.cuda()
