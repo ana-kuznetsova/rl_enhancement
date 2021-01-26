@@ -188,6 +188,8 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
     best = copy.deepcopy(model.state_dict())
     prev_val=99999
 
+    print("Start pretraining...")
+
     for epoch in range(1, num_epochs+1):
         if epoch <= 100:
             lr = 0.0001
