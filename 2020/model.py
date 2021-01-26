@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.utils.data as data
 import torch.nn.functional as F
+from torch.nn.utils import spectral_norm
 
 import numpy as np
 import os
@@ -68,18 +69,18 @@ class Critic(nn.Module):
     def __init__(self):
         super().__init__()
         self.bnorm = nn.BatchNorm1d(513)
-        self.conv2d1 = nn.Conv2d(in_channels=1, out_channels=15,
-                                 kernel_size=(5, 5))
-        self.conv2d2 = nn.Conv2d(in_channels=15, out_channels=25,
-                                 kernel_size=(7, 7))
-        self.conv2d3 = nn.Conv2d(in_channels=25, out_channels=40,
-                                 kernel_size=(9, 9))
-        self.conv2d4 = nn.Conv2d(in_channels=40, out_channels=50,
-                                 kernel_size=(11, 11))
+        self.conv2d1 = spectral_norm(nn.Conv2d(in_channels=1, out_channels=15,
+                                 kernel_size=(5, 5)))
+        self.conv2d2 = spectral_norm(nn.Conv2d(in_channels=15, out_channels=25,
+                                 kernel_size=(7, 7)))
+        self.conv2d3 = spectral_norm(nn.Conv2d(in_channels=25, out_channels=40,
+                                 kernel_size=(9, 9)))
+        self.conv2d4 = spectral_norm(nn.Conv2d(in_channels=40, out_channels=50,
+                                 kernel_size=(11, 11)))
         self.leaky_relu = nn.LeakyReLU()
-        self.fc1 = nn.Linear(50, 50)
-        self.fc2 = nn.Linear(50, 10)
-        self.out = nn.Linear(10, 1)
+        self.fc1 = spectral_norm(nn.Linear(50, 50))
+        self.fc2 = spectral_norm(nn.Linear(50, 10))
+        self.out = spectral_norm(nn.Linear(10, 1))
 
     def forward(self, x):
         x = x.real
@@ -184,6 +185,7 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
             pred_scores.append(critic(disc_input_y))
             pred_scores.append(critic(disc_input_t))
             loss = criterion(x, y, t, m, pred_scores, device)
+            print("Batch loss:", loss)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
