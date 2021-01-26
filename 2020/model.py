@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.utils.data as data
+import torch.nn.functional as F
+
 import numpy as np
 import os
 import copy
@@ -88,7 +90,7 @@ class Critic(nn.Module):
         x = self.conv2d3(x)
         x = self.conv2d4(x)
         print("C4:", x.shape)
-        x = self.avg_pool(x)
+        x = F.adaptive_avg_pool2d(x, (1, 1))
         print("AvgPool:", x.shape)
         x = self.flat(x)
         x = self.fc1(x)
