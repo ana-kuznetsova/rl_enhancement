@@ -185,7 +185,6 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
             pred_scores.append(critic(disc_input_y))
             pred_scores.append(critic(disc_input_t))
             loss = criterion(x, y, t, m, pred_scores, device)
-            print("Batch loss:", loss)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
