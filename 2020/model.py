@@ -173,7 +173,7 @@ def pretrain_critic():
 
 def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
-    device = torch.device("cuda:1")
+    device = torch.device("cuda")
     model = Actor()
     model.cuda()
     model = model.to(device)
