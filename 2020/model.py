@@ -197,8 +197,8 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
         epoch_loss = 0
 
-        dataset = DataLoader(clean_path, noisy_path, get_feats, 1000)
-        loader = data.DataLoader(dataset, batch_size=5, shuffle=True)
+        dataset = Data(clean_path, noisy_path, 1000)
+        loader = data.DataLoader(dataset, batch_size=5, shuffle=True, collate_fn=collate_custom)
 
         for batch in loader:
             x = batch["noisy"].unsqueeze(1).to(device)
@@ -225,8 +225,8 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             ##Validation
             overall_val_loss = 0
 
-            dataset = DataLoader(clean_path, noisy_path, get_feats, 500)
-            loader = data.DataLoader(dataset, batch_size=5, shuffle=True)
+            dataset = Data(clean_path, noisy_path, 1000)
+            loader = data.DataLoader(dataset, batch_size=5, shuffle=True, collate_fn=collate_custom)
 
             for batch in loader:
                 x = batch["noisy"].unsqueeze(1).to(device)
@@ -258,7 +258,7 @@ def inference(clean_path, noisy_path, model_path):
     model.load_state_dict(torch.load(model_path))
     model = model.to(device)
    
-    dataset = DataLoader(clean_path, noisy_path, get_feats, 2)
+    dataset = Data(clean_path, noisy_path, get_feats, 2)
     loader = data.DataLoader(dataset, batch_size=1, shuffle=True)
 
     for i, batch in enumerate(loader):
