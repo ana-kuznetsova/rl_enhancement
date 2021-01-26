@@ -52,7 +52,6 @@ def collate_custom(data):
     noisy_paths = [ex[1] for ex in data]
 
     maxlen = maxlen_fn(clean_paths)
-    print("MAXLEN:", maxlen)
     batch_clean = []
     batch_noisy = []
     batch_mask = []
