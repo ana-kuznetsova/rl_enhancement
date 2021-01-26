@@ -163,7 +163,7 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
 
 
         dataset = Data(clean_path, noisy_path, 1000)
-        loader = data.DataLoader(dataset, batch_size=10, shuffle=True, collate_fn=collate_custom)
+        loader = data.DataLoader(dataset, batch_size=5, shuffle=True, collate_fn=collate_custom)
         optimizer = optim.Adam(critic.parameters(), lr=0.001)
 
         for i, batch in enumerate(loader):
@@ -201,7 +201,7 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
             overall_val_loss = 0
 
             dataset = Data(clean_path, noisy_path, 1000)
-            loader = data.DataLoader(dataset, batch_size=10, shuffle=True, collate_fn=collate_custom)
+            loader = data.DataLoader(dataset, batch_size=5, shuffle=True, collate_fn=collate_custom)
 
             for i, batch in enumerate(loader):
                 x = batch["noisy"].unsqueeze(1).to(device)
