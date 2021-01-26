@@ -126,7 +126,7 @@ def init_weights(m):
     if isinstance(m, nn.Linear) or isinstance(m, nn.Conv2d):
         nn.init.xavier_normal_(m.weight.data)
 
-def pretrain_critic():
+def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
 
     device = torch.device("cuda")
     actor = Actor()
@@ -136,40 +136,102 @@ def pretrain_critic():
     critic = Critic()
     critic = critic.to(device)
     critic.apply(init_weights)
-    criterion = CriticLoss()
-    criterion.cuda()
-    
     critic = nn.DataParallel(critic, device_ids=[0, 1])
 
-    dataset = Data('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
-                     '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/', 1000)
-    loader = data.DataLoader(dataset, batch_size=10, shuffle=True, collate_fn=collate_custom)
-    optimizer = optim.Adam(critic.parameters(), lr=0.001)
+    criterion = CriticLoss()
+    criterion.cuda()
 
-    for i, batch in enumerate(loader):
-        x = batch["noisy"].unsqueeze(1).to(device)
-        t = batch["clean"].unsqueeze(1).to(device)
-        m = batch["mask"].to(device)
-        out_r, out_i = actor(x)
-        out_r = torch.transpose(out_r, 1, 2)
-        out_i = torch.transpose(out_i, 1, 2)
-        y = predict(x.squeeze(1), (out_r, out_i), floor=True)
-        t = t.squeeze(1)
-        x = x.squeeze(1)
-        disc_input_y = torch.cat((y, t), 2)
-        disc_input_t = torch.cat((t, t), 2)
-        disc_input_x = torch.cat((x, t), 2)
+    #Training loop
+    losses = []
+    val_losses = []
+    best = copy.deepcopy(critic.state_dict())
+    prev_val=99999
 
-        pred_scores = []
-        pred_scores.append(critic(disc_input_x))
-        pred_scores.append(critic(disc_input_y))
-        pred_scores.append(critic(disc_input_t))
-        batch_loss = criterion(x, y, t, m, pred_scores, device)
-        print("Batch loss:", batch_loss)
-        optimizer.zero_grad()
-        batch_loss.backward()
-        optimizer.step()
+    print("Start pretraining...")
+
+    for epoch in range(1, num_epochs+1):
+        if epoch <= 100:
+            lr = 0.0001
+        else:
+            lr = lr/100
+
+        optimizer = optim.Adam(critic.parameters(), lr=lr)
+
+        epoch_loss = 0
+
+
+        dataset = Data(clean_path, noisy_path, 1000)
+        loader = data.DataLoader(dataset, batch_size=10, shuffle=True, collate_fn=collate_custom)
+        optimizer = optim.Adam(critic.parameters(), lr=0.001)
+
+        for i, batch in enumerate(loader):
+            x = batch["noisy"].unsqueeze(1).to(device)
+            t = batch["clean"].unsqueeze(1).to(device)
+            m = batch["mask"].to(device)
+            out_r, out_i = actor(x)
+            out_r = torch.transpose(out_r, 1, 2)
+            out_i = torch.transpose(out_i, 1, 2)
+            y = predict(x.squeeze(1), (out_r, out_i), floor=True)
+            t = t.squeeze(1)
+            x = x.squeeze(1)
+            disc_input_y = torch.cat((y, t), 2)
+            disc_input_t = torch.cat((t, t), 2)
+            disc_input_x = torch.cat((x, t), 2)
+
+            pred_scores = []
+            pred_scores.append(critic(disc_input_x))
+            pred_scores.append(critic(disc_input_y))
+            pred_scores.append(critic(disc_input_t))
+            loss = criterion(x, y, t, m, pred_scores, device)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            loss = loss.detach().cpu().numpy()
+            epoch_loss+=loss
         
+        losses.append(epoch_loss/len(loader))
+        np.save(os.path.join(model_path, "loss_critic_pre.npy"), np.array(losses))
+        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/len(loader)))
+
+        if epoch%5==0:
+            ##Validation
+            overall_val_loss = 0
+
+            dataset = Data(clean_path, noisy_path, 1000)
+            loader = data.DataLoader(dataset, batch_size=10, shuffle=True, collate_fn=collate_custom)
+
+            for i, batch in enumerate(loader):
+                x = batch["noisy"].unsqueeze(1).to(device)
+                t = batch["clean"].unsqueeze(1).to(device)
+                m = batch["mask"].to(device)
+                out_r, out_i = actor(x)
+                out_r = torch.transpose(out_r, 1, 2)
+                out_i = torch.transpose(out_i, 1, 2)
+                y = predict(x.squeeze(1), (out_r, out_i), floor=True)
+                t = t.squeeze(1)
+                x = x.squeeze(1)
+                disc_input_y = torch.cat((y, t), 2)
+                disc_input_t = torch.cat((t, t), 2)
+                disc_input_x = torch.cat((x, t), 2)
+
+                pred_scores = []
+                pred_scores.append(critic(disc_input_x))
+                pred_scores.append(critic(disc_input_y))
+                pred_scores.append(critic(disc_input_t))
+                loss = criterion(x, y, t, m, pred_scores, device)
+                overall_val_loss+=loss.detach().cpu().numpy()
+                curr_val_loss = overall_val_loss/len(loader)
+
+            val_losses.append(curr_val_loss)
+            print('Validation loss: ', curr_val_loss)
+            np.save(os.path.join(model_path, 'val_loss_critic_pre.npy'), np.array(val_losses))
+
+            if curr_val_loss < prev_val:
+                torch.save(best, os.path.join(model_path, 'critic_best.pth'))
+                prev_val = curr_val_loss
+
+            torch.save(best, os.path.join(model_path, "critic_last.pth"))
 
 def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
