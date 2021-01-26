@@ -238,13 +238,11 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
 
             loss = loss.detach().cpu().numpy()
             epoch_loss+=loss
-            print(epoch_loss/len(loader))
-            print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, float(epoch_loss/len(loader))))
         
         losses.append(epoch_loss/len(loader))
         np.save(os.path.join(model_path, "loss_critic_pre.npy"), np.array(losses))
-        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/len(loader)))
-
+        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, float(epoch_loss/len(loader))))
+        
         if epoch%5==0:
             ##Validation
             overall_val_loss = 0
