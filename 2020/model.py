@@ -130,7 +130,7 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
 
     device = torch.device("cuda")
     actor = Actor()
-    actor.load_state_dict(torch.load('/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor/actor_best.pth'))
+    actor.load_state_dict(torch.load('/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor/actor_last.pth'))
     actor = actor.to(device)
 
     critic = Critic()
