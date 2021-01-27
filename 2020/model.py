@@ -33,30 +33,22 @@ class Actor(nn.Module):
     def forward(self, x):
         x = x.real
         x = self.conv2d1(x)
-        print("C1:", x.shape)
         x = self.conv2d2(x)
-        print("C2:", x.shape)
         x = self.conv2d3(x)
-        print("C3:", x.shape)
         x = torch.transpose(x.squeeze(), 1, 2)
         x = self.linear1(x)
-        print("L1:", x.shape)
-    
         x, (h, _) = self.bi_lstm(x)
-        print("BLSTM:", x.shape)
-
-        x = self.linear2(x)
+        x = torch.transpose(self.linear2(x), 1, 2)
         print("L2:", x.shape)
 
         real = []
         imag = []
         
-        for m in x_batch:
+        for m in x:
             r = m[:,:int(m.shape[1]/2)]
             real.append(r)
             i = m[:,int(m.shape[1]/2):]
             imag.append(i)
-        del x_batch
 
         return torch.stack(real), torch.stack(imag)
     
