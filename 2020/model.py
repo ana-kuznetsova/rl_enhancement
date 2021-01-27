@@ -38,7 +38,7 @@ class Actor(nn.Module):
         x = torch.transpose(x.squeeze(), 1, 2)
         x = self.linear1(x)
         x, (h, _) = self.bi_lstm(x)
-        x = torch.transpose(self.linear2(x), 1, 2)
+        x = self.linear2(x)
         print("L2:", x.shape)
 
         real = []
@@ -46,6 +46,7 @@ class Actor(nn.Module):
         
         for m in x:
             r = m[:,:int(m.shape[1]/2)]
+            print(r.shape)
             real.append(r)
             i = m[:,int(m.shape[1]/2):]
             imag.append(i)
