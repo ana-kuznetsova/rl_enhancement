@@ -37,6 +37,7 @@ class Actor(nn.Module):
         x = self.conv2d2(x)
         print("C2:", x.shape)
         x = self.conv2d3(x)
+        print("C3:", x.shape)
         x = x.squeeze(1)
         
         x_batch = []
