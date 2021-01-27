@@ -65,8 +65,8 @@ def collate_custom(data):
         mask = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(mask)
         clean = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(clean)
         noisy = nn.ZeroPad2d(padding=(0, maxlen-noisy.shape[1], 0, 0))(noisy)
-        batch_clean.append(clean)
-        batch_noisy.append(noisy)
+        batch_clean.append(torch.log(clean))
+        batch_noisy.append(torch.log(noisy))
         batch_mask.append(mask)
     return {"clean":torch.stack(batch_clean), "noisy":torch.stack(batch_noisy), "mask":torch.stack(batch_mask)}
 

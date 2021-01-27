@@ -38,8 +38,9 @@ class Actor(nn.Module):
         print("C2:", x.shape)
         x = self.conv2d3(x)
         print("C3:", x.shape)
-        x = x.squeeze(1)
+        x = x.squeeze()
         
+        '''
         x_batch = []
 
         ##Run through linear layer
@@ -48,6 +49,7 @@ class Actor(nn.Module):
             x_batch.append(curr_x)
         x = torch.stack(x_batch)
         del x_batch
+        '''
     
         x, (h, _) = self.bi_lstm(x)
 
