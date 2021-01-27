@@ -103,9 +103,9 @@ def inverse(t, y , m):
         t_i = t_i[:, :pad_idx]
         y_i = y[i].squeeze(0)
         y_i = y_i[:, :pad_idx]
-        t_i = torch.istft(t_i, n_fft=1024, win_length=512, hop_length=128)
+        t_i = torch.istft(t_i, n_fft=512, win_length=512, hop_length=128)
         targets.append(t_i)
-        y_i = torch.istft(y_i, n_fft=1024, win_length=512, hop_length=128)
+        y_i = torch.istft(y_i, n_fft=512, win_length=512, hop_length=128)
         preds.append(y_i)
     return targets, preds
 
@@ -307,13 +307,12 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             t = batch["clean"].unsqueeze(1).to(device)
             m = batch["mask"].to(device)
             out_r, out_i = model(x)
-            print(out_r.shape, out_i.shape)
             out_r = torch.transpose(out_r, 1, 2)
             out_i = torch.transpose(out_i, 1, 2)
-            print(out_r.shape, out_i.shape)
             y = predict(x.squeeze(1), (out_r, out_i))
             targets, preds = inverse(t, y, m)
             loss = criterion(targets, preds)
+            print("loss:", loss)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
