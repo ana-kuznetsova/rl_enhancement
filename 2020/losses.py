@@ -13,7 +13,6 @@ class SDRLoss(nn.Module):
 
 
     def forward(self, t, y):
-        '''
         temp = []
         for i in range(len(t)):
             #print(torch.norm(t[i]), torch.norm((t[i]-y[i])))
@@ -22,12 +21,7 @@ class SDRLoss(nn.Module):
             val = self.clip(val)
             temp.append(val)
         temp = torch.stack(temp)
-        ''' 
-        num = torch.norm(t)
-        denom = torch.norm(t-y)
-        frac = 10*torch.log10(num/denom)
-        val = self.clip(frac)
-        return torch.sum(val)
+        return torch.sum(temp)
 
 class CriticLoss(nn.Module):
     def __init__(self):
