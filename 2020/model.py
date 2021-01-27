@@ -310,7 +310,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             out_r = torch.transpose(out_r, 1, 2)
             out_i = torch.transpose(out_i, 1, 2)
             y = predict(x.squeeze(1), (out_r, out_i))
-            print(y.shape)
+            print(y.shape, t.shape, m.shape)
             targets, preds = inverse(t, y, m)
             loss = criterion(targets, preds)
             print("loss:", loss)
