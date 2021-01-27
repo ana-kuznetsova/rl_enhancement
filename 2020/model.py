@@ -128,7 +128,7 @@ def init_weights(m):
         nn.init.xavier_normal_(m.weight.data)
 
 
-def update_critic_params(actor, critic, loader, optimizer, criterion, device, num_it=10):
+def update_critic_params(actor, critic, loader, optimizer, criterion, critic_loss, device, num_it=10):
     for i in range(num_it):
         for batch in loader:
             x = batch["noisy"].unsqueeze(1).to(device)
@@ -154,7 +154,9 @@ def update_critic_params(actor, critic, loader, optimizer, criterion, device, nu
             optimizer.step()
 
             loss = loss.detach().cpu().numpy()
-            epoch_loss+=loss
+            critic_loss+=loss
+    return critic_loss/(len(loader)*num_it)
+
 
 def update_actor_params():
     pass
@@ -242,7 +244,7 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
         losses.append(epoch_loss/len(loader))
         np.save(os.path.join(model_path, "loss_critic_pre.npy"), np.array(losses))
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, float(epoch_loss/len(loader))))
-        
+
         if epoch%5==0:
             ##Validation
             overall_val_loss = 0
