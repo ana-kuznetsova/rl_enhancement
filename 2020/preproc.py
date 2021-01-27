@@ -59,8 +59,9 @@ def collate_custom(data):
     for clean, noisy in zip(clean_paths, noisy_paths):
         clean, sr = librosa.core.load(clean, sr=16000)
         noisy, sr = librosa.core.load(noisy, sr=16000)
-        clean = torch.stft(torch.tensor(clean), n_fft=1024, win_length=512, hop_length=128, normalized=True, return_complex=True)
-        noisy = torch.stft(torch.tensor(noisy), n_fft=1024, win_length=512, hop_length=128, normalized=True, return_complex=True)
+        clean = torch.stft(torch.tensor(clean), n_fft=512, win_length=512, hop_length=128, normalized=True, return_complex=True)
+        noisy = torch.stft(torch.tensor(noisy), n_fft=512, win_length=512, hop_length=128, normalized=True, return_complex=True)
+        print("stft", noisy.shape)
         mask = torch.ones(1, clean.shape[1])
         mask = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(mask)
         clean = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(clean)
