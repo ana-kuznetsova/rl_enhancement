@@ -43,6 +43,7 @@ class Actor(nn.Module):
         print("L1:", x.shape)
     
         x, (h, _) = self.bi_lstm(x)
+        print("BLSTM:", x.shape)
 
         x_batch = []
         for i in range(x.shape[0]):
