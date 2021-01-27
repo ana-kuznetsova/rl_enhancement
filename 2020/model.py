@@ -308,6 +308,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             m = batch["mask"].to(device)
             out_r, out_i = model(x)
             out_r = torch.transpose(out_r, 1, 2)
+            print(out_r)
             out_i = torch.transpose(out_i, 1, 2)
             y = predict(x.squeeze(1), (out_r, out_i))
             print(y[0])
