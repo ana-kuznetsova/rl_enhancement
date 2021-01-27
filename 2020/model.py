@@ -38,7 +38,7 @@ class Actor(nn.Module):
         print("C2:", x.shape)
         x = self.conv2d3(x)
         print("C3:", x.shape)
-        x = x.squeeze()
+        x = torch.transpose(x.squeeze(), 1, 2)
         x = self.linear1(x)
         print("L1:", x.shape)
     
