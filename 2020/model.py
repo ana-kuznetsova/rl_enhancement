@@ -28,7 +28,7 @@ class Actor(nn.Module):
         self.linear1 = nn.Linear(257, 512)
         self.bi_lstm = nn.LSTM(512, hidden_size=512, num_layers=2, 
                                batch_first=True, dropout=0.3, bidirectional=True)
-        self.linear2 = nn.Linear(512, 2*512)
+        self.linear2 = nn.Linear(1024, 257*2)
 
     def forward(self, x):
         x = x.real
@@ -45,10 +45,8 @@ class Actor(nn.Module):
         x, (h, _) = self.bi_lstm(x)
         print("BLSTM:", x.shape)
 
-        x_batch = []
-        for i in range(x.shape[0]):
-            curr_x = self.linear2(x[i])
-            x_batch.append(curr_x)
+        x = self.linear2(x)
+        print("L2:", x.shape)
 
         real = []
         imag = []
