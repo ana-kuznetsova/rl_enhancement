@@ -15,7 +15,7 @@ class SDRLoss(nn.Module):
     def forward(self, t, y):
         temp = []
         for i in range(len(t)):
-            if torch.isnan(t[i]).any():
+            if torch.any(torch.isnan(t[i])):
                 print(t[i])
             frac = torch.norm(t[i])/torch.norm((t[i]-y[i]))
             val = 10*torch.log10(frac)
