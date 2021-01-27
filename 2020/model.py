@@ -25,10 +25,10 @@ class Actor(nn.Module):
                                  padding=(2,7))
         self.conv2d3 = nn.Conv2d(in_channels=60, out_channels=1,
                                  kernel_size=(1, 1), stride=(1,1))
-        self.linear1 = nn.Linear(513, 128)
-        self.bi_lstm = nn.LSTM(128, hidden_size=256, num_layers=2, 
+        self.linear1 = nn.Linear(257, 512)
+        self.bi_lstm = nn.LSTM(512, hidden_size=512, num_layers=2, 
                                batch_first=True, dropout=0.3, bidirectional=True)
-        self.linear2 = nn.Linear(512, 2*513)
+        self.linear2 = nn.Linear(512, 2*512)
 
     def forward(self, x):
         x = x.real
@@ -39,17 +39,8 @@ class Actor(nn.Module):
         x = self.conv2d3(x)
         print("C3:", x.shape)
         x = x.squeeze()
-        
-        '''
-        x_batch = []
-
-        ##Run through linear layer
-        for i in range(x.shape[0]):
-            curr_x = self.linear1(x[i].T)
-            x_batch.append(curr_x)
-        x = torch.stack(x_batch)
-        del x_batch
-        '''
+        x = self.linear1(x)
+        print("L1:", x.shape)
     
         x, (h, _) = self.bi_lstm(x)
 
