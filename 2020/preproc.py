@@ -62,11 +62,13 @@ def collate_custom(data):
         clean = torch.stft(torch.tensor(clean), n_fft=512, win_length=512, hop_length=128, normalized=True, return_complex=True)
         noisy = torch.stft(torch.tensor(noisy), n_fft=512, win_length=512, hop_length=128, normalized=True, return_complex=True)
         mask = torch.ones(1, clean.shape[1])
+        clean = 10*torch.log10(clean)
+        noisy = 10*torch.log10(noisy)
         mask = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(mask)
         clean = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(clean)
         noisy = nn.ZeroPad2d(padding=(0, maxlen-noisy.shape[1], 0, 0))(noisy)
-        batch_clean.append(10*torch.log10(clean))
-        batch_noisy.append(10*torch.log10(noisy))
+        batch_clean.append(clean)
+        batch_noisy.append(noisy)
         batch_mask.append(mask)
     return {"clean":torch.stack(batch_clean), "noisy":torch.stack(batch_noisy), "mask":torch.stack(batch_mask)}
 

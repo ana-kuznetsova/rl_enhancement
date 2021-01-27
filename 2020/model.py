@@ -32,7 +32,6 @@ class Actor(nn.Module):
 
     def forward(self, x):
         x = x.real
-        print(x)
         x = self.conv2d1(x)
         x = self.conv2d2(x)
         x = self.conv2d3(x)
@@ -309,10 +308,9 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             m = batch["mask"].to(device)
             out_r, out_i = model(x)
             out_r = torch.transpose(out_r, 1, 2)
-            #print(out_r, out_i)
             out_i = torch.transpose(out_i, 1, 2)
             y = predict(x.squeeze(1), (out_r, out_i))
-            #print(y[0])
+            print(y[0])
             t = t.squeeze()
             m = m.squeeze()
             targets, preds = inverse(t, y, m)
