@@ -39,14 +39,12 @@ class Actor(nn.Module):
         x = self.linear1(x)
         x, (h, _) = self.bi_lstm(x)
         x = self.linear2(x)
-        print("L2:", x.shape)
 
         real = []
         imag = []
         
         for m in x:
             r = m[:,:int(m.shape[1]/2)]
-            print(r.shape)
             real.append(r)
             i = m[:,int(m.shape[1]/2):]
             imag.append(i)
@@ -309,8 +307,10 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             t = batch["clean"].unsqueeze(1).to(device)
             m = batch["mask"].to(device)
             out_r, out_i = model(x)
+            print(out_r.shape, out_i.shape)
             out_r = torch.transpose(out_r, 1, 2)
             out_i = torch.transpose(out_i, 1, 2)
+            print(out_r.shape, out_i.shape)
             y = predict(x.squeeze(1), (out_r, out_i))
             targets, preds = inverse(t, y, m)
             loss = criterion(targets, preds)
