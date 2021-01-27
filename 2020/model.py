@@ -99,11 +99,11 @@ def inverse(t, y , m):
 
     for i in range(t.shape[0]):
         pad_idx = int(torch.sum(m[i]))
-        t_i = t[i].squeeze(0)
+        t_i = t[i]
         print(t_i.shape)
         t_i = t_i[:, :pad_idx]
         print(t_i.shape)
-        y_i = y[i].squeeze(0)
+        y_i = y[i]
         y_i = y_i[:, :pad_idx]
         t_i = torch.istft(t_i, n_fft=512, win_length=512, hop_length=128)
         targets.append(t_i)
