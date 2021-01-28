@@ -36,13 +36,13 @@ class CriticLoss(nn.Module):
             y_i = y[i][:, :ind]
             s_i = s[i][:, :ind]
 
-            x_i = torch.istft(x_i, n_fft=1024, win_length=512, hop_length=128, 
+            x_i = torch.istft(x_i, n_fft=512, win_length=512, hop_length=128, 
                            normalized=True).detach().cpu().numpy()
            
            
-            y_i = torch.istft(y_i, n_fft=1024, win_length=512, hop_length=128, 
+            y_i = torch.istft(y_i, n_fft=512, win_length=512, hop_length=128, 
                            normalized=True).detach().cpu().numpy()
-            s_i = torch.istft(s_i, n_fft=1024, win_length=512, hop_length=128, 
+            s_i = torch.istft(s_i, n_fft=512, win_length=512, hop_length=128, 
                            normalized=True).detach().cpu().numpy()
             score_x = pesq(s_i, x_i, fs)
             score_y = pesq(s_i, y_i, fs)
