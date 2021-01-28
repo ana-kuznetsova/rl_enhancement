@@ -260,6 +260,7 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
                 pred_scores.append(critic(disc_input_x))
                 pred_scores.append(critic(disc_input_y))
                 pred_scores.append(critic(disc_input_t))
+                pred_scores = torch.transpose(torch.stack(pred_scores).squeeze(), 0, 1)
                 loss = criterion(x, y, t, m, pred_scores, device)
                 overall_val_loss+=loss.detach().cpu().numpy()
                 curr_val_loss = overall_val_loss/len(loader)
@@ -362,12 +363,14 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             torch.save(best, os.path.join(model_path, "actor_last.pth"))
 
 
-def inference(clean_path, noisy_path, model_path):
+def inference(clean_path, noisy_path, model_path, out_path):
     device = torch.device("cuda")
     model = Actor()
     model = nn.DataParallel(model, device_ids=[0,1])
     model.load_state_dict(torch.load(model_path))
     model = model.to(device)
+
+    fnames = os.listdir(noisy_path)
    
     dataset = DataTest(clean_path, noisy_path)
     loader = data.DataLoader(dataset, batch_size=5, shuffle=True, collate_fn=collate_custom)
