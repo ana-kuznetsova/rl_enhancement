@@ -51,7 +51,7 @@ class CriticLoss(nn.Module):
             del y_i
             del s_i
             scores.append([score_x, score_y, score_s]) 
-        return scores
+        return torch.tensor(scores)
            
 
     def forward(self, x, y, s, mask, pred_scores, device):
@@ -64,7 +64,9 @@ class CriticLoss(nn.Module):
             mask (batch): masks for signals
         '''
         true_scores = self.calc_true_pesq(x, y, s, mask)
-        print("Pesq:", true_scores)
+        print("True:", true_scores.shape, "Pred:", pred_scores.shape)
+
+        '''
         final_score = []
 
         for i in range(x.shape[0]):
@@ -76,6 +78,7 @@ class CriticLoss(nn.Module):
             del e_y
             del e_s
         res = sum(final_score)
+        '''
         res = torch.tensor(res, requires_grad=True).to(device)
         return res
             
