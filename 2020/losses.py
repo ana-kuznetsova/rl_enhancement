@@ -66,8 +66,9 @@ class CriticLoss(nn.Module):
         true_scores = self.calc_true_pesq(x, y, s, mask).to(device)
         print("True:", true_scores.shape, "Pred:", pred_scores.shape)
 
-        temp = (true_scores - pred_scores)**2
+        temp = torch.sum((true_scores - pred_scores)**2, 0)/true_scores.shape[0]
         print(temp)
+        print(temp.shape)
 
         '''
         final_score = []
