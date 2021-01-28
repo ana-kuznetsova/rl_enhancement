@@ -374,7 +374,7 @@ def inference(clean_path, noisy_path, model_path):
     pesq_all = []
     stoi_all = []
 
-    for batch in tqdm(loader):
+    for i, batch in tqdm(enumerate(loader)):
         x = batch["noisy"].unsqueeze(1).to(device)
         t = batch["clean"].unsqueeze(1).to(device)
         m = batch["mask"].to(device)
@@ -387,8 +387,8 @@ def inference(clean_path, noisy_path, model_path):
         targets, preds = inverse(t, y, m)
 
         for j in range(len(targets)):
-            curr_pesq = pesq(targets[j], preds[j], 16000)
-            curr_stoi = stoi(targets[j], preds[j], 16000)
+            curr_pesq = pesq(targets[j].detach().cpu().numpy(), preds[j].detach().cpu().numpy(), 16000)
+            curr_stoi = stoi(targets[j].detach().cpu().numpy(), preds[j].detach().cpu().numpy(), 16000)
             pesq_all.append(curr_pesq)
             stoi_all.append(curr_stoi)
     
