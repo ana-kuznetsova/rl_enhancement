@@ -399,5 +399,7 @@ def inference(clean_path, noisy_path, model_path):
     PESQ = torch.mean(torch.tensor(pesq_all))
     STOI = torch.mean(torch.tensor(stoi_all))
 
-    with open(os.path.join(model_path, 'test_scores.txt'), 'w') as fo:
+    print("PESQ: ", PESQ, "STOI: ", STOI)
+
+    with open('/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor/test_scores.txt', 'w') as fo:
         fo.write("Avg PESQ: "+str(float(PESQ))+" Avg STOI: "+str(float(STOI)))
