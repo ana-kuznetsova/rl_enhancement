@@ -67,9 +67,7 @@ class CriticLoss(nn.Module):
         print("True:", true_scores.shape, "Pred:", pred_scores.shape)
 
         temp = torch.sum((true_scores - pred_scores)**2, 0)/true_scores.shape[0]
-        print(temp)
-        print(temp.shape)
-
+        print(torch.sum(temp))
         '''
         final_score = []
 
@@ -83,6 +81,6 @@ class CriticLoss(nn.Module):
             del e_s
         res = sum(final_score)
         '''
-        res = torch.tensor(res, requires_grad=True).to(device)
+        
         return res
             
