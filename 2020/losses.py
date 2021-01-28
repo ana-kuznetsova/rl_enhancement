@@ -67,7 +67,7 @@ class CriticLoss(nn.Module):
         print("True:", true_scores.shape, "Pred:", pred_scores.shape)
 
         temp = torch.sum((true_scores - pred_scores)**2, 0)/true_scores.shape[0]
-        print(torch.sum(temp))
+        res = torch.sum(temp)
         '''
         final_score = []
 
