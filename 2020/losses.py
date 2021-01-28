@@ -66,6 +66,9 @@ class CriticLoss(nn.Module):
         true_scores = self.calc_true_pesq(x, y, s, mask)
         print("True:", true_scores.shape, "Pred:", pred_scores.shape)
 
+        temp = (true_scores - pred_scores)**2
+        print(temp)
+
         '''
         final_score = []
 
