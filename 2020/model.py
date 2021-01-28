@@ -71,10 +71,10 @@ class Critic(nn.Module):
     def forward(self, x):
         x = x.real
         x = self.bnorm(x).unsqueeze(1)
-        x = self.conv2d1(x)
-        x = self.conv2d2(x)
-        x = self.conv2d3(x)
-        x = self.conv2d4(x)
+        x = self.leaky_relu(self.conv2d1(x))
+        x = self.leaky_relu(self.conv2d2(x))
+        x = self.leaky_relu(self.conv2d3(x))
+        x = self.leaky_relu(self.conv2d4(x))
         x = F.adaptive_avg_pool2d(x, 1)
         x = x.squeeze()
         x = self.fc1(x)
