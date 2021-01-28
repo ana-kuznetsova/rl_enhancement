@@ -54,7 +54,7 @@ class Actor(nn.Module):
 class Critic(nn.Module):
     def __init__(self):
         super().__init__()
-        self.bnorm = nn.BatchNorm1d(513)
+        self.bnorm = nn.BatchNorm1d(257)
         self.conv2d1 = spectral_norm(nn.Conv2d(in_channels=1, out_channels=15,
                                  kernel_size=(5, 5)))
         self.conv2d2 = spectral_norm(nn.Conv2d(in_channels=15, out_channels=25,
