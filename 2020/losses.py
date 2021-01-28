@@ -64,23 +64,7 @@ class CriticLoss(nn.Module):
             mask (batch): masks for signals
         '''
         true_scores = self.calc_true_pesq(x, y, s, mask).to(device)
-        print("True:", true_scores.shape, "Pred:", pred_scores.shape)
-
         temp = torch.sum((true_scores - pred_scores)**2, 0)/true_scores.shape[0]
         res = torch.sum(temp)
-        '''
-        final_score = []
-
-        for i in range(x.shape[0]):
-            e_x = (true_scores[i][0]-pred_scores[0][i])**2
-            e_y = (true_scores[i][1]-pred_scores[1][i])**2
-            e_s = (true_scores[i][2]-pred_scores[2][i])**2
-            final_score.append(e_x + e_y + e_s)
-            del e_x
-            del e_y
-            del e_s
-        res = sum(final_score)
-        '''
-        
         return res
             
