@@ -9,8 +9,11 @@ import numpy as np
 import os
 import copy
 import soundfile as sf
+from pystoi import stoi
+from pypesq import pesq
+from tqdm import tqdm
 
-from preproc import Data
+from preproc import Data, DataTest
 from preproc import get_feats, collate_custom
 from losses import SDRLoss, CriticLoss
 
@@ -359,15 +362,19 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
 
 def inference(clean_path, noisy_path, model_path):
-    device = torch.device("cuda:1")
+    device = torch.device("cuda")
     model = Actor()
+    model = nn.DataParallel(model, device_ids=[0,1])
     model.load_state_dict(torch.load(model_path))
     model = model.to(device)
    
-    dataset = Data(clean_path, noisy_path, get_feats, 2)
-    loader = data.DataLoader(dataset, batch_size=1, shuffle=True)
+    dataset = DataTest(clean_path, noisy_path)
+    loader = data.DataLoader(dataset, batch_size=5, shuffle=True, collate_fn=collate_custom)
 
-    for i, batch in enumerate(loader):
+    pesq_all = []
+    stoi_all = []
+
+    for batch in tqdm(loader):
         x = batch["noisy"].unsqueeze(1).to(device)
         t = batch["clean"].unsqueeze(1).to(device)
         m = batch["mask"].to(device)
@@ -375,7 +382,22 @@ def inference(clean_path, noisy_path, model_path):
         out_r = torch.transpose(out_r, 1, 2)
         out_i = torch.transpose(out_i, 1, 2)
         y = predict(x.squeeze(1), (out_r, out_i))
+        t = t.squeeze()
+        m = m.squeeze()
         targets, preds = inverse(t, y, m)
-        
+
+        for j in range(len(targets)):
+            curr_pesq = pesq(targets[j], preds[j], 16000)
+            curr_stoi = stoi(targets[j], preds[j], 16000)
+            pesq_all.append(curr_pesq)
+            stoi_all.append(curr_stoi)
+    
+        #Write to file selected signals only
         sf.write('target_'+str(i)+'.wav', targets[0].detach().cpu().numpy(), 16000)
         sf.write('pred_'+str(i)+'.wav', preds[0].detach().cpu().numpy(), 16000)
+
+    PESQ = torch.mean(torch.tensor(pesq_all))
+    STOI = torch.mean(torch.tensor(stoi_all))
+
+    with open(os.path.join(model_path, 'test_scores.txt'), 'w') as fo:
+        fo.write("Avg PESQ: "+str(float(PESQ))+" Avg STOI: "+str(float(STOI)))

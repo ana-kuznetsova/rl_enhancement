@@ -112,3 +112,27 @@ class Data(data.Dataset):
             idx = idx.tolist()
         sample = (self.fnames_clean[idx], self.fnames_noisy[idx])
         return sample
+
+
+class DataTest(data.Dataset):
+    def __init__(self, clean_path, noisy_path):
+        self.clean_path = clean_path
+        self.noisy_path = noisy_path
+        self.fnames = self.get_samples()
+        self.fnames_clean = self.fnames[0]
+        self.fnames_noisy = self.fnames[1]
+
+    def get_samples(self):
+        fnames = os.listdir(self.clean_path)
+        clean = [os.path.join(self.clean_path, n) for n in fnames]
+        noisy = [os.path.join(self.noisy_path, n) for n in fnames]
+        return (clean, noisy)
+
+    def __len__(self):
+        return len(self.fnames_clean)
+    
+    def __getitem__(self, idx):
+        if torch.is_tensor(idx):
+            idx = idx.tolist()
+        sample = (self.fnames_clean[idx], self.fnames_noisy[idx])
+        return sample
