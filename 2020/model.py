@@ -222,6 +222,7 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
             pred_scores.append(critic(disc_input_x))
             pred_scores.append(critic(disc_input_y))
             pred_scores.append(critic(disc_input_t))
+            pred_scores = torch.tensor(pred_scores)
             loss = criterion(x, y, t, m, pred_scores, device)
             optimizer.zero_grad()
             loss.backward()
