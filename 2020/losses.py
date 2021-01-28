@@ -64,7 +64,7 @@ class CriticLoss(nn.Module):
             mask (batch): masks for signals
         '''
         true_scores = self.calc_true_pesq(x, y, s, mask)
-        #print("Pesq:", true_scores)
+        print("Pesq:", true_scores)
         final_score = []
 
         for i in range(x.shape[0]):
