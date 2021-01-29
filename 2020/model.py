@@ -167,14 +167,14 @@ def train_GAN(clean_path, noisy_path, actor_path, critic_path, model_path, num_i
 
 def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
 
-    #device = torch.device("cuda")
+    device = torch.device("cuda:1")
     actor = Actor()
     actor = nn.DataParallel(actor, device_ids=[1, 2])
     actor.load_state_dict(torch.load('/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor/actor_best.pth'))
     actor = actor.cuda()
 
     critic = Critic()
-    critic = critic.cuda()
+    critic = critic.to(device)
     critic.apply(init_weights)
     critic = nn.DataParallel(critic, device_ids=[1, 2])
 
@@ -205,9 +205,9 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
         optimizer = optim.Adam(critic.parameters(), lr=0.001)
 
         for i, batch in enumerate(loader):
-            x = batch["noisy"].unsqueeze(1).cuda()
-            t = batch["clean"].unsqueeze(1).cuda()
-            m = batch["mask"].cuda()
+            x = batch["noisy"].unsqueeze(1).to(device)
+            t = batch["clean"].unsqueeze(1).to(device)
+            m = batch["mask"].to(device)
             out_r, out_i = actor(x)
             out_r = torch.transpose(out_r, 1, 2)
             out_i = torch.transpose(out_i, 1, 2)
@@ -243,9 +243,9 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
             loader = data.DataLoader(dataset, batch_size=5, shuffle=True, collate_fn=collate_custom)
 
             for i, batch in enumerate(loader):
-                x = batch["noisy"].unsqueeze(1).cuda()
-                t = batch["clean"].unsqueeze(1).cuda()
-                m = batch["mask"].cuda()
+                x = batch["noisy"].unsqueeze(1).to(device)
+                t = batch["clean"].unsqueeze(1).to(device)
+                m = batch["mask"].to(device)
                 out_r, out_i = actor(x)
                 out_r = torch.transpose(out_r, 1, 2)
                 out_i = torch.transpose(out_i, 1, 2)
