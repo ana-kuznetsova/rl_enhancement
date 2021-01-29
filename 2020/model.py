@@ -177,7 +177,7 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
     #critic = critic.to(device)
     critic.apply(init_weights)
     critic = nn.DataParallel(critic, device_ids=[1, 2])
-    print(critic)
+    print(next(critic.parameters()).is_cuda)
 
     criterion = CriticLoss()
     criterion.cuda()
