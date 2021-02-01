@@ -371,9 +371,11 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
     model = model.to(device)
 
     fnames = os.listdir(noisy_path)
+
+    print("Num files:", len(fnames))
    
     dataset = DataTest(clean_path, noisy_path)
-    loader = data.DataLoader(dataset, batch_size=5, shuffle=True, collate_fn=collate_custom)
+    loader = data.DataLoader(dataset, batch_size=5, shuffle=False, collate_fn=collate_custom)
 
     pesq_all = []
     stoi_all = []
@@ -392,12 +394,12 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
         targets, preds = inverse(t, y, m)
 
         for j in range(len(targets)):
-            fcount+=1
             curr_pesq = pesq(targets[j].detach().cpu().numpy(), preds[j].detach().cpu().numpy(), 16000)
             curr_stoi = stoi(targets[j].detach().cpu().numpy(), preds[j].detach().cpu().numpy(), 16000)
             pesq_all.append(curr_pesq)
             stoi_all.append(curr_stoi)
             sf.write(os.path.join(out_path, fnames[fcount]) , preds[j].detach().cpu().numpy(), 16000)
+            fcount+=1
 
     PESQ = torch.mean(torch.tensor(pesq_all))
     STOI = torch.mean(torch.tensor(stoi_all))
