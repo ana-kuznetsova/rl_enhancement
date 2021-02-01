@@ -395,8 +395,7 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
             curr_stoi = stoi(targets[j].detach().cpu().numpy(), preds[j].detach().cpu().numpy(), 16000)
             pesq_all.append(curr_pesq)
             stoi_all.append(curr_stoi)
-            pred_fname = 'pred_'+str(fnames[j].split('.')[0])+'.wav'
-            sf.write(os.path.join(out_path, pred_fname) , preds[j].detach().cpu().numpy(), 16000)
+            sf.write(os.path.join(out_path, fnames[i*j]) , preds[j].detach().cpu().numpy(), 16000)
 
     PESQ = torch.mean(torch.tensor(pesq_all))
     STOI = torch.mean(torch.tensor(stoi_all))
