@@ -363,7 +363,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             torch.save(best, os.path.join(model_path, "actor_last.pth"))
 
 
-def inference(clean_path, noisy_path, model_path, out_path):
+def inference_actor(clean_path, noisy_path, model_path, out_path):
     device = torch.device("cuda")
     model = Actor()
     model = nn.DataParallel(model, device_ids=[0,1])
@@ -395,10 +395,8 @@ def inference(clean_path, noisy_path, model_path, out_path):
             curr_stoi = stoi(targets[j].detach().cpu().numpy(), preds[j].detach().cpu().numpy(), 16000)
             pesq_all.append(curr_pesq)
             stoi_all.append(curr_stoi)
-    
-        #Write to file selected signals only
-        sf.write('target_'+str(i)+'.wav', targets[0].detach().cpu().numpy(), 16000)
-        sf.write('pred_'+str(i)+'.wav', preds[0].detach().cpu().numpy(), 16000)
+            pred_fname = 'pred_'+str(fnames[j].split('.')[0])+'.wav'
+            sf.write(os.path.join(out_path, pred_fname) , preds[j].detach().cpu().numpy(), 16000)
 
     PESQ = torch.mean(torch.tensor(pesq_all))
     STOI = torch.mean(torch.tensor(stoi_all))
