@@ -377,6 +377,7 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
 
     pesq_all = []
     stoi_all = []
+    fcount = 0
 
     for i, batch in tqdm(enumerate(loader)):
         x = batch["noisy"].unsqueeze(1).to(device)
@@ -391,11 +392,12 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
         targets, preds = inverse(t, y, m)
 
         for j in range(len(targets)):
+            fcount+=1
             curr_pesq = pesq(targets[j].detach().cpu().numpy(), preds[j].detach().cpu().numpy(), 16000)
             curr_stoi = stoi(targets[j].detach().cpu().numpy(), preds[j].detach().cpu().numpy(), 16000)
             pesq_all.append(curr_pesq)
             stoi_all.append(curr_stoi)
-            sf.write(os.path.join(out_path, fnames[i*j]) , preds[j].detach().cpu().numpy(), 16000)
+            sf.write(os.path.join(out_path, fnames[fcount]) , preds[j].detach().cpu().numpy(), 16000)
 
     PESQ = torch.mean(torch.tensor(pesq_all))
     STOI = torch.mean(torch.tensor(stoi_all))
