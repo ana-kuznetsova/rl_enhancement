@@ -41,7 +41,7 @@ def update_critic(actor, critic, loader, optimizer, criterion, device):
 
         loss = loss.detach().cpu().numpy()
         epoch_loss+=loss
-    print()
+    print("Critic epoch loss:", epoch_loss/len(loader))
 
 def update_actor(actor, critic, loader, optimizer, criterion, device):
     epoch_loss = 0
