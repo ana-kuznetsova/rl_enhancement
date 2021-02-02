@@ -7,12 +7,14 @@ from torch.nn.utils import spectral_norm
 import copy
 import os
 import numpy as np
+from pystoi import stoi
+from pypesq import pesq
 
 
 from preproc import Data, DataTest
 from preproc import collate_custom
 from losses import CriticLoss, ActorLoss
-from modules import Actor, Critic, predict
+from modules import Actor, Critic, predict, inverse
 
 
 def update_critic(actor, critic, loader, optimizer, criterion, device):
@@ -67,11 +69,33 @@ def update_actor(actor, critic, loader, optimizer, criterion, device):
     return epoch_loss/len(loader)
 
 
-        
+def calc_metrics(loader, actor, device):
+    pesq_all = []
+    stoi_all = []
+    for batch in loader:
+        x = batch["noisy"].unsqueeze(1).to(device)
+        t = batch["clean"].unsqueeze(1).to(device)
+        m = batch["mask"].to(device)
+        out_r, out_i = actor(x)
+        out_r = torch.transpose(out_r, 1, 2)
+        out_i = torch.transpose(out_i, 1, 2)
+        y = predict(x.squeeze(1), (out_r, out_i))
+        t = t.squeeze()
+        m = m.squeeze()
+        targets, preds = inverse(t, y, m)
+
+        for j in range(len(targets)):
+            curr_pesq = pesq(targets[j].detach().cpu().numpy(), preds[j].detach().cpu().numpy(), 16000)
+            curr_stoi = stoi(targets[j].detach().cpu().numpy(), preds[j].detach().cpu().numpy(), 16000)
+            pesq_all.append(curr_pesq)
+            stoi_all.append(curr_stoi)
+    PESQ = torch.mean(torch.tensor(pesq_all))
+    STOI = torch.mean(torch.tensor(stoi_all))
+    return PESQ, STOI
 
 
 
-def train(clean_path, noisy_path, actor_path, critic_path, model_path, num_it=100):
+def train(clean_path, noisy_path, clean_test, noisy_test, actor_path, critic_path, model_path, num_it=100):
     device = torch.device("cuda:1")
 
     actor = Actor()
@@ -101,6 +125,9 @@ def train(clean_path, noisy_path, actor_path, critic_path, model_path, num_it=10
     prev_actor_loss = 999999.0
     prev_critic_loss = 999999.0
 
+    pesq_all = []
+    stoi_all = []
+
 
     for it in range(1, num_it+1):
         data_actor = Data(clean_path, noisy_path, 200)
@@ -116,6 +143,8 @@ def train(clean_path, noisy_path, actor_path, critic_path, model_path, num_it=10
 
         print('Epoch:{:2} Actor loss:{:>4f} Critic loss:{:>4f}'.format(it, float(epoch_loss_actor), float(epoch_loss_critic)))
 
+        ### Save models
+
         if epoch_loss_actor < prev_actor_loss:
             torch.save(best_actor, os.path.join(model_path, 'actor_best.pth'))
             prev_actor_loss = epoch_loss_actor
@@ -127,6 +156,17 @@ def train(clean_path, noisy_path, actor_path, critic_path, model_path, num_it=10
         np.save(os.path.join(model_path, 'actor_loss.npy'), np.array(actor_losses))
         np.save(os.path.join(model_path, 'critic_loss.npy'), np.array(critic_losses))
 
+        ### PESQ of predictions
+        data_test = DataTest(clean_test, noisy_test)
+        loader_test = data.DataLoader(data_test, batch_size=5, shuffle=False, collate_fn=collate_custom)
+
+        PESQ, STOI = calc_metrics(loader_test, actor, device)
+        print("PESQ:", PESQ, "STOI:", STOI)
+
+        pesq_all.append(PESQ)
+        stoi_all.append(STOI)
+        np.save(os.path.join(model_path, "pesq.npy"), np.array(pesq_all))
+        np.save(os.path.join(model_path, "stoi.npy"), np.array(stoi_all))
 
         
     
