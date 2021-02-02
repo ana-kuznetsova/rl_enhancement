@@ -5,6 +5,8 @@ import torch.utils.data as data
 import torch.nn.functional as F
 from torch.nn.utils import spectral_norm
 import copy
+import os
+import numpy as np
 
 
 from preproc import Data, DataTest
@@ -41,7 +43,7 @@ def update_critic(actor, critic, loader, optimizer, criterion, device):
 
         loss = loss.detach().cpu().numpy()
         epoch_loss+=loss
-    print("Critic epoch loss:", epoch_loss/len(loader))
+    return epoch_loss/len(loader)
 
 def update_actor(actor, critic, loader, optimizer, criterion, device):
     epoch_loss = 0
@@ -62,14 +64,14 @@ def update_actor(actor, critic, loader, optimizer, criterion, device):
         optimizer.step()
         loss = loss.detach().cpu().numpy()
         epoch_loss+=loss
-    print("Actor epoch loss:", epoch_loss/len(loader))
+    return epoch_loss/len(loader)
 
 
         
 
 
 
-def train(clean_path, noisy_path, actor_path, critic_path, num_it=100):
+def train(clean_path, noisy_path, actor_path, critic_path, model_path, num_it=100):
     device = torch.device("cuda:1")
 
     actor = Actor()
@@ -91,12 +93,14 @@ def train(clean_path, noisy_path, actor_path, critic_path, num_it=100):
 
 
     critic_losses = []
-    val_critic_losses = []
     best_critic = copy.deepcopy(critic.state_dict())
-    prev_val_critic=99999
 
-    epoch_loss_critic = 0
-    epoch_loss_actor =0
+    actor_losses = []
+    best_actor = copy.deepcopy(critic.state_dict())
+
+    prev_actor_loss = 999999.0
+    prev_critic_loss = 999999.0
+
 
     for it in range(1, num_it+1):
         data_actor = Data(clean_path, noisy_path, 200)
@@ -105,8 +109,23 @@ def train(clean_path, noisy_path, actor_path, critic_path, num_it=100):
         data_critic = Data(clean_path, noisy_path, 50)
         loader_critic = data.DataLoader(data_critic, batch_size=5, shuffle=True, collate_fn=collate_custom)
 
-        update_critic(actor, critic, loader_critic, sgd_critic, criterion_critic, device)
-        update_actor(actor, critic, loader_actor, sgd_actor, criterion_actor, device)
+        epoch_loss_critic = update_critic(actor, critic, loader_critic, sgd_critic, criterion_critic, device)
+        critic_losses.append(epoch_loss_critic)
+        epoch_loss_actor = update_actor(actor, critic, loader_actor, sgd_actor, criterion_actor, device)
+        actor_losses.append(epoch_loss_actor)
+
+        print('Epoch:{:2} Actor loss:{:>4f} Critic loss:{:>4f}'.format(it, float(epoch_loss_actor), float(epoch_loss_critic)))
+
+        if epoch_loss_actor < prev_actor_loss:
+            torch.save(best_actor, os.path.join(model_path, 'actor_best.pth'))
+            prev_actor_loss = epoch_loss_actor
+        
+        if epoch_loss_critic < prev_critic_loss:
+            torch.save(best_critic, os.path.join(model_path, 'critic_best.pth'))
+            prev_critic_loss = epoch_loss_critic
+
+        np.save(os.path.join(model_path, 'actor_loss.npy'), np.array(actor_losses))
+        np.save(os.path.join(model_path, 'critic_loss.npy'), np.array(critic_losses))
 
 
         
