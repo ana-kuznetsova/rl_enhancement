@@ -35,8 +35,8 @@ def train(clean_path, noisy_path, actor_path, critic_path, num_it=100):
         data_critic = Data(clean_path, noisy_path, 50)
         loader_critic = data.DataLoader(data_critic, batch_size=5, shuffle=True, collate_fn=collate_custom)
 
-        test_source, test_target = next(iter(loader_actor))
-        print(test_source)
+        test_sample = next(iter(loader_actor))
+        print(test_sample)
     
 
 train('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
