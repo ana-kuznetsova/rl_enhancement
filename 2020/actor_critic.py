@@ -9,7 +9,7 @@ import copy
 
 from preproc import Data, DataTest
 from preproc import collate_custom
-from losses import CriticLoss
+from losses import CriticLoss, ActorLoss
 from modules import Actor, Critic, predict
 
 
@@ -33,7 +33,6 @@ def update_critic(actor, critic, loader, optimizer, criterion, epoch_loss, devic
         pred_scores.append(critic(disc_input_y))
         pred_scores.append(critic(disc_input_t))
         pred_scores = torch.transpose(torch.stack(pred_scores).squeeze(), 0, 1)
-        print("Pred scores:", pred_scores)
         loss = criterion(x, y, t, m, pred_scores, device)
         optimizer.zero_grad()
         loss.backward()
@@ -43,6 +42,20 @@ def update_critic(actor, critic, loader, optimizer, criterion, epoch_loss, devic
         print("Batch loss:", loss)
         epoch_loss+=loss
 
+def update_actor(actor, critic, loader, optimizer, criterion, epoch_loss, device):
+    for i, batch in enumerate(loader):
+        x = batch["noisy"].unsqueeze(1).to(device)
+        t = batch["clean"].unsqueeze(1).to(device)
+        m = batch["mask"].to(device)
+        out_r, out_i = actor(x)
+        out_r = torch.transpose(out_r, 1, 2)
+        out_i = torch.transpose(out_i, 1, 2)
+        y = predict(x.squeeze(1), (out_r, out_i), floor=True)
+        t = t.squeeze(1)
+        disc_input_y = torch.cat((y, t), 2)
+        print(disc_input_y)
+
+
 
 def train(clean_path, noisy_path, actor_path, critic_path, num_it=100):
     device = torch.device("cuda:1")
@@ -51,8 +64,9 @@ def train(clean_path, noisy_path, actor_path, critic_path, num_it=100):
     actor = nn.DataParallel(actor, device_ids=[1, 2])
     actor.load_state_dict(torch.load(actor_path))
     actor = actor.to(device)
-
     sgd_actor = optim.SGD(actor.parameters(), lr=0.001)
+    criterion_actor = ActorLoss()
+    criterion_actor.to(device)
 
     critic = Critic()
     critic = nn.DataParallel(critic, device_ids=[1, 2])
@@ -70,6 +84,7 @@ def train(clean_path, noisy_path, actor_path, critic_path, num_it=100):
     prev_val_critic=99999
 
     epoch_loss_critic = 0
+    epoch_loss_actor =0
 
     for it in range(1, num_it+1):
         data_actor = Data(clean_path, noisy_path, 200)
@@ -79,6 +94,7 @@ def train(clean_path, noisy_path, actor_path, critic_path, num_it=100):
         loader_critic = data.DataLoader(data_critic, batch_size=5, shuffle=True, collate_fn=collate_custom)
 
         update_critic(actor, critic, loader_critic, sgd_critic, criterion_critic, epoch_loss_critic, device)
+        update_actor(actor, critic, loader_actor, sgd_actor, criterion_actor, epoch_loss_actor, device)
 
 
         

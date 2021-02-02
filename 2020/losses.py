@@ -72,3 +72,6 @@ class CriticLoss(nn.Module):
 class ActorLoss(nn.Module):
     def __init__(self):
         super().__init__()
+    
+    def forward(self, preds):
+        return -torch.sum(preds)
