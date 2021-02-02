@@ -33,6 +33,7 @@ def update_critic(actor, critic, loader, optimizer, criterion, epoch_loss, devic
         pred_scores.append(critic(disc_input_y))
         pred_scores.append(critic(disc_input_t))
         pred_scores = torch.transpose(torch.stack(pred_scores).squeeze(), 0, 1)
+        print("Pred scores:", pred_scores)
         loss = criterion(x, y, t, m, pred_scores, device)
         optimizer.zero_grad()
         loss.backward()
