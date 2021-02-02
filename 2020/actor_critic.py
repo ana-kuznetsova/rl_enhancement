@@ -39,7 +39,6 @@ def update_critic(actor, critic, loader, optimizer, criterion, epoch_loss, devic
         optimizer.step()
 
         loss = loss.detach().cpu().numpy()
-        print("Batch loss:", loss)
         epoch_loss+=loss
 
 def update_actor(actor, critic, loader, optimizer, criterion, epoch_loss, device):
@@ -53,7 +52,8 @@ def update_actor(actor, critic, loader, optimizer, criterion, epoch_loss, device
         y = predict(x.squeeze(1), (out_r, out_i), floor=True)
         t = t.squeeze(1)
         disc_input_y = torch.cat((y, t), 2)
-        print(disc_input_y)
+        preds = critic(disc_input_y)
+        print(preds)
 
 
 
@@ -94,6 +94,7 @@ def train(clean_path, noisy_path, actor_path, critic_path, num_it=100):
         loader_critic = data.DataLoader(data_critic, batch_size=5, shuffle=True, collate_fn=collate_custom)
 
         update_critic(actor, critic, loader_critic, sgd_critic, criterion_critic, epoch_loss_critic, device)
+        print("Epoch loss critic:", epoch_loss_critic/len(loader_critic))
         update_actor(actor, critic, loader_actor, sgd_actor, criterion_actor, epoch_loss_actor, device)
 
 
