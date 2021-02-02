@@ -4,13 +4,43 @@ import torch.optim as optim
 import torch.utils.data as data
 import torch.nn.functional as F
 from torch.nn.utils import spectral_norm
+import copy
 
 
 from preproc import Data, DataTest
 from preproc import collate_custom
 from losses import CriticLoss
-from modules import Actor, Critic
+from modules import Actor, Critic, predict
 
+
+def update_critic(actor, critic, loader, optimizer, criterion, epoch_loss, device):
+    for i, batch in enumerate(loader):
+        x = batch["noisy"].unsqueeze(1).to(device)
+        t = batch["clean"].unsqueeze(1).to(device)
+        m = batch["mask"].to(device)
+        out_r, out_i = actor(x)
+        out_r = torch.transpose(out_r, 1, 2)
+        out_i = torch.transpose(out_i, 1, 2)
+        y = predict(x.squeeze(1), (out_r, out_i), floor=True)
+        t = t.squeeze(1)
+        x = x.squeeze(1)
+        disc_input_y = torch.cat((y, t), 2)
+        disc_input_t = torch.cat((t, t), 2)
+        disc_input_x = torch.cat((x, t), 2)
+
+        pred_scores = []
+        pred_scores.append(critic(disc_input_x))
+        pred_scores.append(critic(disc_input_y))
+        pred_scores.append(critic(disc_input_t))
+        pred_scores = torch.transpose(torch.stack(pred_scores).squeeze(), 0, 1)
+        loss = criterion(x, y, t, m, pred_scores, device)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        loss = loss.detach().cpu().numpy()
+        print("Batch loss:", loss)
+        epoch_loss+=loss
 
 
 def train(clean_path, noisy_path, actor_path, critic_path, num_it=100):
@@ -21,12 +51,24 @@ def train(clean_path, noisy_path, actor_path, critic_path, num_it=100):
     actor.load_state_dict(torch.load(actor_path))
     actor = actor.to(device)
 
+    sgd_actor = optim.SGD(actor.parameters(), lr=0.001)
+
     critic = Critic()
     critic = nn.DataParallel(critic, device_ids=[1, 2])
     critic.load_state_dict(torch.load(critic_path))
     critic = critic.to(device)
-    criterion = CriticLoss()
-    criterion.to(device)
+    sgd_critic = optim.SGD(critic.parameters(), lr=0.001)
+
+    criterion_critic = CriticLoss()
+    criterion_critic.to(device)
+
+
+    critic_losses = []
+    val_critic_losses = []
+    best_critic = copy.deepcopy(critic.state_dict())
+    prev_val_critic=99999
+
+    epoch_loss_critic = 0
 
     for it in range(1, num_it+1):
         data_actor = Data(clean_path, noisy_path, 200)
@@ -35,8 +77,9 @@ def train(clean_path, noisy_path, actor_path, critic_path, num_it=100):
         data_critic = Data(clean_path, noisy_path, 50)
         loader_critic = data.DataLoader(data_critic, batch_size=5, shuffle=True, collate_fn=collate_custom)
 
-        print(len(loader_actor), len(loader_critic))
-        test_sample = next(iter(loader_actor))
+        update_critic(actor, critic, loader_critic, sgd_critic, criterion_critic, epoch_loss_critic, device)
+
+
         
     
 
