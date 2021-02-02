@@ -169,9 +169,11 @@ def train(clean_path, noisy_path, clean_test, noisy_test, actor_path, critic_pat
         np.save(os.path.join(model_path, "stoi.npy"), np.array(stoi_all))
 
         
-    
 
-train('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
-      '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/', 
-      '/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor/actor_best.pth',
-      '/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_critic/critic_best.pth')
+train(clean_path='/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
+      noisy_path='/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/',
+      clean_test='/nobackup/anakuzne/data/voicebank-demand/clean_testset_wav/',
+      noisy_test='/nobackup/anakuzne/data/voicebank-demand/noisy_testset_wav/',
+      actor_path='/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor/actor_best.pth',
+      critic_path='/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_critic/critic_best.pth',
+      model_path='/nobackup/anakuzne/data/experiments/speech_enhancement/2020/actor_critic/')
