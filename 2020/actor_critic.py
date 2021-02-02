@@ -13,7 +13,8 @@ from losses import CriticLoss, ActorLoss
 from modules import Actor, Critic, predict
 
 
-def update_critic(actor, critic, loader, optimizer, criterion, epoch_loss, device):
+def update_critic(actor, critic, loader, optimizer, criterion, device):
+    epoch_loss=0
     for i, batch in enumerate(loader):
         x = batch["noisy"].unsqueeze(1).to(device)
         t = batch["clean"].unsqueeze(1).to(device)
@@ -40,8 +41,10 @@ def update_critic(actor, critic, loader, optimizer, criterion, epoch_loss, devic
 
         loss = loss.detach().cpu().numpy()
         epoch_loss+=loss
+    print()
 
-def update_actor(actor, critic, loader, optimizer, criterion, epoch_loss, device):
+def update_actor(actor, critic, loader, optimizer, criterion, device):
+    epoch_loss = 0
     for i, batch in enumerate(loader):
         x = batch["noisy"].unsqueeze(1).to(device)
         t = batch["clean"].unsqueeze(1).to(device)
@@ -53,7 +56,16 @@ def update_actor(actor, critic, loader, optimizer, criterion, epoch_loss, device
         t = t.squeeze(1)
         disc_input_y = torch.cat((y, t), 2)
         preds = critic(disc_input_y)
-        print(preds)
+        loss = criterion(preds)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        loss = loss.detach().cpu().numpy()
+        epoch_loss+=loss
+    print("Actor epoch loss:", epoch_loss/len(loader))
+
+
+        
 
 
 
@@ -93,9 +105,8 @@ def train(clean_path, noisy_path, actor_path, critic_path, num_it=100):
         data_critic = Data(clean_path, noisy_path, 50)
         loader_critic = data.DataLoader(data_critic, batch_size=5, shuffle=True, collate_fn=collate_custom)
 
-        update_critic(actor, critic, loader_critic, sgd_critic, criterion_critic, epoch_loss_critic, device)
-        print("Epoch loss critic:", epoch_loss_critic/len(loader_critic))
-        update_actor(actor, critic, loader_actor, sgd_actor, criterion_actor, epoch_loss_actor, device)
+        update_critic(actor, critic, loader_critic, sgd_critic, criterion_critic, device)
+        update_actor(actor, critic, loader_actor, sgd_actor, criterion_actor, device)
 
 
         
