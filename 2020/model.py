@@ -381,7 +381,7 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
     stoi_all = []
     fcount = 0
 
-    for i, batch in tqdm(enumerate(loader)):
+    for batch in tqdm(loader):
         x = batch["noisy"].unsqueeze(1).to(device)
         t = batch["clean"].unsqueeze(1).to(device)
         m = batch["mask"].to(device)
@@ -400,6 +400,7 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
             stoi_all.append(curr_stoi)
             sf.write(os.path.join(out_path, fnames[fcount]) , preds[j].detach().cpu().numpy(), 16000)
             fcount+=1
+            print('Fcount:', fcount)
 
     PESQ = torch.mean(torch.tensor(pesq_all))
     STOI = torch.mean(torch.tensor(stoi_all))
