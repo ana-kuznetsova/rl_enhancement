@@ -68,3 +68,10 @@ class CriticLoss(nn.Module):
         res = torch.sum(temp)
         return res
             
+
+class ActorLoss(nn.Module):
+    def __init__(self):
+        super().__init__()
+    
+    def forward(self, preds):
+        return -torch.sum(preds)

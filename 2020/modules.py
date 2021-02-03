@@ -117,54 +117,6 @@ def init_weights(m):
         nn.init.xavier_normal_(m.weight.data)
 
 
-def update_critic_params(actor, critic, loader, optimizer, criterion, critic_loss, device, num_it=10):
-    for i in range(num_it):
-        for batch in loader:
-            x = batch["noisy"].unsqueeze(1).to(device)
-            t = batch["clean"].unsqueeze(1).to(device)
-            m = batch["mask"].to(device)
-            out_r, out_i = actor(x)
-            out_r = torch.transpose(out_r, 1, 2)
-            out_i = torch.transpose(out_i, 1, 2)
-            y = predict(x.squeeze(1), (out_r, out_i), floor=True)
-            t = t.squeeze(1)
-            x = x.squeeze(1)
-            disc_input_y = torch.cat((y, t), 2)
-            disc_input_t = torch.cat((t, t), 2)
-            disc_input_x = torch.cat((x, t), 2)
-
-            pred_scores = []
-            pred_scores.append(critic(disc_input_x))
-            pred_scores.append(critic(disc_input_y))
-            pred_scores.append(critic(disc_input_t))
-            loss = criterion(x, y, t, m, pred_scores, device)
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-
-            loss = loss.detach().cpu().numpy()
-            critic_loss+=loss
-    return critic_loss/(len(loader)*num_it)
-
-
-def update_actor_params():
-    pass
-
-def train_GAN(clean_path, noisy_path, actor_path, critic_path, model_path, num_it):
-    device = torch.device("cuda")
-
-    actor = Actor()
-    actor = nn.DataParallel(actor, device_ids=[0, 1])
-    actor.load_state_dict(torch.load(actor_path))
-    actor = actor.to(device)
-
-    critic = Critic()
-    critic = nn.DataParallel(critic, device_ids=[0, 1])
-    critic.load_state_dict(torch.load(critic))
-    critic = critic.to(device)
-
-
-
 def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
 
     device = torch.device("cuda:1")
@@ -381,7 +333,7 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
     stoi_all = []
     fcount = 0
 
-    for i, batch in tqdm(enumerate(loader)):
+    for batch in tqdm(loader):
         x = batch["noisy"].unsqueeze(1).to(device)
         t = batch["clean"].unsqueeze(1).to(device)
         m = batch["mask"].to(device)

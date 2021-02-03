@@ -1,5 +1,5 @@
-from model import pretrain_actor, pretrain_critic
-from model import inference_actor
+from modules import pretrain_actor, pretrain_critic
+from modules import inference_actor
 
 '''
 pretrain_actor('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
