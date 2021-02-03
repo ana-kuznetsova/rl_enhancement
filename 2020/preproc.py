@@ -124,7 +124,6 @@ class DataTest(data.Dataset):
 
     def get_samples(self):
         fnames = os.listdir(self.clean_path)
-        print(fnames[:5])
         clean = [os.path.join(self.clean_path, n) for n in fnames]
         noisy = [os.path.join(self.noisy_path, n) for n in fnames]
         return (clean, noisy)
