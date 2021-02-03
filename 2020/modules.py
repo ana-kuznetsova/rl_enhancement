@@ -323,6 +323,7 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
     model = model.to(device)
 
     fnames = os.listdir(noisy_path)
+    print('fnames:', fnames[:5])
 
     print("Num files:", len(fnames))
    
