@@ -140,3 +140,4 @@ class DataTest(data.Dataset):
 
 def normalize(t):
     t = 10*(t/np.linalg.norm(t))
+    return t
