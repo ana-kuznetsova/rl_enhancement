@@ -15,7 +15,7 @@ from tqdm import tqdm
 import librosa
 
 from preproc import Data, DataTest
-from preproc import get_feats, collate_custom
+from preproc import get_feats, collate_custom, normalize
 from losses import SDRLoss, CriticLoss
 
 class Actor(nn.Module):
@@ -164,7 +164,7 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
             out_r, out_i = actor(x)
             out_r = torch.transpose(out_r, 1, 2)
             out_i = torch.transpose(out_i, 1, 2)
-            y = predict(x.squeeze(1), (out_r, out_i), floor=True)
+            y = normalize(predict(x.squeeze(1), (out_r, out_i), floor=True))
             t = t.squeeze(1)
             x = x.squeeze(1)
             disc_input_y = torch.cat((y, t), 2)

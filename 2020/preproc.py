@@ -136,3 +136,7 @@ class DataTest(data.Dataset):
             idx = idx.tolist()
         sample = (self.fnames_clean[idx], self.fnames_noisy[idx])
         return sample
+
+
+def normalize(t):
+    t = 10*(t/torch.linalg.norm(t))
