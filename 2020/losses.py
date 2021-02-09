@@ -61,11 +61,6 @@ class CriticLoss(nn.Module):
             pred_scores (batch): [x, y, s] predicted by Critic scored for x, y, s
             mask (batch): masks for signals
         '''
-        print("Before", y.shape, type(y))
-        y_imag = y.imag
-        y = normalize(y.real)
-        y = torch.complex(y, y_imag)
-        print("After", y.shape, type(y))
         true_scores = self.calc_true_pesq(x, y, s, mask).to(device)
         temp = torch.sum((true_scores - pred_scores)**2, 0)/true_scores.shape[0]
         res = torch.sum(temp)
