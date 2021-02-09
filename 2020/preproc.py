@@ -139,5 +139,5 @@ class DataTest(data.Dataset):
 
 
 def normalize(t):
-    t = 10*(t/np.linalg.norm(t))
+    t = 10*(t/torch.linalg.norm(t))
     return t
