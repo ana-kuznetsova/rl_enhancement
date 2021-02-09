@@ -107,7 +107,7 @@ def train(clean_path, noisy_path, clean_test, noisy_test, actor_path, critic_pat
     criterion_actor.to(device)
 
     critic = Critic()
-    critic = nn.DataParallel(critic, device_ids=[1, 2])
+    critic = nn.DataParallel(critic, device_ids=[3, 0])
     critic.load_state_dict(torch.load(critic_path))
     critic = critic.to(device)
     sgd_critic = optim.SGD(critic.parameters(), lr=0.001)
