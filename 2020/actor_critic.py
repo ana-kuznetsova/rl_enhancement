@@ -83,6 +83,7 @@ def calc_metrics(loader, actor, device):
         t = t.squeeze()
         m = m.squeeze()
         targets, preds = inverse(t, y, m)
+        preds = normalize(preds)
 
         for j in range(len(targets)):
             curr_pesq = pesq(targets[j].detach().cpu().numpy(), preds[j].detach().cpu().numpy(), 16000)
