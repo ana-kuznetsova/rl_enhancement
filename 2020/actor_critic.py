@@ -96,10 +96,10 @@ def calc_metrics(loader, actor, device):
 
 
 def train(clean_path, noisy_path, clean_test, noisy_test, actor_path, critic_path, model_path, num_it=100):
-    device = torch.device("cuda:1")
+    device = torch.device("cuda:3")
 
     actor = Actor()
-    actor = nn.DataParallel(actor, device_ids=[1, 2])
+    actor = nn.DataParallel(actor, device_ids=[3, 0])
     actor.load_state_dict(torch.load(actor_path))
     actor = actor.to(device)
     sgd_actor = optim.SGD(actor.parameters(), lr=0.001)
