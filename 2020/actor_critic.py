@@ -176,4 +176,4 @@ train(clean_path='/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_
       noisy_test='/nobackup/anakuzne/data/voicebank-demand/noisy_testset_wav/',
       actor_path='/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor/actor_best.pth',
       critic_path='/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_critic/critic_best.pth',
-      model_path='/nobackup/anakuzne/data/experiments/speech_enhancement/2020/actor_critic/')
+      model_path='/nobackup/anakuzne/data/experiments/speech_enhancement/2020/actor_critic_1/')
