@@ -12,7 +12,7 @@ from pypesq import pesq
 
 
 from preproc import Data, DataTest
-from preproc import collate_custom
+from preproc import collate_custom, normalize
 from losses import CriticLoss, ActorLoss
 from modules import Actor, Critic, predict, inverse
 
@@ -156,6 +156,11 @@ def train(clean_path, noisy_path, clean_test, noisy_test, actor_path, critic_pat
 
         np.save(os.path.join(model_path, 'actor_loss.npy'), np.array(actor_losses))
         np.save(os.path.join(model_path, 'critic_loss.npy'), np.array(critic_losses))
+
+        ###Save models every 5 it for plotting weight landscape
+        if it%5==0:
+            torch.save(best_actor, os.path.join(model_path, "weights", "actor_"+str(it)+".pth"))
+            torch.save(best_critic, os.path.join(model_path, "weights", "critic_"+str(it)+".pth"))
 
         ### PESQ of predictions
         data_test = DataTest(clean_test, noisy_test)
