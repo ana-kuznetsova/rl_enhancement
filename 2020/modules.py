@@ -12,9 +12,10 @@ import soundfile as sf
 from pystoi import stoi
 from pypesq import pesq
 from tqdm import tqdm
+import librosa
 
 from preproc import Data, DataTest
-from preproc import get_feats, collate_custom
+from preproc import get_feats, collate_custom, normalize
 from losses import SDRLoss, CriticLoss
 
 class Actor(nn.Module):
@@ -346,11 +347,14 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
         targets, preds = inverse(t, y, m)
 
         for j in range(len(targets)):
-            curr_pesq = pesq(targets[j].detach().cpu().numpy(), preds[j].detach().cpu().numpy(), 16000)
-            curr_stoi = stoi(targets[j].detach().cpu().numpy(), preds[j].detach().cpu().numpy(), 16000)
+            t_j = targets[j].detach().cpu().numpy()
+            p_j = preds[j].detach().cpu().numpy()
+            p_j = 10*(p_j/np.linalg.norm(p_j))
+            curr_pesq = pesq(t_j, p_j, 16000)
+            curr_stoi = stoi(t_j, p_j, 16000)
             pesq_all.append(curr_pesq)
             stoi_all.append(curr_stoi)
-            sf.write(os.path.join(out_path, fnames[fcount]) , preds[j].detach().cpu().numpy(), 16000)
+            sf.write(os.path.join(out_path, fnames[fcount]) , p_j, 16000)
             fcount+=1
 
     PESQ = torch.mean(torch.tensor(pesq_all))

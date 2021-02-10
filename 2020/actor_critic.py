@@ -12,7 +12,7 @@ from pypesq import pesq
 
 
 from preproc import Data, DataTest
-from preproc import collate_custom
+from preproc import collate_custom, normalize
 from losses import CriticLoss, ActorLoss
 from modules import Actor, Critic, predict, inverse
 
@@ -85,8 +85,8 @@ def calc_metrics(loader, actor, device):
         targets, preds = inverse(t, y, m)
 
         for j in range(len(targets)):
-            curr_pesq = pesq(targets[j].detach().cpu().numpy(), preds[j].detach().cpu().numpy(), 16000)
-            curr_stoi = stoi(targets[j].detach().cpu().numpy(), preds[j].detach().cpu().numpy(), 16000)
+            curr_pesq = pesq(targets[j].detach().cpu().numpy(), normalize(preds[j]).detach().cpu().numpy(), 16000)
+            curr_stoi = stoi(targets[j].detach().cpu().numpy(), normalize(preds[j]).detach().cpu().numpy(), 16000)
             pesq_all.append(curr_pesq)
             stoi_all.append(curr_stoi)
     PESQ = torch.mean(torch.tensor(pesq_all))
@@ -96,10 +96,10 @@ def calc_metrics(loader, actor, device):
 
 
 def train(clean_path, noisy_path, clean_test, noisy_test, actor_path, critic_path, model_path, num_it=100):
-    device = torch.device("cuda:1")
+    device = torch.device("cuda:3")
 
     actor = Actor()
-    actor = nn.DataParallel(actor, device_ids=[1, 2])
+    actor = nn.DataParallel(actor, device_ids=[3, 0])
     actor.load_state_dict(torch.load(actor_path))
     actor = actor.to(device)
     sgd_actor = optim.SGD(actor.parameters(), lr=0.001)
@@ -107,7 +107,7 @@ def train(clean_path, noisy_path, clean_test, noisy_test, actor_path, critic_pat
     criterion_actor.to(device)
 
     critic = Critic()
-    critic = nn.DataParallel(critic, device_ids=[1, 2])
+    critic = nn.DataParallel(critic, device_ids=[3, 0])
     critic.load_state_dict(torch.load(critic_path))
     critic = critic.to(device)
     sgd_critic = optim.SGD(critic.parameters(), lr=0.001)
@@ -156,6 +156,11 @@ def train(clean_path, noisy_path, clean_test, noisy_test, actor_path, critic_pat
         np.save(os.path.join(model_path, 'actor_loss.npy'), np.array(actor_losses))
         np.save(os.path.join(model_path, 'critic_loss.npy'), np.array(critic_losses))
 
+        ###Save models every 5 it for plotting weight landscape
+        if it%5==0:
+            torch.save(best_actor, os.path.join(model_path, "weights", "actor_"+str(it)+".pth"))
+            torch.save(best_critic, os.path.join(model_path, "weights", "critic_"+str(it)+".pth"))
+
         ### PESQ of predictions
         data_test = DataTest(clean_test, noisy_test)
         loader_test = data.DataLoader(data_test, batch_size=5, shuffle=False, collate_fn=collate_custom)
@@ -176,4 +181,4 @@ train(clean_path='/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_
       noisy_test='/nobackup/anakuzne/data/voicebank-demand/noisy_testset_wav/',
       actor_path='/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor/actor_best.pth',
       critic_path='/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_critic/critic_best.pth',
-      model_path='/nobackup/anakuzne/data/experiments/speech_enhancement/2020/actor_critic/')
+      model_path='/nobackup/anakuzne/data/experiments/speech_enhancement/2020/actor_critic_1/')
