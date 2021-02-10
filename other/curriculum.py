@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(1, '../2020/')
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -14,9 +17,9 @@ from pypesq import pesq
 from tqdm import tqdm
 import librosa
 
-from rl_enhancement.2020.modules import Actor, init_weights, predict, inverse
-from ../2020.losses import SDRLoss
-from ../2020.preproc import collate_custom
+from modules import Actor, init_weights, predict, inverse
+from losses import SDRLoss
+from preproc import collate_custom
 
 
 def generate_curriculum(clean_path, noisy_path, model_path):
