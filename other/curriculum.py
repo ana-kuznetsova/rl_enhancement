@@ -14,7 +14,7 @@ from pypesq import pesq
 from tqdm import tqdm
 import librosa
 
-from ../2020.modules import Actor, init_weights, predict, inverse
+from rl_enhancement.2020.modules import Actor, init_weights, predict, inverse
 from ../2020.losses import SDRLoss
 from ../2020.preproc import collate_custom
 
