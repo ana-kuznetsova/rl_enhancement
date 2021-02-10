@@ -14,9 +14,9 @@ from pypesq import pesq
 from tqdm import tqdm
 import librosa
 
-from .modules import Actor, init_weights, predict, inverse
-from .losses import SDRLoss
-from .preproc import collate_custom
+from ../2020.modules import Actor, init_weights, predict, inverse
+from ../2020.losses import SDRLoss
+from ../2020.preproc import collate_custom
 
 
 def generate_curriculum(clean_path, noisy_path, model_path):
