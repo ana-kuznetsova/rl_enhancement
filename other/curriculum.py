@@ -70,7 +70,7 @@ def train_curriculum(clean_path, noisy_path, model_path, num_epochs):
 
 
     dataset = Data(clean_path, noisy_path, os.path.join(model_path, 'train.tsv'))
-    loader = data.DataLoader(dataset, batch_size=32, shuffle=False, collate_fn=collate_custom)
+    loader = data.DataLoader(dataset, batch_size=10, shuffle=False, collate_fn=collate_custom)
 
     for epoch in range(1, num_epochs+1):
         if epoch <= 100:
@@ -111,7 +111,7 @@ def train_curriculum(clean_path, noisy_path, model_path, num_epochs):
             overall_val_loss = 0
 
             dataset = Data(clean_path, noisy_path, os.path.join(model_path, 'dev.tsv'))
-            loader = data.DataLoader(dataset, batch_size=32, shuffle=True, collate_fn=collate_custom)
+            loader = data.DataLoader(dataset, batch_size=10, shuffle=True, collate_fn=collate_custom)
 
             for batch in loader:
                 x = batch["noisy"].unsqueeze(1).to(device)
