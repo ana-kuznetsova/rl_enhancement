@@ -85,8 +85,8 @@ def calc_metrics(loader, actor, device):
         targets, preds = inverse(t, y, m)
 
         for j in range(len(targets)):
-            curr_pesq = pesq(targets[j].detach().cpu().numpy(), normalize(preds[j]).detach().cpu().numpy(), 16000)
-            curr_stoi = stoi(targets[j].detach().cpu().numpy(), normalize(preds[j]).detach().cpu().numpy(), 16000)
+            curr_pesq = pesq(targets[j].detach().cpu().numpy(), preds[j].detach().cpu().numpy(), 16000)
+            curr_stoi = stoi(targets[j].detach().cpu().numpy(), preds[j].detach().cpu().numpy(), 16000)
             pesq_all.append(curr_pesq)
             stoi_all.append(curr_stoi)
     PESQ = torch.mean(torch.tensor(pesq_all))
