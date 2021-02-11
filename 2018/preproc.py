@@ -32,7 +32,7 @@ def generate_noisy(speech, noise, desired_snr):
     b = torch.sqrt((E_speech/(10**(desired_snr/10)))/E_noise)    
     return speech + b*noise
 
-def get_features(source, noise):
+def get_features(source, noise, snr):
     source = torchaudio.load_wav(source)
     noise = torchaudio.load_wav(noise)
     noise = pad_noise(source, noise)
@@ -43,3 +43,4 @@ def get_features(source, noise):
     mfcc_source = MFCC(source)
     mfcc_noise = MFCC(noise)
 
+    blend = generate_noisy(mfcc_source, mfcc_noise, snr)
