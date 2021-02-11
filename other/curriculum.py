@@ -102,7 +102,7 @@ def train_curriculum(clean_path, noisy_path, model_path, num_epochs):
             print("Step:{}/{}".format(i + 1, len(loader)), loss)
             epoch_loss+=loss
 
-            losses.append(epoch_loss/len(loader))
+        losses.append(epoch_loss/len(loader))
         np.save(os.path.join(model_path, "loss_actor_curr.npy"), np.array(losses))
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/len(loader)))
 
