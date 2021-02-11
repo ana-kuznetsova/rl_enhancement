@@ -261,6 +261,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
         loader = data.DataLoader(dataset, batch_size=5, shuffle=True, collate_fn=collate_custom)
 
         for batch in loader:
+            ##Clean and noisy are normalized
             x = batch["noisy"].unsqueeze(1).to(device)
             t = batch["clean"].unsqueeze(1).to(device)
             m = batch["mask"].to(device)

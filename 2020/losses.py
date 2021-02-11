@@ -22,7 +22,7 @@ class SDRLoss(nn.Module):
             val = self.clip(val)
             temp.append(val)
         temp = torch.stack(temp)
-        return torch.sum(temp)
+        return -torch.sum(temp)
 
 class CriticLoss(nn.Module):
     def __init__(self):
