@@ -70,7 +70,7 @@ def train_curriculum(clean_path, noisy_path, model_path, num_epochs):
 
 
     dataset = Data(clean_path, noisy_path, os.path.join(model_path, 'train.tsv'))
-    loader = data.DataLoader(dataset, batch_size=10, shuffle=False, collate_fn=collate_custom)
+    loader = data.DataLoader(dataset, batch_size=32, shuffle=False, collate_fn=collate_custom)
 
     for epoch in range(1, num_epochs+1):
         if epoch <= 100:
@@ -82,7 +82,7 @@ def train_curriculum(clean_path, noisy_path, model_path, num_epochs):
 
         epoch_loss = 0
 
-        for batch in loader:
+        for i, batch in enumerate(loader):
             x = batch["noisy"].unsqueeze(1).to(device)
             t = batch["clean"].unsqueeze(1).to(device)
             m = batch["mask"].to(device)
@@ -99,9 +99,10 @@ def train_curriculum(clean_path, noisy_path, model_path, num_epochs):
             optimizer.step()
 
             loss = loss.detach().cpu().numpy()
+            print("Step:{}/{}".format(i + 1, len(loader)), loss)
             epoch_loss+=loss
 
-            losses.append(epoch_loss/len(loader))
+        losses.append(epoch_loss/len(loader))
         np.save(os.path.join(model_path, "loss_actor_curr.npy"), np.array(losses))
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/len(loader)))
 
@@ -111,7 +112,7 @@ def train_curriculum(clean_path, noisy_path, model_path, num_epochs):
             overall_val_loss = 0
 
             dataset = Data(clean_path, noisy_path, os.path.join(model_path, 'dev.tsv'))
-            loader = data.DataLoader(dataset, batch_size=10, shuffle=True, collate_fn=collate_custom)
+            loader = data.DataLoader(dataset, batch_size=32, shuffle=True, collate_fn=collate_custom)
 
             for batch in loader:
                 x = batch["noisy"].unsqueeze(1).to(device)
