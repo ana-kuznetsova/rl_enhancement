@@ -99,7 +99,7 @@ def train_curriculum(clean_path, noisy_path, model_path, num_epochs):
             optimizer.step()
 
             loss = loss.detach().cpu().numpy()
-            print("Step:",i , loss)
+            print("Step:{:5}/{:5}".format(i + 1, len(loader)), loss)
             epoch_loss+=loss
 
             losses.append(epoch_loss/len(loader))
