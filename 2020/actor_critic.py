@@ -12,7 +12,7 @@ from pypesq import pesq
 
 
 from preproc import Data, DataTest
-from preproc import collate_custom, normalize
+from preproc import collate_custom
 from losses import CriticLoss, ActorLoss
 from modules import Actor, Critic, predict, inverse
 

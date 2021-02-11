@@ -3,7 +3,6 @@ import torch.nn as nn
 import torchaudio
 
 from pypesq import pesq
-from preproc import normalize
 
 class SDRLoss(nn.Module):
     def __init__(self):
