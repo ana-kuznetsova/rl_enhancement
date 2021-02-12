@@ -111,10 +111,10 @@ def inverse(t, y , m, device):
         y_i = y[i]
         y_i = y_i[:, :pad_idx].detach().cpu().numpy()
         t_i = librosa.core.istft(t_i, win_length=512, hop_length=128)
-        t_i = torch.tensor(normalize(t_i), requires_grad=True).to(device)
+        t_i = torch.tensor(t_i, requires_grad=True).to(device)
         targets.append(t_i)
         y_i = librosa.core.istft(y_i, win_length=512, hop_length=128)
-        y_i = torch.tensor(normalize(y_i), requires_grad=True).to(device)
+        y_i = torch.tensor(y_i, requires_grad=True).to(device)
         preds.append(y_i)
     return targets, preds
 
