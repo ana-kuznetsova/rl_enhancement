@@ -115,6 +115,7 @@ def inverse(t, y , m, device):
         targets.append(t_i)
         y_i = librosa.core.istft(y_i, win_length=512, hop_length=128)
         y_i = torch.tensor(normalize(y_i)).to(device)
+        print(y_i)
         preds.append(y_i)
     return targets, preds
 
