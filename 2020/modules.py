@@ -97,19 +97,24 @@ def predict(x, model_out, floor=False):
     temp = torch.complex(model_out[0], model_out[1])
     return x*temp
 
-def inverse(t, y , m):
+def inverse(t, y , m, device):
+    def normalize(v):
+        return v/np.linalg.norm(v)
+
     targets = []
     preds = []
 
     for i in range(t.shape[0]):
         pad_idx = int(torch.sum(m[i]))
         t_i = t[i]
-        t_i = t_i[:, :pad_idx]
+        t_i = t_i[:, :pad_idx].detach().cpu().numpy()
         y_i = y[i]
-        y_i = y_i[:, :pad_idx]
-        t_i = torch.istft(t_i, n_fft=512, win_length=512, hop_length=128)
+        y_i = y_i[:, :pad_idx].detach().cpu().numpy()
+        t_i = librosa.core.istft(t_i, n_fft=512, win_length=512, hop_length=128)
+        t_i = torch.tensor(normalize(t_i)).to(device)
         targets.append(t_i)
-        y_i = torch.istft(y_i, n_fft=512, win_length=512, hop_length=128)
+        y_i = librosa.core.istft(y_i, n_fft=512, win_length=512, hop_length=128)
+        y_i = torch.tensor(normalize(y_i)).to(device)
         preds.append(y_i)
     return targets, preds
 
@@ -261,7 +266,6 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
         loader = data.DataLoader(dataset, batch_size=5, shuffle=True, collate_fn=collate_custom)
 
         for batch in loader:
-            ##Clean and noisy are normalized
             x = batch["noisy"].unsqueeze(1).to(device)
             t = batch["clean"].unsqueeze(1).to(device)
             m = batch["mask"].to(device)
@@ -271,7 +275,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             y = predict(x.squeeze(1), (out_r, out_i))
             t = t.squeeze()
             m = m.squeeze()
-            targets, preds = inverse(t, y, m)
+            targets, preds = inverse(t, y, m, device) #Normalization of waveform is made inside inverse()
             loss = criterion(targets, preds)
             optimizer.zero_grad()
             loss.backward()

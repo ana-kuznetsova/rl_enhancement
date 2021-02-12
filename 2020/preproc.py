@@ -48,9 +48,6 @@ def collate_custom(data):
                 max_len = sig.shape[1]
         return int(max_len)
 
-    def normalize(v):
-        return v/np.linalg.norm(v)
-
     clean_paths = [ex[0] for ex in data]
     noisy_paths = [ex[1] for ex in data]
 
@@ -66,8 +63,8 @@ def collate_custom(data):
         #noisy = torch.stft(torch.tensor(noisy), n_fft=512, win_length=512, hop_length=128, normalized=True, return_complex=True)
         clean = librosa.stft(clean, n_fft=512, win_length=512, hop_length=128)
         noisy = librosa.stft(noisy, n_fft=512, win_length=512, hop_length=128)
-        clean = torch.tensor(normalize(10*np.log10(clean)))
-        noisy = torch.tensor(normalize(10*np.log10(noisy)))
+        clean = torch.tensor(10*np.log10(clean))
+        noisy = torch.tensor(10*np.log10(noisy))
         mask = torch.ones(1, clean.shape[1])
         mask = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(mask)
         clean = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(clean)
