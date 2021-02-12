@@ -115,7 +115,6 @@ def inverse(t, y , m, device):
         targets.append(t_i)
         y_i = librosa.core.istft(y_i, win_length=512, hop_length=128)
         y_i = torch.tensor(normalize(y_i), requires_grad=True).to(device)
-        print(y_i)
         preds.append(y_i)
     return targets, preds
 
@@ -278,6 +277,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             m = m.squeeze()
             targets, preds = inverse(t, y, m, device) #Normalization of waveform is made inside inverse()
             loss = criterion(targets, preds)
+            print("Batch loss:", loss)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -306,7 +306,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
                 y = predict(x.squeeze(1), (out_r, out_i))
                 t = t.squeeze()
                 m = m.squeeze()
-                targets, preds = inverse(t, y, m)
+                targets, preds = inverse(t, y, m, device)
                 loss = criterion(targets, preds)
                 overall_val_loss+=loss.detach().cpu().numpy()
 
