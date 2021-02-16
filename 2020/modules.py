@@ -97,26 +97,48 @@ def predict(x, model_out, floor=False):
     temp = torch.complex(model_out[0], model_out[1])
     return x*temp
 
-def inverse(t, y , m, device):
+def inverse(t, y , m, device, x=None):
     def normalize(v):
         return v/np.linalg.norm(v)
 
     targets = []
     preds = []
+    source = []
 
     for i in range(t.shape[0]):
         pad_idx = int(torch.sum(m[i]))
-        t_i = t[i]
-        t_i = t_i[:, :pad_idx].detach().cpu().numpy()
-        y_i = y[i]
-        y_i = y_i[:, :pad_idx].detach().cpu().numpy()
-        t_i = librosa.core.istft(t_i, win_length=512, hop_length=128)
-        t_i = torch.tensor(t_i, requires_grad=True).to(device)
-        targets.append(t_i)
-        y_i = librosa.core.istft(y_i, win_length=512, hop_length=128)
-        y_i = torch.tensor(y_i, requires_grad=True).to(device)
-        preds.append(y_i)
-    return targets, preds
+        if x==None:
+            t_i = t[i]
+            t_i = t_i[:, :pad_idx].detach().cpu().numpy()
+            y_i = y[i]
+            y_i = y_i[:, :pad_idx].detach().cpu().numpy()
+            t_i = librosa.core.istft(t_i, win_length=512, hop_length=128)
+            t_i = torch.tensor(t_i, requires_grad=True).to(device)
+            targets.append(t_i)
+            y_i = librosa.core.istft(y_i, win_length=512, hop_length=128)
+            y_i = torch.tensor(y_i, requires_grad=True).to(device)
+            preds.append(y_i)
+        else:
+            t_i = t[i]
+            t_i = t_i[:, :pad_idx].detach().cpu().numpy()
+            y_i = y[i]
+            y_i = y_i[:, :pad_idx].detach().cpu().numpy()
+            x_i = x[i]
+            x_i = x_i[:, :pad_idx].detach().cpu().numpy()
+            t_i = librosa.core.istft(t_i, win_length=512, hop_length=128)
+            t_i = torch.tensor(t_i, requires_grad=True).to(device)
+            targets.append(t_i)
+            y_i = librosa.core.istft(y_i, win_length=512, hop_length=128)
+            y_i = torch.tensor(y_i, requires_grad=True).to(device)
+            preds.append(y_i)
+            x_i = librosa.core.istft(x_i, win_length=512, hop_length=128)
+            x_i = torch.tensor(x_i, requires_grad=True).to(device)
+            source.append(x_i)
+    if x:
+        return source, targets, preds
+    else:
+        return targets, preds
+
 
 def init_weights(m):
     if isinstance(m, nn.Linear) or isinstance(m, nn.Conv2d):
@@ -275,8 +297,9 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             y = predict(x.squeeze(1), (out_r, out_i))
             t = t.squeeze()
             m = m.squeeze()
-            targets, preds = inverse(t, y, m, device) #Normalization of waveform is made inside inverse()
-            loss = criterion(targets, preds)
+            x = x.squeeze()
+            source, targets, preds = inverse(t, y, m, device, x) #Normalization of waveform is made inside inverse()
+            loss = criterion(source, targets, preds)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
