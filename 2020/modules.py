@@ -134,7 +134,7 @@ def inverse(t, y , m, device, x=None):
             x_i = librosa.core.istft(x_i, win_length=512, hop_length=128)
             x_i = torch.tensor(x_i, requires_grad=True).to(device)
             source.append(x_i)
-    if x:
+    if x!=None:
         return source, targets, preds
     else:
         return targets, preds
@@ -298,7 +298,6 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             t = t.squeeze()
             m = m.squeeze()
             x = x.squeeze()
-            print(t.shape, m.shape, x.shape)
             source, targets, preds = inverse(t, y, m, device, x) #Normalization of waveform is made inside inverse()
             loss = criterion(source, targets, preds)
             print("Batch loss:", loss)
