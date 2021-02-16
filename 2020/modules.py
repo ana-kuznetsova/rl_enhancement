@@ -298,6 +298,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             t = t.squeeze()
             m = m.squeeze()
             x = x.squeeze()
+            print(t.shape, m.shape, x.shape)
             source, targets, preds = inverse(t, y, m, device, x) #Normalization of waveform is made inside inverse()
             loss = criterion(source, targets, preds)
             print("Batch loss:", loss)
