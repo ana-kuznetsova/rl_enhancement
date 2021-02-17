@@ -16,7 +16,7 @@ class SDRLoss(nn.Module):
         temp = []
         for i in range(len(t)):
             if torch.any(torch.isnan(t[i])) or torch.any(torch.isnan(y[i])):
-                print(t[i], y[i])
+                print("FOUND NANs:", t[i], y[i])
             #print("INPUT:", x[i][:5], t[i][:5], y[i][:5])
             #print("Norms:", torch.norm(t[i]),  torch.norm(t[i]-y[i]))
             frac1 = torch.norm(t[i])/torch.norm((t[i]-y[i]))
