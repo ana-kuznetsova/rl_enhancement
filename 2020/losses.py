@@ -18,8 +18,9 @@ class SDRLoss(nn.Module):
             if torch.any(torch.isnan(t[i])) or torch.any(torch.isnan(y[i])):
                 print(t[i], y[i])
             frac1 = torch.norm(t[i])/torch.norm((t[i]-y[i]))
+            print("FRACS1:", frac1)
             frac1 = -0.5*self.clip(10*torch.log10(frac1))
-            print("FRACS:", frac1, frac2)
+            print("FRACS2:", frac1)
 
             n = x[i]-t[i]
             diff = n - (x[i]-y[i])
