@@ -59,12 +59,12 @@ def collate_custom(data):
     for clean, noisy in zip(clean_paths, noisy_paths):
         clean, sr = librosa.core.load(clean, sr=16000)
         noisy, sr = librosa.core.load(noisy, sr=16000)
-        #clean = torch.stft(torch.tensor(clean), n_fft=512, win_length=512, hop_length=128, normalized=True, return_complex=True)
-        #noisy = torch.stft(torch.tensor(noisy), n_fft=512, win_length=512, hop_length=128, normalized=True, return_complex=True)
-        clean = librosa.stft(clean, n_fft=512, win_length=512, hop_length=128)
-        noisy = librosa.stft(noisy, n_fft=512, win_length=512, hop_length=128)
-        clean = torch.tensor(10*np.log10(clean))
-        noisy = torch.tensor(10*np.log10(noisy))
+        clean = torch.stft(torch.tensor(clean), n_fft=512, win_length=512, hop_length=128, normalized=True, return_complex=True)
+        noisy = torch.stft(torch.tensor(noisy), n_fft=512, win_length=512, hop_length=128, normalized=True, return_complex=True)
+        #clean = librosa.stft(clean, n_fft=512, win_length=512, hop_length=128)
+        #noisy = librosa.stft(noisy, n_fft=512, win_length=512, hop_length=128)
+        clean = 10*torch.log10(clean)
+        noisy = 10*torch.log10(noisy)
         mask = torch.ones(1, clean.shape[1])
         mask = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(mask)
         clean = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(clean)
@@ -138,8 +138,3 @@ class DataTest(data.Dataset):
             idx = idx.tolist()
         sample = (self.fnames_clean[idx], self.fnames_noisy[idx])
         return sample
-
-
-def scale(t):
-    t = 10*(t/torch.linalg.norm(t))
-    return t
