@@ -293,9 +293,9 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             x = batch["noisy"].unsqueeze(1).to(device)
             t = batch["clean"].unsqueeze(1).to(device)
             m = batch["mask"].to(device)
-            if torch.any(torch.isnan(x)):
-                print("Nans in input:", x[0])
             out_r, out_i = model(x)
+            if torch.any(torch.isnan(out_r)) or torch.any(torch.isnan(out_i)):
+                print("Nans PRED:", out_r[0], out_i[0])
             out_r = torch.transpose(out_r, 1, 2)
             out_i = torch.transpose(out_i, 1, 2)
             y = predict(x.squeeze(1), (out_r, out_i))
