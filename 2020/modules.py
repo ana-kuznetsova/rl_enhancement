@@ -132,18 +132,18 @@ def inverse(t, y , m, device, x=None):
             #y_i = y_i[:, :pad_idx].detach().cpu().numpy()
             y_i = y_i[:, :pad_idx]
             #t_i = librosa.core.istft(t_i, win_length=512, hop_length=128)
-            t_i = torch.istft(y_i, n_fft=512, win_length=512, hop_length=128, normalized=True)
+            t_i = normalize(torch.istft(y_i, n_fft=512, win_length=512, hop_length=128, normalized=True))
 
             #t_i = torch.tensor(t_i, requires_grad=True).to(device)
             targets.append(t_i)
             #y_i = librosa.core.istft(y_i, win_length=512, hop_length=128)
             #y_i = torch.tensor(y_i, requires_grad=True).to(device)
-            y_i = torch.istft(y_i, n_fft=512, win_length=512, hop_length=128, normalized=True)
-            print(normalize(t_i)[:5], normalize(y_i)[:5])
+            y_i = normalize(torch.istft(y_i, n_fft=512, win_length=512, hop_length=128, normalized=True))
+            #print(normalize(t_i)[:5], normalize(y_i)[:5])
             preds.append(y_i)
             #x_i = normalize(librosa.core.istft(x_i, win_length=512, hop_length=128))
             x_i = x[i][:, :pad_idx]
-            x_i = torch.istft(x_i, n_fft=512, win_length=512, hop_length=128, normalized=True)
+            x_i = normalize(torch.istft(x_i, n_fft=512, win_length=512, hop_length=128, normalized=True))
             #x_i = torch.tensor(x_i, requires_grad=True).to(device)
             source.append(x_i)
     if x!=None:
@@ -312,6 +312,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             m = m.squeeze()
             x = x.squeeze()
             source, targets, preds = inverse(t, y, m, device, x) #Normalization of waveform is made inside inverse()
+            print(source[0][:5], targets[0][:5], preds[0][:5])
             loss = criterion(source, targets, preds)
             optimizer.zero_grad()
             loss.backward()
