@@ -100,9 +100,6 @@ def predict(x, model_out, floor=False):
     return x*temp
 
 def inverse(t, y , m, device, x=None):    
-    def normalize(v):
-        #return v/np.linalg.norm(v)
-        return v/torch.norm(v)
 
     targets = []
     preds = []
