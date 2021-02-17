@@ -203,6 +203,7 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
             out_r = torch.transpose(out_r, 1, 2)
             out_i = torch.transpose(out_i, 1, 2)
             y = predict(x.squeeze(1), (out_r, out_i), floor=True)
+            print("predicted", y[:10])
             t = t.squeeze(1)
             x = x.squeeze(1)
             disc_input_y = torch.cat((y, t), 2)
