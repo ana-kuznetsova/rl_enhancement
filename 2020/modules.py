@@ -36,6 +36,7 @@ class Actor(nn.Module):
 
     def forward(self, x):
         x = x.real
+        print("X:", x.shape)
         x = self.conv2d1(x)
         x = self.conv2d2(x)
         x = self.conv2d3(x)
