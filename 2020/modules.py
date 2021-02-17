@@ -15,7 +15,7 @@ from tqdm import tqdm
 import librosa
 
 from preproc import Data, DataTest
-from preproc import get_feats, collate_custom
+from preproc import normalize, collate_custom
 from losses import SDRLoss, CriticLoss
 
 class Actor(nn.Module):
