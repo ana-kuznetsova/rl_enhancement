@@ -27,9 +27,11 @@ class SDRLoss(nn.Module):
             n = x[i]-t[i]
             diff = n - (x[i]-y[i])
             frac2 = torch.norm(n)/torch.norm(diff)
-            print("FRAC2:", frac2, torch.norm(n), torch.norm(diff))
+            #print("FRAC2:", frac2, torch.norm(n), torch.norm(diff))
             frac2 = 0.5*self.clip(10*torch.log10(frac2))
+            print("FRAC2:", frac2)
             val = frac1-frac2
+            print("RES:", val)
             temp.append(val)
         temp = torch.stack(temp)
         return torch.sum(temp)
