@@ -129,12 +129,12 @@ def inverse(t, y , m, device, x=None):
             t_i = t_i[:, :pad_idx]
             y_i = y[i]
             y_i = y_i[:, :pad_idx]
-            t_i = normalize(torch.istft(t_i, n_fft=512, win_length=512, hop_length=128))
+            t_i =torch.istft(t_i, n_fft=512, win_length=512, hop_length=128)
             targets.append(t_i)
-            y_i = normalize(torch.istft(y_i, n_fft=512, win_length=512, hop_length=128))
+            y_i = torch.istft(y_i, n_fft=512, win_length=512, hop_length=128)
             preds.append(y_i)
             x_i = x[i][:, :pad_idx]
-            x_i = normalize(torch.istft(x_i, n_fft=512, win_length=512, hop_length=128))
+            x_i = torch.istft(x_i, n_fft=512, win_length=512, hop_length=128)
             source.append(x_i)
     if x!=None:
         return source, targets, preds
