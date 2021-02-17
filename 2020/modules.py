@@ -42,9 +42,9 @@ class Actor(nn.Module):
         x = self.conv2d2(x)
         x = self.conv2d3(x)
         x = torch.transpose(x.squeeze(), 1, 2)
-        x = self.linear1(x)
+        x = nn.functional.relu(self.linear1(x))
         x, (h, _) = self.bi_lstm(x)
-        x = self.linear2(x)
+        x = nn.functional.relu(self.linear2(x))
 
         real = []
         imag = []
