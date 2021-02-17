@@ -140,6 +140,7 @@ def inverse(t, y , m, device, x=None):
             y_i = torch.istft(y_i, n_fft=512, win_length=512, hop_length=128)
             preds.append(y_i)
             #x_i = normalize(librosa.core.istft(x_i, win_length=512, hop_length=128))
+            x_i = x[i][:, :pad_idx]
             x_i = torch.istft(x_i, n_fft=512, win_length=512, hop_length=128)
             #x_i = torch.tensor(x_i, requires_grad=True).to(device)
             source.append(x_i)
