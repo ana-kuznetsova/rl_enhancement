@@ -97,7 +97,7 @@ def predict(x, model_out, floor=False):
     temp = torch.complex(model_out[0], model_out[1])
     return x*temp
 
-def inverse(t, y , m, device, x=None):
+def inverse(t, y , m, device, x=None):    
     def normalize(v):
         return v/np.linalg.norm(v)
 
