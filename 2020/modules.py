@@ -111,7 +111,6 @@ def inverse(t, y , m, x):
         t_i = t_i[:, :pad_idx]
         y_i = y[i]
         y_i = y_i[:, :pad_idx]
-        print("Ti:", t_i.shape, t_i[:5, :1])
         t_i =torch.istft(t_i, n_fft=512, win_length=512, hop_length=128)
         targets.append(t_i)
         y_i = torch.istft(y_i, n_fft=512, win_length=512, hop_length=128)
@@ -278,13 +277,14 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             out_r, out_i = model(x)
             out_r = torch.transpose(out_r, 1, 2)
             out_i = torch.transpose(out_i, 1, 2)
+            print(out_r[:5, :1], out_i[:5, :1])
             y = predict(x.squeeze(1), (out_r, out_i))
             if torch.any(torch.isnan(y)):
                 print("Nans PRED:", y[0])
             t = t.squeeze()
             m = m.squeeze()
             x = x.squeeze()
-            print(y[:5, :1])
+            #print(y[:5, :1])
             source, targets, preds = inverse(t, y, m, x)
             loss = criterion(source, targets, preds)
             print("batch loss:", loss)
