@@ -15,23 +15,14 @@ class SDRLoss(nn.Module):
     def forward(self, x, t, y):
         temp = []
         for i in range(len(t)):
-            #if torch.any(torch.isnan(t[i])) or torch.any(torch.isnan(y[i])):
-            #    print("FOUND NANs:", t[i], y[i])
-            #print("INPUT:", x[i][:5], t[i][:5], y[i][:5])
-            #print("Norms:", torch.norm(t[i]),  torch.norm(t[i]-y[i]))
             frac1 = torch.norm(t[i])/torch.norm((t[i]-y[i]))
-            #print("FRACS1:", frac1)
             frac1 = -0.5*self.clip(10*torch.log10(frac1))
-            #print("FRAC1:", frac1)
 
             n = x[i]-t[i]
             diff = n - (x[i]-y[i])
             frac2 = torch.norm(n)/torch.norm(diff)
-            #print("FRAC2:", frac2, torch.norm(n), torch.norm(diff))
             frac2 = 0.5*self.clip(10*torch.log10(frac2))
-            #print("FRAC2:", frac2)
             val = frac1-frac2
-            #print("RES:", val)
             temp.append(val)
         temp = torch.stack(temp)
         return torch.sum(temp)
