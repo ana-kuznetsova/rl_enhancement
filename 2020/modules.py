@@ -99,7 +99,7 @@ def predict(x, model_out, floor=False):
     temp = torch.complex(model_out[0], model_out[1])
     return x*temp
 
-def inverse(t, y , m, device, x=None):    
+def inverse(t, y , m, x):    
 
     targets = []
     preds = []
@@ -107,38 +107,21 @@ def inverse(t, y , m, device, x=None):
 
     for i in range(t.shape[0]):
         pad_idx = int(torch.sum(m[i]))
-        if x==None:
-            t_i = t[i]
-            #t_i = t_i[:, :pad_idx].detach().cpu().numpy()
-            t_i = t_i[:, :pad_idx]
-            y_i = y[i]
-            #y_i = y_i[:, :pad_idx].detach().cpu().numpy()
-            y_i = y_i[:, :pad_idx]
-            #t_i = librosa.core.istft(t_i, win_length=512, hop_length=128)
-            t_i = torch.istft(t_i, n_fft=512, win_length=512, hop_length=128, normalized=True)
-
-            #t_i = torch.tensor(t_i, requires_grad=True).to(device)
-            targets.append(t_i)
-            #y_i = librosa.core.istft(y_i, win_length=512, hop_length=128)
-            #y_i = torch.tensor(y_i, requires_grad=True).to(device)
-            y_i = torch.istft(y_i, n_fft=512, win_length=512, hop_length=128, normalized=True)
-            preds.append(y_i)
-        else:
-            t_i = t[i]
-            t_i = t_i[:, :pad_idx]
-            y_i = y[i]
-            y_i = y_i[:, :pad_idx]
-            t_i =torch.istft(t_i, n_fft=512, win_length=512, hop_length=128)
-            targets.append(t_i)
-            y_i = torch.istft(y_i, n_fft=512, win_length=512, hop_length=128)
-            preds.append(y_i)
-            x_i = x[i][:, :pad_idx]
-            x_i = torch.istft(x_i, n_fft=512, win_length=512, hop_length=128)
-            source.append(x_i)
-    if x!=None:
-        return source, targets, preds
-    else:
-        return targets, preds
+    
+        t_i = t[i]
+        t_i = t_i[:, :pad_idx]
+        y_i = y[i]
+        y_i = y_i[:, :pad_idx]
+        print("Ti:", t_i.shape)
+        t_i =torch.istft(t_i, n_fft=512, win_length=512, hop_length=128)
+        targets.append(t_i)
+        y_i = torch.istft(y_i, n_fft=512, win_length=512, hop_length=128)
+        preds.append(y_i)
+        x_i = x[i][:, :pad_idx]
+        x_i = torch.istft(x_i, n_fft=512, win_length=512, hop_length=128)
+        source.append(x_i)
+    return source, targets, preds
+    
 
 
 def init_weights(m):
@@ -263,7 +246,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
     model = Actor()
     model.cuda()
     model = model.to(device)
-    #model.apply(init_weights)
+    model.apply(init_weights)
     model = nn.DataParallel(model, device_ids=[1, 3])
 
     criterion = SDRLoss()
@@ -302,8 +285,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             t = t.squeeze()
             m = m.squeeze()
             x = x.squeeze()
-            print("SHAPES:", t.shape, x.shape, y.shape)
-            source, targets, preds = inverse(t, y, m, device, x)
+            source, targets, preds = inverse(t, y, m, x)
             loss = criterion(source, targets, preds)
             print("batch loss:", loss)
             optimizer.zero_grad()
