@@ -33,18 +33,18 @@ class Actor(nn.Module):
         self.bi_lstm = nn.LSTM(512, hidden_size=512, num_layers=2, 
                                batch_first=True, dropout=0.3, bidirectional=True)
         self.linear2 = nn.Linear(1024, 257*2)
-        self.bnorm = nn.BatchNorm2d(1)
+        #self.bnorm = nn.BatchNorm2d(1)
 
     def forward(self, x):
-        x = x.real
-        x = self.bnorm(x)
+        #x = x.real
+        #x = self.bnorm(x)
         x = self.conv2d1(x)
         x = self.conv2d2(x)
         x = self.conv2d3(x)
         x = torch.transpose(x.squeeze(), 1, 2)
-        x = nn.functional.relu(self.linear1(x))
+        x = self.linear1(x)
         x, (h, _) = self.bi_lstm(x)
-        x = nn.functional.relu(self.linear2(x))
+        x = self.linear2(x)
 
         real = []
         imag = []
