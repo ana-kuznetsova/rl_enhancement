@@ -36,8 +36,7 @@ class Actor(nn.Module):
         #self.bnorm = nn.BatchNorm2d(1)
 
     def forward(self, x):
-        #x = x.real
-        #x = self.bnorm(x)
+        x = 10*torch.log10(x.abs())
         x = self.conv2d1(x)
         x = self.conv2d2(x)
         x = self.conv2d3(x)
