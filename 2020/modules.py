@@ -279,8 +279,8 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             out_i = torch.transpose(out_i, 1, 2)
             print(out_r[:5, :1], out_i[:5, :1])
             y = predict(x.squeeze(1), (out_r, out_i))
-            if torch.any(torch.isnan(y)):
-                print("Nans PRED:", y[0])
+            #if torch.any(torch.isnan(y)):
+            #    print("Nans PRED:", y[0])
             t = t.squeeze()
             m = m.squeeze()
             x = x.squeeze()
