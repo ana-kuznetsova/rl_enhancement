@@ -37,6 +37,9 @@ class Actor(nn.Module):
 
     def forward(self, x):
         x = 10*torch.log10(x.abs())
+        #-inf is caused by zero padding
+        #Change inf to zeros
+        x[x==float("-Inf")] = 0
         print("X:", x[:5, :1])
         x = self.conv2d1(x)
         x = self.conv2d2(x)
