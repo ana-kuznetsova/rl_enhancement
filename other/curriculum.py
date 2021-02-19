@@ -92,8 +92,9 @@ def train_curriculum(clean_path, noisy_path, model_path, num_epochs):
             y = predict(x.squeeze(1), (out_r, out_i))
             t = t.squeeze()
             m = m.squeeze()
-            targets, preds = inverse(t, y, m)
-            loss = criterion(targets, preds)
+            x = x.squeeze()
+            source, targets, preds = inverse(t, y, m, x)
+            loss = criterion(source, targets, preds)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -124,8 +125,9 @@ def train_curriculum(clean_path, noisy_path, model_path, num_epochs):
                 y = predict(x.squeeze(1), (out_r, out_i))
                 t = t.squeeze()
                 m = m.squeeze()
-                targets, preds = inverse(t, y, m)
-                loss = criterion(targets, preds)
+                x = x.squeeze()
+                source, targets, preds = inverse(t, y, m, x)
+                loss = criterion(source, targets, preds)
                 overall_val_loss+=loss.detach().cpu().numpy()
 
                 curr_val_loss = overall_val_loss/len(loader)
@@ -140,6 +142,6 @@ def train_curriculum(clean_path, noisy_path, model_path, num_epochs):
             torch.save(best, os.path.join(model_path, "actor_last.pth"))
 
 
-train_curriculum('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
-                '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/', 
-                '/nobackup/anakuzne/data/experiments/speech_enhancement/curriculum/', 150)
+train_curriculum('/data/anakuzne/voicebank-demand/clean_trainset_28spk_wav/',
+                '/data/anakuzne/voicebank-demand/noisy_trainset_28spk_wav/', 
+                '/data/anakuzne/experiments/curriculum/curriculum/', 150)
