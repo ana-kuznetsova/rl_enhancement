@@ -144,4 +144,4 @@ def train_curriculum(clean_path, noisy_path, model_path, num_epochs):
 
 train_curriculum('/data/anakuzne/voicebank-demand/clean_trainset_28spk_wav/',
                 '/data/anakuzne/voicebank-demand/noisy_trainset_28spk_wav/', 
-                '/data/anakuzne/experiments/curriculum/curriculum/', 150)
+                '/data/anakuzne/experiments/curriculum/', 150)
