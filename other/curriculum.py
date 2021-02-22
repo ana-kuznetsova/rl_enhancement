@@ -40,7 +40,7 @@ class Data(data.Dataset):
     def __init__(self, clean_path, noisy_path, csv_path=None, mode='Train'):
         if mode=='Train':
             self.fnames = pd.read_csv(csv_path)['fname']
-       elif mode=='Test':
+        elif mode=='Test':
             self.fnames = os.listdir(clean_path)
         self.clean_paths = [os.path.join(clean_path, f) for f in self.fnames]
         self.noisy_paths = [os.path.join(noisy_path, f) for f in self.fnames]
