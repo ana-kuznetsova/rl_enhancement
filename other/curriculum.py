@@ -199,8 +199,8 @@ def inference(clean_path, noisy_path, model_path, out_path):
         fo.write("Avg PESQ: "+str(float(PESQ))+" Avg STOI: "+str(float(STOI)))
 
 
-inference('/nobackup/anakuzne/data/voicebank-demand/clean_testset_wav/',
-          '/nobackup/anakuzne/data/voicebank-demand/noisy_testset_wav/', 
+inference('/data/anakuzne/voicebank-demand/clean_testset_wav/',
+          '/data/anakuzne/voicebank-demand/noisy_testset_wav/', 
           '/data/anakuzne/experiments/curriculum/', '/data/anakuzne/experiments/curriculum/test_wav')
 
 '''
