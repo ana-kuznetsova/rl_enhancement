@@ -370,7 +370,10 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
             curr_stoi = stoi(t_j, p_j, 16000)
             pesq_all.append(curr_pesq)
             stoi_all.append(curr_stoi)
-            sf.write(os.path.join(out_path, fnames[fcount]) , p_j, 16000)
+            try:
+                sf.write(os.path.join(out_path, fnames[fcount]) , p_j, 16000)
+            except IndexError:
+                print("Fcount:", fcount, len(fnames))
             fcount+=1
 
     PESQ = torch.mean(torch.tensor(pesq_all))
