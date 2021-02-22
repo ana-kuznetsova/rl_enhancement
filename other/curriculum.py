@@ -155,6 +155,49 @@ def inference(clean_path, noisy_path, model_path, out_path):
     dataset = Data(clean_path, noisy_path, mode='Test')
     loader = data.DataLoader(dataset, batch_size=32, shuffle=False, collate_fn=collate_custom)
 
+    fnames = os.listdir(noisy_path)
+
+    print("Num files:", len(fnames))
+
+    pesq_all = []
+    stoi_all = []
+    fcount = 0
+
+    for i, batch in enumerate(loader):
+        x = batch["noisy"].unsqueeze(1).to(device)
+        t = batch["clean"].unsqueeze(1).to(device)
+        m = batch["mask"].to(device)
+        out_r, out_i = model(x)
+        out_r = torch.transpose(out_r, 1, 2)
+        out_i = torch.transpose(out_i, 1, 2)
+        y = predict(x.squeeze(1), (out_r, out_i))
+        t = t.squeeze()
+        m = m.squeeze()
+        x = x.squeeze()
+        source, targets, preds = inverse(t, y, m, x)
+
+        for j in range(len(targets)):
+            t_j = targets[j].detach().cpu().numpy()
+            p_j = preds[j].detach().cpu().numpy()
+            p_j = 10*(p_j/np.linalg.norm(p_j))
+            curr_pesq = pesq(t_j, p_j, 16000)
+            curr_stoi = stoi(t_j, p_j, 16000)
+            pesq_all.append(curr_pesq)
+            stoi_all.append(curr_stoi)
+            try:
+                sf.write(os.path.join(out_path, fnames[fcount]) , p_j, 16000)
+            except IndexError:
+                print("Fcount:", fcount, len(fnames))
+            fcount+=1
+
+    PESQ = torch.mean(torch.tensor(pesq_all))
+    STOI = torch.mean(torch.tensor(stoi_all))
+
+    print("PESQ: ", PESQ, "STOI: ", STOI)
+
+    with open(os.path.join(model_path, 'test_scores.txt'), 'w') as fo:
+        fo.write("Avg PESQ: "+str(float(PESQ))+" Avg STOI: "+str(float(STOI)))
+
 
 
 '''
