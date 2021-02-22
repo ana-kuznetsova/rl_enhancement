@@ -14,6 +14,7 @@ import copy
 import soundfile as sf
 
 from pypesq import pesq
+from pystoi import stoi
 from tqdm import tqdm
 import librosa
 
