@@ -346,8 +346,8 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
     stoi_all = []
     fcount = 0
 
-    dataset = Data(clean_path, noisy_path, 1000)
-    loader = data.DataLoader(dataset, batch_size=5, shuffle=True, collate_fn=collate_custom)
+    dataset = DataTest(clean_path, noisy_path)
+    loader = data.DataLoader(dataset, batch_size=5, collate_fn=collate_custom)
 
     for batch in tqdm(loader):
         x = batch["noisy"].unsqueeze(1).to(device)

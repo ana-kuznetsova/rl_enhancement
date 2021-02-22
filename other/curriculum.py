@@ -69,7 +69,7 @@ def train_curriculum(clean_path, noisy_path, model_path, num_epochs):
     prev_val=99999
 
 
-    dataset = Data(clean_path, noisy_path, os.path.join(model_path, 'train.tsv'))
+    dataset = DataTest(clean_path, noisy_path, os.path.join(model_path, 'train.tsv'))
     loader = data.DataLoader(dataset, batch_size=32, shuffle=False, collate_fn=collate_custom)
 
     for epoch in range(1, num_epochs+1):
@@ -142,6 +142,12 @@ def train_curriculum(clean_path, noisy_path, model_path, num_epochs):
             torch.save(best, os.path.join(model_path, "actor_last.pth"))
 
 
+def inference(noisy_test, clean_test, model_path):
+
+
+'''
 train_curriculum('/data/anakuzne/voicebank-demand/clean_trainset_28spk_wav/',
                 '/data/anakuzne/voicebank-demand/noisy_trainset_28spk_wav/', 
                 '/data/anakuzne/experiments/curriculum/', 150)
+'''
+
