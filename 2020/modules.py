@@ -260,11 +260,14 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
     print("Start pretraining...")
 
+    lr = 0.0001
     for epoch in range(1, num_epochs+1):
+        '''
         if epoch <= 100:
             lr = 0.0001
         else:
             lr = lr/100
+        '''
 
         optimizer = optim.Adam(model.parameters(), lr=lr)
 
