@@ -149,7 +149,7 @@ def inference(clean_path, noisy_path, model_path, out_path):
     device = torch.device("cuda:1")
     model = Actor()
     model = nn.DataParallel(model, device_ids=[1, 2])
-    model.load_state_dict(torch.load(model_path))
+    model.load_state_dict(torch.load(model_path + 'actor_best.pth'))
     model = model.to(device)
 
     dataset = Data(clean_path, noisy_path, mode='Test')
