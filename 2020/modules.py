@@ -365,7 +365,7 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
         for j in range(len(targets)):
             t_j = targets[j].detach().cpu().numpy()
             p_j = preds[j].detach().cpu().numpy()
-            p_j = p_j/np.linalg.norm(p_j)
+            p_j = 10*(p_j/np.linalg.norm(p_j))
             curr_pesq = pesq(t_j, p_j, 16000)
             curr_stoi = stoi(t_j, p_j, 16000)
             pesq_all.append(curr_pesq)

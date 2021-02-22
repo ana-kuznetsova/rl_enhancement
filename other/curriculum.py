@@ -37,8 +37,11 @@ def generate_curriculum(clean_path, noisy_path, model_path):
 
 
 class Data(data.Dataset):
-    def __init__(self, clean_path, noisy_path, csv_path):
-        self.fnames = pd.read_csv(csv_path)['fname']
+    def __init__(self, clean_path, noisy_path, csv_path=None, mode='Train'):
+        if mode=='Train':
+            self.fnames = pd.read_csv(csv_path)['fname']
+       elif mode=='Test':
+            self.fnames = os.listdir(clean_path)
         self.clean_paths = [os.path.join(clean_path, f) for f in self.fnames]
         self.noisy_paths = [os.path.join(noisy_path, f) for f in self.fnames]
 
@@ -69,7 +72,7 @@ def train_curriculum(clean_path, noisy_path, model_path, num_epochs):
     prev_val=99999
 
 
-    dataset = DataTest(clean_path, noisy_path, os.path.join(model_path, 'train.tsv'))
+    dataset = Data(clean_path, noisy_path, os.path.join(model_path, 'train.tsv'))
     loader = data.DataLoader(dataset, batch_size=32, shuffle=False, collate_fn=collate_custom)
 
     for epoch in range(1, num_epochs+1):
@@ -142,7 +145,16 @@ def train_curriculum(clean_path, noisy_path, model_path, num_epochs):
             torch.save(best, os.path.join(model_path, "actor_last.pth"))
 
 
-def inference(noisy_test, clean_test, model_path):
+def inference(clean_path, noisy_path, model_path, out_path):
+    device = torch.device("cuda:1")
+    model = Actor()
+    model = nn.DataParallel(model, device_ids=[1, 2])
+    model.load_state_dict(torch.load(model_path))
+    model = model.to(device)
+
+    dataset = Data(clean_path, noisy_path, mode='Test')
+    loader = data.DataLoader(dataset, batch_size=32, shuffle=False, collate_fn=collate_custom)
+
 
 
 '''
