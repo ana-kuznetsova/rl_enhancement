@@ -341,9 +341,6 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
     fnames = os.listdir(noisy_path)
 
     print("Num files:", len(fnames))
-   
-    dataset = DataTest(clean_path, noisy_path)
-    loader = data.DataLoader(dataset, batch_size=5, shuffle=False, collate_fn=collate_custom)
 
     pesq_all = []
     stoi_all = []
@@ -352,7 +349,7 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
     dataset = Data(clean_path, noisy_path, 1000)
     loader = data.DataLoader(dataset, batch_size=5, shuffle=True, collate_fn=collate_custom)
 
-    for batch in loader:
+    for batch in tqdm(loader):
         x = batch["noisy"].unsqueeze(1).to(device)
         t = batch["clean"].unsqueeze(1).to(device)
         m = batch["mask"].to(device)
