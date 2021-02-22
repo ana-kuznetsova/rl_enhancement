@@ -332,9 +332,9 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
 
 def inference_actor(clean_path, noisy_path, model_path, out_path):
-    device = torch.device("cuda")
+    device = torch.device("cuda:2")
     model = Actor()
-    model = nn.DataParallel(model, device_ids=[0,1])
+    model = nn.DataParallel(model, device_ids=[2, 3])
     model.load_state_dict(torch.load(model_path))
     model = model.to(device)
 
@@ -349,7 +349,10 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
     stoi_all = []
     fcount = 0
 
-    for batch in tqdm(loader):
+    dataset = Data(clean_path, noisy_path, 1000)
+    loader = data.DataLoader(dataset, batch_size=5, shuffle=True, collate_fn=collate_custom)
+
+    for batch in loader:
         x = batch["noisy"].unsqueeze(1).to(device)
         t = batch["clean"].unsqueeze(1).to(device)
         m = batch["mask"].to(device)
@@ -359,12 +362,13 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
         y = predict(x.squeeze(1), (out_r, out_i))
         t = t.squeeze()
         m = m.squeeze()
-        targets, preds = inverse(t, y, m)
+        x = x.squeeze()
+        source, targets, preds = inverse(t, y, m, x)
 
         for j in range(len(targets)):
             t_j = targets[j].detach().cpu().numpy()
             p_j = preds[j].detach().cpu().numpy()
-            p_j = 10*(p_j/np.linalg.norm(p_j))
+            p_j = p_j/np.linalg.norm(p_j)
             curr_pesq = pesq(t_j, p_j, 16000)
             curr_stoi = stoi(t_j, p_j, 16000)
             pesq_all.append(curr_pesq)
@@ -377,5 +381,5 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
 
     print("PESQ: ", PESQ, "STOI: ", STOI)
 
-    with open('/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor/test_scores.txt', 'w') as fo:
+    with open('/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor_1/test_scores.txt', 'w') as fo:
         fo.write("Avg PESQ: "+str(float(PESQ))+" Avg STOI: "+str(float(STOI)))
