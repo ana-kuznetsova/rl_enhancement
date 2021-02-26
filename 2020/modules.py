@@ -182,10 +182,10 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
             t = t.squeeze()
             m = m.squeeze()
             x = x.squeeze()
+            print("shapes:", x.shape, y.shape, t.shape, m.shape)
             disc_input_y = torch.cat((y, t), 2)
             disc_input_t = torch.cat((t, t), 2)
             disc_input_x = torch.cat((x, t), 2)
-            print("Shapes:", disc_input_t.shape, disc_input_x.shape, disc_input_y.shape)
 
             pred_scores = []
             pred_scores.append(critic(disc_input_x))
