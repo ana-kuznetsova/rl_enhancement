@@ -21,4 +21,4 @@ pretrain_actor('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wa
 
 pretrain_critic('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/', 
                 '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/',
-                '/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_critic_2/', 200)       
+                '/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_critic_1/', 200)       
