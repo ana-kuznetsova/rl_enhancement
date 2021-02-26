@@ -135,7 +135,7 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
     device = torch.device("cuda:1")
     actor = Actor()
     actor = nn.DataParallel(actor, device_ids=[1, 2])
-    actor.load_state_dict(torch.load('/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor/actor_best.pth'))
+    actor.load_state_dict(torch.load('/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor_2/actor_best.pth'))
     actor = actor.to(device)
 
     critic = Critic()
@@ -262,12 +262,10 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
     lr = 0.0001
     for epoch in range(1, num_epochs+1):
-        '''
         if epoch <= 100:
             lr = 0.0001
         else:
             lr = lr/100
-        '''
 
         optimizer = optim.Adam(model.parameters(), lr=lr)
 

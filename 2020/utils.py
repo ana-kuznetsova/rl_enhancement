@@ -1,10 +1,13 @@
 import os
+import sys
 
-def main():
-    fnames = os.listdir()
+def main(dir):
+    fnames = os.listdir(dir)
     
     for i, fname in enumerate(fnames):
-        os.rename(fname, 'Train_'+str(i)+'.wav')
+        src = os.path.join(dir, fname)
+        dst = os.path.join(dir, 'Train_'+str(i)+'.wav')
+        os.rename(src, dst)
 
 if __name__ == '__main__': 
-    main()
+    main(sys.argv[1])
