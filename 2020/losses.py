@@ -34,6 +34,7 @@ class CriticLoss(nn.Module):
     def calc_true_pesq(self, x, y, s, mask, fs=16000):
         scores = []
         for i in range(x.shape[0]):
+            print(mask.shape)
             ind = int(torch.sum(mask[i], 1))
             x_i = x[i][:, :ind]
             y_i = y[i][:, :ind]
