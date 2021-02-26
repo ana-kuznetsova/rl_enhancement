@@ -379,7 +379,7 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
             p_j = 10*(p_j/np.linalg.norm(p_j))
             curr_pesq = pesq(t_j, p_j, 16000)
             curr_stoi = stoi(t_j, p_j, 16000)
-            pesq_all.append(curr_pesq)
+            pesq_all.append((curr_pesq + 0.5)/5.0)
             stoi_all.append(curr_stoi)
             try:
                 sf.write(os.path.join(out_path, fnames[fcount]) , p_j, 16000)
