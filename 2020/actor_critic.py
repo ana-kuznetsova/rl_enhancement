@@ -67,7 +67,7 @@ def update_actor(actor, critic, loader, optimizer, criterion, device):
         m = m.squeeze()
         x = x.squeeze()
         source, targets, preds = inverse(t, y, m, x)
-        loss = criterion(source, targets, preds)
+        loss = criterion(preds)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
