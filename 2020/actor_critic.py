@@ -70,6 +70,7 @@ def update_actor(actor, critic, loader, optimizer, criterion, device):
     
         with torch.no_grad():
             pred_scores = critic(y)
+            pred_scores.requires_grad=True
 
         loss = criterion(pred_scores)
         print("Batch actor loss:", loss)
