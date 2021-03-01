@@ -34,7 +34,6 @@ def update_critic(actor, critic, loader, optimizer, criterion, device):
         m = m.squeeze()
         x = x.squeeze()
         disc_input_y = torch.cat((y, t), 2)
-        print("DISC INP:", disc_input_y.shape)
         disc_input_t = torch.cat((t, t), 2)
         disc_input_x = torch.cat((x, t), 2)
 
@@ -67,7 +66,8 @@ def update_actor(actor, critic, loader, optimizer, criterion, device):
         t = t.squeeze()
         m = m.squeeze()
         x = x.squeeze()
-        source, targets, preds = inverse(t, y, m, x)
+        print("Y:", y.shape)
+        #source, targets, preds = inverse(t, y, m, x)
         with torch.no_grad():
             disc_input_y = torch.cat((y, t), 2)
 
