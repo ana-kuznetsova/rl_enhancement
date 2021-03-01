@@ -96,6 +96,7 @@ def calc_metrics(loader, actor, device):
         y = predict(x.squeeze(1), (out_r, out_i))
         t = t.squeeze()
         m = m.squeeze()
+        print("Y:", y.shape)
         source, targets, preds = inverse(t, y, m, x)
 
         for j in range(len(targets)):
