@@ -91,7 +91,7 @@ def calc_metrics(loader, actor, device):
         y = predict(x.squeeze(1), (out_r, out_i))
         t = t.squeeze()
         m = m.squeeze()
-        targets, preds = inverse(t, y, m)
+        source, targets, preds = inverse(t, y, m, x)
 
         for j in range(len(targets)):
             curr_pesq = pesq(targets[j].detach().cpu().numpy(), preds[j].detach().cpu().numpy(), 16000)
@@ -105,10 +105,10 @@ def calc_metrics(loader, actor, device):
 
 
 def train(clean_path, noisy_path, clean_test, noisy_test, actor_path, critic_path, model_path, num_it=100):
-    device = torch.device("cuda:3")
+    device = torch.device("cuda:1")
 
     actor = Actor()
-    actor = nn.DataParallel(actor, device_ids=[3, 0])
+    actor = nn.DataParallel(actor, device_ids=[1, 2])
     actor.load_state_dict(torch.load(actor_path))
     actor = actor.to(device)
     sgd_actor = optim.SGD(actor.parameters(), lr=0.001)
