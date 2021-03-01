@@ -19,16 +19,20 @@ from modules import Actor, Critic, predict, inverse
 
 def update_critic(actor, critic, loader, optimizer, criterion, device):
     epoch_loss=0
-    for i, batch in enumerate(loader):
+    for batch in loader:
         x = batch["noisy"].unsqueeze(1).to(device)
         t = batch["clean"].unsqueeze(1).to(device)
         m = batch["mask"].to(device)
-        out_r, out_i = actor(x)
-        out_r = torch.transpose(out_r, 1, 2)
-        out_i = torch.transpose(out_i, 1, 2)
-        y = predict(x.squeeze(1), (out_r, out_i), floor=True)
-        t = t.squeeze(1)
-        x = x.squeeze(1)
+        actor.eval()
+       
+        with torch.no_grad():
+            out_r, out_i = actor(x)
+            out_r = torch.transpose(out_r, 1, 2)
+            out_i = torch.transpose(out_i, 1, 2)
+        y = predict(x.squeeze(1), (out_r, out_i))
+        t = t.squeeze()
+        m = m.squeeze()
+        x = x.squeeze()
         disc_input_y = torch.cat((y, t), 2)
         disc_input_t = torch.cat((t, t), 2)
         disc_input_x = torch.cat((x, t), 2)
@@ -45,27 +49,32 @@ def update_critic(actor, critic, loader, optimizer, criterion, device):
 
         loss = loss.detach().cpu().numpy()
         epoch_loss+=loss
+        actor.train()
     return epoch_loss/len(loader)
 
 def update_actor(actor, critic, loader, optimizer, criterion, device):
     epoch_loss = 0
-    for i, batch in enumerate(loader):
+    critic.eval()
+    for batch in loader:
         x = batch["noisy"].unsqueeze(1).to(device)
         t = batch["clean"].unsqueeze(1).to(device)
         m = batch["mask"].to(device)
         out_r, out_i = actor(x)
         out_r = torch.transpose(out_r, 1, 2)
         out_i = torch.transpose(out_i, 1, 2)
-        y = predict(x.squeeze(1), (out_r, out_i), floor=True)
-        t = t.squeeze(1)
-        disc_input_y = torch.cat((y, t), 2)
-        preds = critic(disc_input_y)
-        loss = criterion(preds)
+        y = predict(x.squeeze(1), (out_r, out_i))
+        t = t.squeeze()
+        m = m.squeeze()
+        x = x.squeeze()
+        source, targets, preds = inverse(t, y, m, x)
+        loss = criterion(source, targets, preds)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+
         loss = loss.detach().cpu().numpy()
         epoch_loss+=loss
+    critic.train()
     return epoch_loss/len(loader)
 
 
@@ -179,6 +188,6 @@ train(clean_path='/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_
       noisy_path='/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/',
       clean_test='/nobackup/anakuzne/data/voicebank-demand/clean_testset_wav/',
       noisy_test='/nobackup/anakuzne/data/voicebank-demand/noisy_testset_wav/',
-      actor_path='/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor/actor_best.pth',
-      critic_path='/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_critic/critic_best.pth',
+      actor_path='/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor_1/actor_best.pth',
+      critic_path='/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_critic_1/critic_best.pth',
       model_path='/nobackup/anakuzne/data/experiments/speech_enhancement/2020/actor_critic_1/')
