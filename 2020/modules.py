@@ -114,6 +114,7 @@ def inverse(t, y , m, x):
         t_i = t_i[:, :pad_idx]
         y_i = y[i]
         y_i = y_i[:, :pad_idx]
+        print("Y_inv:", y_i.shape)
         t_i =torch.istft(t_i, n_fft=512, win_length=512, hop_length=128)
         targets.append(t_i)
         y_i = torch.istft(y_i, n_fft=512, win_length=512, hop_length=128)
