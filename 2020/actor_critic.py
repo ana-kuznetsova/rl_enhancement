@@ -67,10 +67,10 @@ def update_actor(actor, critic, loader, optimizer, criterion, device):
         m = m.squeeze()
         x = x.squeeze()
         y = torch.cat((y, t), 2)
-        print("Y:", y.shape)
-        #source, targets, preds = inverse(t, y, m, x)
+    
         with torch.no_grad():
-            disc_input_y = torch.cat((y, t), 2)
+            pred_scores = critic(y)
+            print("Batch scores:", pred_scores)
 
         loss = criterion(preds)
         optimizer.zero_grad()
