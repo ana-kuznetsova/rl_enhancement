@@ -73,7 +73,6 @@ def update_actor(actor, critic, loader, optimizer, criterion, device):
             pred_scores.requires_grad=True
 
         loss = criterion(pred_scores)
-        print("Batch actor loss:", loss)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
