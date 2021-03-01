@@ -66,6 +66,7 @@ def update_actor(actor, critic, loader, optimizer, criterion, device):
         t = t.squeeze()
         m = m.squeeze()
         x = x.squeeze()
+        y = torch.cat((y, t), 2)
         print("Y:", y.shape)
         #source, targets, preds = inverse(t, y, m, x)
         with torch.no_grad():
