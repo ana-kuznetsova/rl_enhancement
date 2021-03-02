@@ -119,10 +119,11 @@ def inverse(t, y , m, x):
         targets.append(t_i)
         y_i = torch.istft(y_i, n_fft=512, win_length=512, hop_length=128)
         preds.append(y_i)
-        x_i = x[i][:, :pad_idx]
-        x_i = torch.istft(x_i, n_fft=512, win_length=512, hop_length=128)
-        source.append(x_i)
-    return source, targets, preds
+        #x_i = x[i][:, :pad_idx]
+        #x_i = torch.istft(x_i, n_fft=512, win_length=512, hop_length=128)
+        #source.append(x_i)
+    #return source, targets, preds
+    return targets, preds
     
 
 
