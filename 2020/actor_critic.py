@@ -68,10 +68,8 @@ def update_actor(actor, critic, loader, optimizer, criterion, device):
         x = x.squeeze()
         y = torch.cat((y, t), 2)
     
-        with torch.no_grad():
-            pred_scores = critic(y)
-            pred_scores.requires_grad=True
-
+        pred_scores = critic(y)
+        
         loss = criterion(pred_scores)
         optimizer.zero_grad()
         loss.backward()
