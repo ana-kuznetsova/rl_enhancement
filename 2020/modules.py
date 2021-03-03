@@ -66,16 +66,23 @@ class Actor(nn.Module):
         x, (h, _) = self.bi_lstm(x)
         x = self.linear2(x)
 
+        
+        
+        '''
         real = []
         imag = []
-        
         for m in x:
             r = m[:,:int(m.shape[1]/2)]
             real.append(r)
             i = m[:,int(m.shape[1]/2):]
             imag.append(i)
-
         return torch.stack(real), torch.stack(imag)
+        '''
+        real = x[:,:,:257]
+        imag = x[:, :, 258:]
+        print(real.shape, imag.shape)
+        return real, imag
+        
     
 class Critic(nn.Module):
     def __init__(self):
