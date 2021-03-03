@@ -54,18 +54,18 @@ class Actor(nn.Module):
         #-inf is caused by zero padding
         #Change inf to zeros
         x[x==float("-Inf")] = 0
-        print(x.shape)
+        #print(x.shape)
         x = self.conv2d1(x)
-        print(x.shape)
+        #print(x.shape)
         x = self.conv2d2(x)
-        print(x.shape)
+        #print(x.shape)
         x = self.conv2d3(x)
-        print(x.shape)
+        #print(x.shape)
         x = torch.transpose(x.squeeze(), 1, 2)
         x = self.linear1(x)
-        x, (h, _) = self.bi_lstm(x)
+        x, _ = self.bi_lstm(x)
         x = self.linear2(x)
-        print("X out:", x.shape)
+        #print("X out:", x.shape)
         
         
         '''
@@ -80,7 +80,7 @@ class Actor(nn.Module):
         '''
         real = x[:,:,:257]
         imag = x[:, :, 257:]
-        print(real.shape, imag.shape)
+        #print(real.shape, imag.shape)
         return real, imag
         
     
@@ -144,11 +144,11 @@ def inverse(t, y , m, x):
         targets.append(t_i)
         y_i = torch.istft(y_i, n_fft=512, win_length=512, hop_length=128)
         preds.append(y_i)
-        #x_i = x[i][:, :pad_idx]
-        #x_i = torch.istft(x_i, n_fft=512, win_length=512, hop_length=128)
-        #source.append(x_i)
-    #return source, targets, preds
-    return targets, preds
+        x_i = x[i][:, :pad_idx]
+        x_i = torch.istft(x_i, n_fft=512, win_length=512, hop_length=128)
+        source.append(x_i)
+    return source, targets, preds
+    #return targets, preds
     
 
 
