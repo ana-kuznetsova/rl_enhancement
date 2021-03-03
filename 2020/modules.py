@@ -21,6 +21,7 @@ from losses import SDRLoss, CriticLoss
 class Actor(nn.Module):
     def __init__(self):
         super().__init__()
+        '''
         self.conv2d1 = nn.Conv2d(in_channels=1, out_channels=30,
                                  kernel_size=(5, 15), stride=(1,1), 
                                  padding=(2,7))
@@ -33,6 +34,19 @@ class Actor(nn.Module):
         self.bi_lstm = nn.LSTM(512, hidden_size=512, num_layers=2, 
                                batch_first=True, dropout=0.3, bidirectional=True)
         self.linear2 = nn.Linear(1024, 257*2)
+        '''
+        self.conv2d1 = nn.Conv2d(in_channels=1, out_channels=30,
+                                 kernel_size=5, 
+                                 padding=2)
+        self.conv2d2 = nn.Conv2d(in_channels=30, out_channels=60,
+                                 kernel_size=15,
+                                 padding=7)
+        self.conv2d3 = nn.Conv2d(in_channels=60, out_channels=1,
+                                 kernel_size=1)
+        self.linear1 = nn.Linear(257, 512)
+        self.bi_lstm = nn.LSTM(512, hidden_size=512, num_layers=2, 
+                               batch_first=True, dropout=0.3, bidirectional=True)
+        self.linear2 = nn.Linear(1024, 257*2)
 
 
     def forward(self, x):
@@ -41,8 +55,11 @@ class Actor(nn.Module):
         #Change inf to zeros
         x[x==float("-Inf")] = 0
         x = self.conv2d1(x)
+        print(x.shape)
         x = self.conv2d2(x)
+        print(x.shape)
         x = self.conv2d3(x)
+        print(x.shape)
         x = torch.transpose(x.squeeze(), 1, 2)
         x = self.linear1(x)
         x, (h, _) = self.bi_lstm(x)
