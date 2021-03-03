@@ -65,7 +65,7 @@ class Actor(nn.Module):
         x = self.linear1(x)
         x, (h, _) = self.bi_lstm(x)
         x = self.linear2(x)
-
+        print("X out:", x.shape)
         
         
         '''
@@ -79,7 +79,7 @@ class Actor(nn.Module):
         return torch.stack(real), torch.stack(imag)
         '''
         real = x[:,:,:257]
-        imag = x[:, :, 258:]
+        imag = x[:, :, 257:]
         print(real.shape, imag.shape)
         return real, imag
         
