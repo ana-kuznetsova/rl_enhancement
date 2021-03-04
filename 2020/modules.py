@@ -433,6 +433,7 @@ def enhance(clean_path,noisy_path, model_path, out_path):
 
     fnames = os.listdir(noisy_path)
     fcount = 0
+    print("FNAMES:", fnames)
 
     dataset = DataTest(clean_path, noisy_path)
     loader = data.DataLoader(dataset, batch_size=5, collate_fn=collate_custom)
