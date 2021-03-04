@@ -436,7 +436,7 @@ def enhance(clean_path,noisy_path, model_path, out_path):
     print("FNAMES:", fnames)
 
     dataset = DataTest(clean_path, noisy_path)
-    loader = data.DataLoader(dataset, batch_size=5, collate_fn=collate_custom)
+    loader = data.DataLoader(dataset, batch_size=1, collate_fn=collate_custom)
 
     for batch in tqdm(loader):
         x = batch["noisy"].unsqueeze(1).to(device)
