@@ -422,3 +422,33 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
 
     with open('/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor_1/test_scores.txt', 'w') as fo:
         fo.write("Avg PESQ: "+str(float(PESQ))+" Avg STOI: "+str(float(STOI)))
+
+
+def enhance(clean_path,noisy_path, model_path, out_path):
+    device = torch.device("cuda:2")
+    model = Actor()
+    model = nn.DataParallel(model, device_ids=[2, 3])
+    model.load_state_dict(torch.load(model_path))
+    model = model.to(device)
+
+    fnames = os.listdir(noisy_path)
+    fcount = 0
+
+    dataset = DataTest(clean_path, noisy_path)
+    loader = data.DataLoader(dataset, batch_size=5, collate_fn=collate_custom)
+
+    for batch in tqdm(loader):
+        x = batch["noisy"].unsqueeze(1).to(device)
+        m = batch["mask"].to(device)
+        out_r, out_i = model(x)
+        out_r = torch.transpose(out_r, 1, 2)
+        out_i = torch.transpose(out_i, 1, 2)
+        y = predict(x.squeeze(1), (out_r, out_i))
+
+        for i in range(x.shape[0]):
+            pad_idx = int(torch.sum(m[i]))
+            y_i = y[i]
+            y_i = y_i[:, :pad_idx].detach().cpu().numpy()
+            y_i = 10*(y_i/np.linalg.norm(y_i))
+            sf.write(os.path.join(out_path, fnames[fcount]) , y_i, 16000)
+            fcount+=1
