@@ -440,9 +440,10 @@ def enhance(clean_path,noisy_path, model_path, out_path):
 
     for batch in tqdm(loader):
         x = batch["noisy"].unsqueeze(1).to(device)
-        print(x.shape)
+        print("INP:",x.shape)
         m = batch["mask"].to(device)
         out_r, out_i = model(x)
+        print("model out:", out_r.shape, out_i.shape)
         out_r = torch.transpose(out_r, 1, 2)
         out_i = torch.transpose(out_i, 1, 2)
         y = predict(x.squeeze(1), (out_r, out_i))
