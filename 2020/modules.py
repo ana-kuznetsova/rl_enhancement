@@ -21,7 +21,6 @@ from losses import SDRLoss, CriticLoss
 class Actor(nn.Module):
     def __init__(self):
         super().__init__()
-        '''
         self.conv2d1 = nn.Conv2d(in_channels=1, out_channels=30,
                                  kernel_size=(5, 15), stride=(1,1), 
                                  padding=(2,7))
@@ -47,6 +46,7 @@ class Actor(nn.Module):
         self.bi_lstm = nn.LSTM(512, hidden_size=512, num_layers=2, 
                                batch_first=True, dropout=0.3, bidirectional=True)
         self.linear2 = nn.Linear(1024, 257*2)
+        '''
 
 
     def forward(self, x):
