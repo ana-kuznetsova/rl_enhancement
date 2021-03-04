@@ -453,5 +453,6 @@ def enhance(clean_path,noisy_path, model_path, out_path):
             y_i = y[i]
             y_i = y_i[:, :pad_idx].detach().cpu().numpy()
             y_i = 10*(y_i/np.linalg.norm(y_i))
-            sf.write(os.path.join(out_path, fnames[fcount]) , y_i, 16000)
+            print(y_i.shape)
+            sf.write(os.path.join(out_path, fnames[fcount]), y_i, 16000)
             fcount+=1
