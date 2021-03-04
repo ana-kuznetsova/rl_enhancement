@@ -30,6 +30,6 @@ inference_actor('/nobackup/anakuzne/data/voicebank-demand/clean_testset_wav/',
 enhance('/nobackup/anakuzne/data/experiments/speech_enhancement/chkt/',
         '/nobackup/anakuzne/data/experiments/speech_enhancement/chkt/', 
         '/nobackup/anakuzne/data/experiments/speech_enhancement/2020/pre_actor_1/actor_best.pth', 
-        '/nobackup/anakuzne/data/experiments/speech_enhancement/chkt/res/')  
+        '/nobackup/anakuzne/data/experiments/speech_enhancement/chkt_res/')  
 
 
