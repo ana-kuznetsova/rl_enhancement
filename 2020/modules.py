@@ -451,8 +451,8 @@ def enhance(clean_path,noisy_path, model_path, out_path):
         for i in range(x.shape[0]):
             pad_idx = int(torch.sum(m[i]))
             y_i = y[i]
-            y_i = y_i[:, :pad_idx].detach().cpu().numpy()
+            y_i = y_i[:, :pad_idx]
+            y_i = torch.istft(y_i, n_fft=512, win_length=512, hop_length=128).detach().cpu().numpy()
             y_i = 10*(y_i/np.linalg.norm(y_i))
-            print(y_i.shape)
             sf.write(os.path.join(out_path, fnames[fcount]), y_i, 16000)
             fcount+=1
