@@ -34,12 +34,17 @@ class Actor(nn.Module):
                                batch_first=True, dropout=0.3, bidirectional=True)
         self.linear2 = nn.Linear(1024, 257*2)
 
-    def forward(self, x):
+    def forward(self, x, m):
         x = 10*torch.log10(x.abs())
         #-inf is caused by zero padding
         #Change inf to zeros
         x[x==float("-Inf")] = 0
         #print(x.shape)
+        for i in range(x.shape[0]):
+            mask = int(torch.sum(m[i]))
+            print(mask)
+            x_i = x[i][:, mask]
+            print("Masked:", x_i.shape)
         x = self.conv2d1(x)
         #print(x.shape)
         x = self.conv2d2(x)
@@ -279,7 +284,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
         epoch_loss = 0
 
         dataset = Data(clean_path, noisy_path, 1000)
-        loader = data.DataLoader(dataset, batch_size=5, shuffle=True, collate_fn=collate_custom)
+        loader = data.DataLoader(dataset, batch_size=1, shuffle=True, collate_fn=collate_custom)
         model.train()
 
         for batch in loader:
@@ -360,7 +365,7 @@ def inference_actor(clean_path, noisy_path, model_path, out_path):
     fcount = 0
 
     dataset = DataTest(clean_path, noisy_path)
-    loader = data.DataLoader(dataset, batch_size=5, collate_fn=collate_custom)
+    loader = data.DataLoader(dataset, batch_size=1, collate_fn=collate_custom)
 
     for batch in tqdm(loader):
         x = batch["noisy"].unsqueeze(1).to(device)
