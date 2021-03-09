@@ -42,9 +42,16 @@ class Actor(nn.Module):
         #print(x.shape)
         for i in range(x.shape[0]):
             mask = int(torch.sum(m[i]))
-            print(mask, x[i].shape)
             x_i = x[i].squeeze()[:, :mask]
-            print("Masked:", x_i.shape)
+            x_i = self.conv2d1(x_i)
+            x = self.conv2d2(x_i)
+            x = self.conv2d3(x_i)
+            print(x.shape)
+            x = torch.transpose(x.squeeze(), 1, 2)
+            x = self.linear1(x)
+            x, _ = self.bi_lstm(x)
+            x = self.linear2(x)
+        '''
         x = self.conv2d1(x)
         #print(x.shape)
         x = self.conv2d2(x)
@@ -60,6 +67,7 @@ class Actor(nn.Module):
         real = x[:,:,:257]
         imag = x[:, :, 257:]
         #print(real.shape, imag.shape)
+        '''
         return real, imag
         
     
