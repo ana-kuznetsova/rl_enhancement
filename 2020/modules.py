@@ -42,7 +42,7 @@ class Actor(nn.Module):
         #print(x.shape)
         for i in range(x.shape[0]):
             mask = int(torch.sum(m[i]))
-            print(mask)
+            print(mask, x[i].shape)
             x_i = x[i][:, mask]
             print("Masked:", x_i.shape)
         x = self.conv2d1(x)
