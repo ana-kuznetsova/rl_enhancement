@@ -52,17 +52,6 @@ class Actor(nn.Module):
         x = self.linear2(x)
         #print("X out:", x.shape)
         
-        
-        '''
-        real = []
-        imag = []
-        for m in x:
-            r = m[:,:int(m.shape[1]/2)]
-            real.append(r)
-            i = m[:,int(m.shape[1]/2):]
-            imag.append(i)
-        return torch.stack(real), torch.stack(imag)
-        '''
         real = x[:,:,:257]
         imag = x[:, :, 257:]
         #print(real.shape, imag.shape)
