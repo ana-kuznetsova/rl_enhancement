@@ -43,7 +43,7 @@ class Actor(nn.Module):
         for i in range(x.shape[0]):
             mask = int(torch.sum(m[i]))
             print(mask, x[i].shape)
-            x_i = x[i].squeeze()[:, mask]
+            x_i = x[i].squeeze()[:, :mask]
             print("Masked:", x_i.shape)
         x = self.conv2d1(x)
         #print(x.shape)
