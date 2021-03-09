@@ -33,21 +33,6 @@ class Actor(nn.Module):
         self.bi_lstm = nn.LSTM(512, hidden_size=512, num_layers=2, 
                                batch_first=True, dropout=0.3, bidirectional=True)
         self.linear2 = nn.Linear(1024, 257*2)
-        '''
-        self.conv2d1 = nn.Conv2d(in_channels=1, out_channels=30,
-                                 kernel_size=5, 
-                                 padding=2)
-        self.conv2d2 = nn.Conv2d(in_channels=30, out_channels=60,
-                                 kernel_size=15,
-                                 padding=7)
-        self.conv2d3 = nn.Conv2d(in_channels=60, out_channels=1,
-                                 kernel_size=1)
-        self.linear1 = nn.Linear(257, 512)
-        self.bi_lstm = nn.LSTM(512, hidden_size=512, num_layers=2, 
-                               batch_first=True, dropout=0.3, bidirectional=True)
-        self.linear2 = nn.Linear(1024, 257*2)
-        '''
-
 
     def forward(self, x):
         x = 10*torch.log10(x.abs())
@@ -310,7 +295,6 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
         for batch in loader:
             x = batch["noisy"].unsqueeze(1).to(device)
-            print("X", x.shape)
             t = batch["clean"].unsqueeze(1).to(device)
             m = batch["mask"].to(device)
             out_r, out_i = model(x)
