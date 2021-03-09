@@ -284,7 +284,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
         epoch_loss = 0
 
         dataset = Data(clean_path, noisy_path, 1000)
-        loader = data.DataLoader(dataset, batch_size=1, shuffle=True, collate_fn=collate_custom)
+        loader = data.DataLoader(dataset, batch_size=5, shuffle=True, collate_fn=collate_custom)
         model.train()
 
         for batch in loader:
