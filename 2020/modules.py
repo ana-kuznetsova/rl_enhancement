@@ -310,6 +310,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
         for batch in loader:
             x = batch["noisy"].unsqueeze(1).to(device)
+            print("X", x.shape)
             t = batch["clean"].unsqueeze(1).to(device)
             m = batch["mask"].to(device)
             out_r, out_i = model(x)
