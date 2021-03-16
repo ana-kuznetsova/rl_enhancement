@@ -63,7 +63,8 @@ class Data(data.Dataset):
         lengths = []
         fnames = os.listdir(self.clean_path)
         fnames = np.random.choice(fnames, size=self.sample_size, replace=True)
-
+        
+        print("Bucketing in progress...")
         for p in tqdm(fnames):
             sig, sr = librosa.core.load(os.path.join(self.noisy_path, p), sr=16000)
             lengths.append((p, sig.shape[-1]))
@@ -72,7 +73,7 @@ class Data(data.Dataset):
         clean = [os.path.join(self.clean_path, n[0]) for n in lengths]
         noisy = [os.path.join(self.noisy_path, n[0]) for n in lengths]
         return (clean, noisy)
-        
+
     def __len__(self):
         return len(self.fnames_clean)
     
