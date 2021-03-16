@@ -109,4 +109,4 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200, popula
 
 train('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
      '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/', 
-     '/nobackup/anakuzne/data/experiments/speech_enhancement/es/es_0/', 100, 10, 100)
+     '/nobackup/anakuzne/data/experiments/speech_enhancement/es/es_0/', 100)
