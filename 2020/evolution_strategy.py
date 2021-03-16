@@ -58,6 +58,7 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200):
             y = predict(x.squeeze(1), (out_r, out_i))
             t = t.squeeze()
             batch_losses = criterion(torch.abs(y), torch.abs(t))
+            print(batch_losses)
             individual_losses.extend(batch_losses)
         
         ### Select elite set and backpropagate from N best ###
@@ -71,7 +72,7 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200):
 
         losses.append(elite_set_loss)
         np.save(os.path.join(model_path, "elite_loss_train.npy"), np.array(losses))
-        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, elite_set_loss))
+        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, elite_set_loss.detach().numpy().cpu()))
             
 
 
