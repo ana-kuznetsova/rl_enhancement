@@ -66,8 +66,9 @@ class Data(data.Dataset):
         
         print("Bucketing in progress...")
         for p in tqdm(fnames):
-            sig, sr = librosa.core.load(os.path.join(self.noisy_path, p), sr=16000)
-            lengths.append((p, sig.shape[-1]))
+            p = os.path.join(self.noisy_path, p)
+            size = os.stat(p).st_size
+            lengths.append((p, size))
         lengths = sorted(lengths, key=lambda x:x[1])
 
         clean = [os.path.join(self.clean_path, n[0]) for n in lengths]
