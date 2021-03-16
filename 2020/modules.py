@@ -34,7 +34,7 @@ class Actor(nn.Module):
                                batch_first=True, dropout=0.3, bidirectional=True)
         self.linear2 = nn.Linear(1024, 257*2)
 
-    def forward(self, x, m):
+    def forward(self, x):
         x = 10*torch.log10(x.abs())
         #-inf is caused by zero padding
         #Change inf to zeros
@@ -301,7 +301,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             x = batch["noisy"].unsqueeze(1).to(device)
             t = batch["clean"].unsqueeze(1).to(device)
             m = batch["mask"].to(device)
-            out_r, out_i = model(x, m)
+            out_r, out_i = model(x)
             out_r = torch.transpose(out_r, 1, 2)
             out_i = torch.transpose(out_i, 1, 2)
             y = predict(x.squeeze(1), (out_r, out_i))
@@ -335,8 +335,8 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
                 x = batch["noisy"].unsqueeze(1).to(device)
                 t = batch["clean"].unsqueeze(1).to(device)
                 m = batch["mask"].to(device)
-                with torch.no_grad():
-                    out_r, out_i = model(x)
+
+                out_r, out_i = model(x)
                 out_r = torch.transpose(out_r, 1, 2)
                 out_i = torch.transpose(out_i, 1, 2)
                 y = predict(x.squeeze(1), (out_r, out_i))
@@ -344,6 +344,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
                 m = m.squeeze()
                 x = x.squeeze()
                 source, targets, preds = inverse(t, y, m, x)
+                
                 loss = criterion(source, targets, preds)
                 overall_val_loss+=loss.detach().cpu().numpy()
 
