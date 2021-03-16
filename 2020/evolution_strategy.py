@@ -61,7 +61,7 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200):
         ### Select elite set and backpropagate from N best ###
         elite_set = [(i, (individual_losses[i])) for i in range(100)]
         elite_set = sorted(elite_set, key=lambda x:x[1])[:elite_size]
-        elite_set_loss = torch.mean([i[1] for i in elite_set])
+        elite_set_loss = torch.mean(torch.tensor([i[1] for i in elite_set]))
         
         optimizer.zero_grad()
         elite_set_loss.backward()
