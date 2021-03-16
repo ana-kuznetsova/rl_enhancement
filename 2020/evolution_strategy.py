@@ -58,7 +58,6 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200):
             y = predict(x.squeeze(1), (out_r, out_i))
             t = t.squeeze()
             batch_losses = criterion(torch.abs(y), torch.abs(t))
-            print(batch_losses)
             individual_losses.extend(batch_losses)
         
         ### Select elite set and backpropagate from N best ###
