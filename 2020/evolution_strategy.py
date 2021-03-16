@@ -19,7 +19,7 @@ from modules import Actor, init_weights, predict
 from losses import ES_MSE
 
 
-def train(clean_path, noisy_path, model_path, num_epochs):
+def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200):
     device = torch.device("cuda:2")
     model = Actor()
     model.cuda()
@@ -28,7 +28,7 @@ def train(clean_path, noisy_path, model_path, num_epochs):
     model = nn.DataParallel(model, device_ids=[2, 3])
 
 
-    criterion = nn.MSELoss()
+    criterion = ES_MSE()
     criterion.cuda()
 
     optimizer = optim.Adam(model.parameters(), lr=0.0001)
@@ -42,9 +42,11 @@ def train(clean_path, noisy_path, model_path, num_epochs):
         epoch_loss = 0
 
         dataset = Data(clean_path, noisy_path, 1000)
-        loader = data.DataLoader(dataset, batch_size=32, shuffle=True, collate_fn=collate_custom)
+        loader = data.DataLoader(dataset, batch_size=32, shuffle=False, collate_fn=collate_custom)
 
         model.train()
+        
+        individual_losses = []
 
         for batch in loader:
             x = batch["noisy"].unsqueeze(1).to(device)
@@ -55,8 +57,22 @@ def train(clean_path, noisy_path, model_path, num_epochs):
             out_i = torch.transpose(out_i, 1, 2)
             y = predict(x.squeeze(1), (out_r, out_i))
             t = t.squeeze()
-            loss = criterion(torch.abs(y), torch.abs(t))
-            print(loss)
+            batch_losses = criterion(torch.abs(y), torch.abs(t))
+            individual_losses.extend(batch_losses)
+        
+        ### Select elite set and backpropagate from N best ###
+        elite_set = [(i, (individual_losses[i])) for i in range(1000)]
+        elite_set = sorted(elite_set, key=lambda x:x[1])[:elite_size]
+        elite_set_loss = torch.mean([i[1] for i in elite_set])
+        
+        optimizer.zero_grad()
+        elite_set_loss.backward()
+        optimizer.step()
+
+        losses.append(elite_set_loss)
+        np.save(os.path.join(model_path, "elite_loss_train.npy"), np.array(losses))
+        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, elite_set_loss))
+            
 
 
 train('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',

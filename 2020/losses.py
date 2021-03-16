@@ -79,6 +79,11 @@ class ActorLoss(nn.Module):
 class ES_MSE(nn.Module):
     def __init__(self):
         super().__init__()
-        
+
     def forward(self, y, t):
-        pass
+        individual_losses = []
+        criterion = nn.MSELoss()
+
+        for i in range(y.shape[0]):
+            individual_losses.append((i, criterion(y[i], t[i])))
+        return individual_losses
