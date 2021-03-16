@@ -40,7 +40,7 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200, popula
 
     for epoch in range(1, num_epochs+1):
         dataset = Data(clean_path, noisy_path, population)
-        loader = data.DataLoader(dataset, batch_size=16, shuffle=False, collate_fn=collate_custom)
+        loader = data.DataLoader(dataset, batch_size=8, shuffle=False, collate_fn=collate_custom)
 
         model.train()
         
@@ -79,7 +79,7 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200, popula
 
             print("Validation...")
             dataset = Data(clean_path, noisy_path, val_size)
-            loader = data.DataLoader(dataset, batch_size=16, shuffle=False, collate_fn=collate_custom)
+            loader = data.DataLoader(dataset, batch_size=8, shuffle=False, collate_fn=collate_custom)
             print("Steps:", len(loader))
 
             for i, batch in enumerate(loader):
