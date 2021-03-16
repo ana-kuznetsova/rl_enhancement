@@ -59,7 +59,7 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200):
             individual_losses.extend(batch_losses)
         
         ### Select elite set and backpropagate from N best ###
-        elite_set = [(i, (individual_losses[i])) for i in range(100)]
+        elite_set = [(i, (individual_losses[i])) for i in range(50)]
         elite_set = sorted(elite_set, key=lambda x:x[1])[:elite_size]
         print("elite set:", elite_set, torch.tensor([i[1] for i in elite_set]))
         elite_set_loss = torch.mean(torch.tensor([i[1] for i in elite_set]))
