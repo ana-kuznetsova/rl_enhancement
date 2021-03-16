@@ -63,6 +63,7 @@ class Data(data.Dataset):
         lengths = []
         fnames = os.listdir(self.clean_path)
         fnames = np.random.choice(fnames, size=self.sample_size, replace=True)
+        print("before bucketing:", fnames[:4])
         
         print("Bucketing in progress...")
         for p in tqdm(fnames):
