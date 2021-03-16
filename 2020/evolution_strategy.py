@@ -20,12 +20,12 @@ from losses import ES_MSE
 
 
 def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200, population=1000, val_size=300):
-    device = torch.device("cuda:2")
+    device = torch.device("cuda:1")
     model = Actor()
     model.cuda()
     model = model.to(device)
     model.apply(init_weights)
-    model = nn.DataParallel(model, device_ids=[2, 3])
+    model = nn.DataParallel(model, device_ids=[1, 3])
 
 
     criterion = ES_MSE()
