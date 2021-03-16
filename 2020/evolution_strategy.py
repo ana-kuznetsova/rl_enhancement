@@ -39,7 +39,7 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200):
     prev_val=99999
 
     for epoch in range(1, num_epochs+1):
-        dataset = Data(clean_path, noisy_path, 100)
+        dataset = Data(clean_path, noisy_path, 50)
         loader = data.DataLoader(dataset, batch_size=16, shuffle=False, collate_fn=collate_custom)
 
         model.train()
@@ -61,6 +61,7 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200):
         ### Select elite set and backpropagate from N best ###
         elite_set = [(i, (individual_losses[i])) for i in range(100)]
         elite_set = sorted(elite_set, key=lambda x:x[1])[:elite_size]
+        print("elite set:", elite_set, torch.tensor([i[1] for i in elite_set]))
         elite_set_loss = torch.mean(torch.tensor([i[1] for i in elite_set]))
         
         optimizer.zero_grad()
