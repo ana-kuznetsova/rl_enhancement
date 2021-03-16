@@ -55,7 +55,7 @@ def train(clean_path, noisy_path, model_path, num_epochs):
             out_i = torch.transpose(out_i, 1, 2)
             y = predict(x.squeeze(1), (out_r, out_i))
             t = t.squeeze()
-            loss = criterion(y, t)
+            loss = criterion(torch.abs(y), t)
             print(loss)
 
 
