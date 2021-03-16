@@ -28,7 +28,7 @@ def train(clean_path, noisy_path, model_path, num_epochs):
     model = nn.DataParallel(model, device_ids=[2, 3])
 
 
-    criterion = ES_MSE()
+    criterion = nn.MSELoss()
     criterion.cuda()
 
     optimizer = optim.Adam(model.parameters(), lr=0.0001)
@@ -49,17 +49,14 @@ def train(clean_path, noisy_path, model_path, num_epochs):
         for batch in loader:
             x = batch["noisy"].unsqueeze(1).to(device)
             t = batch["clean"].unsqueeze(1).to(device)
-            print("X:", x.shape, "target:", t.shape)
             m = batch["mask"].to(device)
             out_r, out_i = model(x)
             out_r = torch.transpose(out_r, 1, 2)
             out_i = torch.transpose(out_i, 1, 2)
-            print(out_r.shape)
             y = predict(x.squeeze(1), (out_r, out_i))
-            print("predict shape:", y.shape)
             t = t.squeeze()
-            m = m.squeeze()
-            x = x.squeeze()
+            loss = criterion(y, t)
+            print(loss)
 
 
 train('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
