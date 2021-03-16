@@ -70,7 +70,7 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200, popula
 
         losses.append(elite_set_loss)
         np.save(os.path.join(model_path, "elite_loss_train.npy"), np.array(losses))
-        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, elite_set_loss.detach().numpy().cpu()))
+        print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, elite_set_loss.detach().cpu().numpy()))
             
 
 
