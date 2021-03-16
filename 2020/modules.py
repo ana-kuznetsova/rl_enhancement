@@ -40,6 +40,7 @@ class Actor(nn.Module):
         #Change inf to zeros
         x[x==float("-Inf")] = 0
         #print(x.shape)
+        '''
         for i in range(x.shape[0]):
             mask = int(torch.sum(m[i]))
             x_i = x[i].squeeze()[:, :mask]
@@ -52,22 +53,23 @@ class Actor(nn.Module):
             x, _ = self.bi_lstm(x)
             x = self.linear2(x)
         '''
+        print("x input:", x.shape)
         x = self.conv2d1(x)
-        #print(x.shape)
+        print(x.shape)
         x = self.conv2d2(x)
-        #print(x.shape)
+        print(x.shape)
         x = self.conv2d3(x)
-        #print(x.shape)
+        print(x.shape)
         x = torch.transpose(x.squeeze(), 1, 2)
         x = self.linear1(x)
         x, _ = self.bi_lstm(x)
         x = self.linear2(x)
-        #print("X out:", x.shape)
+        print("X out:", x.shape)
         
         real = x[:,:,:257]
         imag = x[:, :, 257:]
-        #print(real.shape, imag.shape)
-        '''
+        print(real.shape, imag.shape)
+        
         return real, imag
         
     
