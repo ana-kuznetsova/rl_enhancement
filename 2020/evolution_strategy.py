@@ -39,7 +39,7 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200):
     prev_val=99999
 
     for epoch in range(1, num_epochs+1):
-        dataset = Data(clean_path, noisy_path, 1000)
+        dataset = Data(clean_path, noisy_path, 100)
         loader = data.DataLoader(dataset, batch_size=16, shuffle=False, collate_fn=collate_custom)
 
         model.train()
@@ -59,7 +59,7 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200):
             individual_losses.extend(batch_losses)
         
         ### Select elite set and backpropagate from N best ###
-        elite_set = [(i, (individual_losses[i])) for i in range(1000)]
+        elite_set = [(i, (individual_losses[i])) for i in range(100)]
         elite_set = sorted(elite_set, key=lambda x:x[1])[:elite_size]
         elite_set_loss = torch.mean([i[1] for i in elite_set])
         
@@ -75,4 +75,4 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200):
 
 train('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
      '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/', 
-     '/nobackup/anakuzne/data/experiments/speech_enhancement/es/es_0/', 100)
+     '/nobackup/anakuzne/data/experiments/speech_enhancement/es/es_0/', 100, 10)
