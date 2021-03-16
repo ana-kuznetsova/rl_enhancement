@@ -75,3 +75,9 @@ class ActorLoss(nn.Module):
     
     def forward(self, preds):
         return -torch.sum(preds)
+
+class ES_MSE(nn.Module):
+    def __init__(self):
+        super().__init__()
+    def forward(self, y, t):
+        pass
