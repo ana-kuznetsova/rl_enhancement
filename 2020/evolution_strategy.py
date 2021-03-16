@@ -56,3 +56,8 @@ def train(clean_path, noisy_path, model_path, num_epochs):
             t = t.squeeze()
             m = m.squeeze()
             x = x.squeeze()
+
+
+train('/nobackup/anakuzne/data/voicebank-demand/clean_trainset_28spk_wav/',
+     '/nobackup/anakuzne/data/voicebank-demand/noisy_trainset_28spk_wav/', 
+     '/nobackup/anakuzne/data/experiments/speech_enhancement/es/es_0/', 100)
