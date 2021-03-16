@@ -49,6 +49,7 @@ def train(clean_path, noisy_path, model_path, num_epochs):
         for batch in loader:
             x = batch["noisy"].unsqueeze(1).to(device)
             t = batch["clean"].unsqueeze(1).to(device)
+            print("X:", x.shape, "target:", t.shape)
             m = batch["mask"].to(device)
             out_r, out_i = model(x)
             out_r = torch.transpose(out_r, 1, 2)
