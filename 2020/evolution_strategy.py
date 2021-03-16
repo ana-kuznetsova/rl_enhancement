@@ -51,6 +51,7 @@ def train(clean_path, noisy_path, model_path, num_epochs):
             t = batch["clean"].unsqueeze(1).to(device)
             m = batch["mask"].to(device)
             out_r, out_i = model(x)
+            print(out_r.shape)
             y = predict(x.squeeze(1), (out_r, out_i))
             print("predict shape:", y.shape)
             t = t.squeeze()
