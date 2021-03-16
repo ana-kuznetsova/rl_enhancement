@@ -19,7 +19,7 @@ from modules import Actor, init_weights, predict
 from losses import ES_MSE
 
 
-def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200, population=1000):
+def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200, population=1000, val_size=300):
     device = torch.device("cuda:2")
     model = Actor()
     model.cuda()
@@ -47,7 +47,7 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200, popula
         individual_losses = []
 
         for i, batch in enumerate(loader):
-            print('Step:{}/{}'.format(i, len(loader)))
+            print("Steps:", len(loader))
             x = batch["noisy"].unsqueeze(1).to(device)
             t = batch["clean"].unsqueeze(1).to(device)
             out_r, out_i = model(x)
@@ -71,6 +71,39 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200, popula
         losses.append(elite_set_loss)
         np.save(os.path.join(model_path, "elite_loss_train.npy"), np.array(losses))
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, elite_set_loss.detach().cpu().numpy()))
+
+
+        if epoch%5==0:
+            ##Validation
+            model.eval()
+            val_loss = 0
+
+            print("Validation...")
+            dataset = Data(clean_path, noisy_path, val_size)
+            loader = data.DataLoader(dataset, batch_size=16, shuffle=False, collate_fn=collate_custom)
+            for i, batch in enumerate(loader):
+                print("Steps:", len(loader))
+                x = batch["noisy"].unsqueeze(1).to(device)
+                t = batch["clean"].unsqueeze(1).to(device)
+                out_r, out_i = model(x)
+                out_r = torch.transpose(out_r, 1, 2)
+                out_i = torch.transpose(out_i, 1, 2)
+                y = predict(x.squeeze(1), (out_r, out_i))
+                t = t.squeeze()
+                batch_losses = criterion(torch.abs(y), torch.abs(t))
+                batch_losses = torch.sum(batch_losses/len(batch_losses)).detach().cpu().numpy()
+                val_loss+=batch_losses
+            val_losses.append(val_loss/len(loader))
+            print('Validation loss:', val_loss)
+            np.save(os.path.join(model_path, 'val_loss.npy'), np.array(val_losses))
+
+
+            if  val_loss < prev_val:
+                torch.save(best, os.path.join(model_path, 'es_best.pth'))
+                prev_val = val_loss
+            torch.save(best, os.path.join(model_path, "es_last.pth"))
+        
+            
             
 
 
