@@ -45,9 +45,9 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200, popula
         model.train()
         
         individual_losses = []
+        print("Steps:", len(loader))
 
         for i, batch in enumerate(loader):
-            print("Steps:", len(loader))
             x = batch["noisy"].unsqueeze(1).to(device)
             t = batch["clean"].unsqueeze(1).to(device)
             out_r, out_i = model(x)
@@ -82,7 +82,7 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200, popula
             dataset = Data(clean_path, noisy_path, val_size)
             loader = data.DataLoader(dataset, batch_size=16, shuffle=False, collate_fn=collate_custom)
             print("Steps:", len(loader))
-            
+
             for i, batch in enumerate(loader):
                 x = batch["noisy"].unsqueeze(1).to(device)
                 t = batch["clean"].unsqueeze(1).to(device)
