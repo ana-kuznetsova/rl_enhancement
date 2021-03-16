@@ -39,8 +39,6 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200):
     prev_val=99999
 
     for epoch in range(1, num_epochs+1):
-        epoch_loss = 0
-
         dataset = Data(clean_path, noisy_path, 1000)
         loader = data.DataLoader(dataset, batch_size=32, shuffle=False, collate_fn=collate_custom)
 
@@ -51,7 +49,6 @@ def train(clean_path, noisy_path, model_path, num_epochs, elite_size=200):
         for batch in loader:
             x = batch["noisy"].unsqueeze(1).to(device)
             t = batch["clean"].unsqueeze(1).to(device)
-            m = batch["mask"].to(device)
             out_r, out_i = model(x)
             out_r = torch.transpose(out_r, 1, 2)
             out_i = torch.transpose(out_i, 1, 2)
