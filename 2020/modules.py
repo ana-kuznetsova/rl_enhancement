@@ -39,7 +39,6 @@ class Actor(nn.Module):
         #-inf is caused by zero padding
         #Change inf to zeros
         x[x==float("-Inf")] = 0
-        print(x)
         x = self.conv2d1(x)
         #print(x.shape)
         x = self.conv2d2(x)
@@ -91,13 +90,7 @@ class Critic(nn.Module):
         x = self.out(x)
         return x
 
-def predict(x, model_out, floor=False):
-    def floor_mask(model_out, treshold=0.05):
-        temp = model_out[0]
-        temp[temp < treshold] = treshold
-        return [temp, model_out[1]]
-    if floor:
-        model_out = floor_mask(model_out)
+def predict(x, model_out):
     temp = torch.complex(model_out[0], model_out[1])
     return x*temp
 
@@ -290,6 +283,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             out_r, out_i = model(x)
             out_r = torch.transpose(out_r, 1, 2)
             out_i = torch.transpose(out_i, 1, 2)
+            print(out_i.shape, out_r.shape)
             y = predict(x.squeeze(1), (out_r, out_i))
             t = t.squeeze()
             m = m.squeeze()
