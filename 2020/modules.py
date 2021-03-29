@@ -35,9 +35,7 @@ class Actor(nn.Module):
         self.linear2 = nn.Linear(1024, 257*2)
 
     def forward(self, x):
-        print(x)
-        #x = x.squeeze(-1)
-        print("Before:",  x.shape)
+        print(x.shape)
         x = 10*torch.log10(x.abs())
         print(x.shape)
         #-inf is caused by zero padding
