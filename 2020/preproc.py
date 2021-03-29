@@ -46,6 +46,8 @@ def collate_custom(data):
         batch_clean.append(clean)
         batch_noisy.append(noisy)
         batch_mask.append(mask)
+
+    print("Collate", torch.stack(batch_noisy).shape)
     return {"clean":torch.stack(batch_clean), "noisy":torch.stack(batch_noisy), "mask":torch.stack(batch_mask)}
 
 
