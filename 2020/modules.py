@@ -35,6 +35,7 @@ class Actor(nn.Module):
         self.linear2 = nn.Linear(1024, 257*2)
 
     def forward(self, x):
+        x = x.squeeze(-1)
         print("Before:",  x.shape)
         x = 10*torch.log10(x.abs())
         print(x.shape)
