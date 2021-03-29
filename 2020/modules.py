@@ -35,27 +35,11 @@ class Actor(nn.Module):
         self.linear2 = nn.Linear(1024, 257*2)
 
     def forward(self, x):
-        print(x.shape)
+        print(x[:, :, :, :, 0].shape, x[:, :, :, :, 0].shape)
         x = 10*torch.log10(x.abs())
-        print(x.shape)
         #-inf is caused by zero padding
         #Change inf to zeros
         x[x==float("-Inf")] = 0
-        print(x.shape)
-        '''
-        for i in range(x.shape[0]):
-            mask = int(torch.sum(m[i]))
-            x_i = x[i].squeeze()[:, :mask]
-            x_i = self.conv2d1(x_i)
-            x = self.conv2d2(x_i)
-            x = self.conv2d3(x_i)
-            print(x.shape)
-            x = torch.transpose(x.squeeze(), 1, 2)
-            x = self.linear1(x)
-            x, _ = self.bi_lstm(x)
-            x = self.linear2(x)
-        '''
-        print("x input:", x.shape)
         x = self.conv2d1(x)
         #print(x.shape)
         x = self.conv2d2(x)
