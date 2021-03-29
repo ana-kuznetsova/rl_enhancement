@@ -35,11 +35,13 @@ class Actor(nn.Module):
         self.linear2 = nn.Linear(1024, 257*2)
 
     def forward(self, x):
+        print(x.shape)
         x = 10*torch.log10(x.abs())
+        print(x.shape)
         #-inf is caused by zero padding
         #Change inf to zeros
         x[x==float("-Inf")] = 0
-        #print(x.shape)
+        print(x.shape)
         '''
         for i in range(x.shape[0]):
             mask = int(torch.sum(m[i]))
