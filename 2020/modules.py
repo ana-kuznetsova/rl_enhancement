@@ -265,7 +265,7 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
 
 def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
-    device = torch.device("cuda:2")
+    device = torch.device("cuda:0")
     model = Actor()
     model.cuda()
     model = model.to(device)
@@ -315,7 +315,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             optimizer.step()
 
             loss = loss.detach().cpu().numpy()
-            #print("Batch loss:", loss)
+            print("Batch loss:", loss)
             epoch_loss+=loss
         
         losses.append(epoch_loss/len(loader))
