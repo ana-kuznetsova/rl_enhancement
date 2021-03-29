@@ -35,7 +35,6 @@ class Actor(nn.Module):
         self.linear2 = nn.Linear(1024, 257*2)
 
     def forward(self, x):
-        print(x[0].shape)
         x = 10*torch.log10(x.abs())
         #-inf is caused by zero padding
         #Change inf to zeros
@@ -253,10 +252,11 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
     device = torch.device("cuda:0")
     model = Actor()
+    model = nn.DataParallel(model, device_ids=[0, 1])
     model.cuda()
     model = model.to(device)
     model.apply(init_weights)
-    model = nn.DataParallel(model, device_ids=[0, 1])
+    
 
     criterion = SDRLoss()
     criterion.cuda()
