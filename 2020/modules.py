@@ -53,7 +53,7 @@ class Actor(nn.Module):
             x, _ = self.bi_lstm(x)
             x = self.linear2(x)
         '''
-        #print("x input:", x.shape)
+        print("x input:", x.shape)
         x = self.conv2d1(x)
         #print(x.shape)
         x = self.conv2d2(x)
@@ -301,7 +301,6 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             x = batch["noisy"].unsqueeze(1).to(device)
             t = batch["clean"].unsqueeze(1).to(device)
             m = batch["mask"].to(device)
-            print("Shapes:", x.shape, t.shape)
             out_r, out_i = model(x)
             out_r = torch.transpose(out_r, 1, 2)
             out_i = torch.transpose(out_i, 1, 2)
