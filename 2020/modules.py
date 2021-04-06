@@ -285,7 +285,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             out_r = torch.transpose(out_r, 1, 2)
             out_i = torch.transpose(out_i, 1, 2)
             y = predict(x.squeeze(1), (out_r, out_i))
-            print(y)
+            print(y[0])
             t = t.squeeze()
             m = m.squeeze()
             x = x.squeeze()
