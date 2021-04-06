@@ -35,8 +35,9 @@ class Actor(nn.Module):
         self.linear2 = nn.Linear(1024, 257*2)
 
     def forward(self, x):
-        print(x.abs())
-        x = 10*torch.log10(x.abs())
+        x = x.abs()
+        x = 10*torch.log10(x)
+        print(x[0])
         #-inf is caused by zero padding
         #Change inf to zeros
         x[x==float("-Inf")] = 0
@@ -90,6 +91,7 @@ class Critic(nn.Module):
         x = self.leaky_relu(self.fc2(x))
         x = self.out(x)
         return x
+
 
 def predict(x, model_out):
     temp = torch.complex(model_out[0], model_out[1])
