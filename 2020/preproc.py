@@ -18,7 +18,7 @@ def collate_custom(data):
     def maxlen_fn(paths):
         max_len=0
         for f in paths:
-            sig, sr = sfl.read(f, samplerate=16000)
+            sig, sr = sfl.read(f)
             print(sig, sr)
             sig = torch.stft(torch.tensor(sig), n_fft=1024, 
                             win_length=512, hop_length=128, 
