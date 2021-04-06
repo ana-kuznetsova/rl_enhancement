@@ -104,9 +104,7 @@ def inverse(t, y , m, x):
         pad_idx = int(torch.sum(m[i]))
     
         t_i = t[i]
-        print("before:", t_i.shape)
         t_i = t_i[:, :pad_idx]
-        print("after:", t_i.shape)
         y_i = y[i]
         y_i = y_i[:, :pad_idx]
         #print("Y_inv:", y_i.shape)
@@ -246,9 +244,9 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
 
 def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
-    device = torch.device("cuda:0")
+    device = torch.device("cuda:1")
     model = Actor()
-    #model = nn.DataParallel(model, device_ids=[0, 1])
+    model = nn.DataParallel(model, device_ids=[1,2])
     model = model.to(device)
     model.apply(init_weights)
     
