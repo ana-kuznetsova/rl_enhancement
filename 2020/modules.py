@@ -50,12 +50,11 @@ class Actor(nn.Module):
         x = self.linear1(x)
         x, _ = self.bi_lstm(x)
         x = self.linear2(x)
-        print(x[0])
         #print("X out:", x.shape)
         
         real = x[:,:,:257]
         imag = x[:, :, 257:]
-        #print(real.shape, imag.shape)
+        print(real[0], imag[0])
         
         return real, imag
         
