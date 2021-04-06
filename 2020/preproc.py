@@ -38,8 +38,8 @@ def collate_custom(data):
     for clean, noisy in zip(clean_paths, noisy_paths):
         clean, sr = sfl.read(clean)
         noisy, sr = sfl.read(noisy)
-        clean = torch.stft(torch.tensor(clean), n_fft=512, win_length=512, hop_length=128, return_complex=True, normalized=True)
-        noisy = torch.stft(torch.tensor(noisy), n_fft=512, win_length=512, hop_length=128, return_complex=True, normalized=True)
+        clean = torch.stft(torch.tensor(clean).float(), n_fft=512, win_length=512, hop_length=128, return_complex=True, normalized=True)
+        noisy = torch.stft(torch.tensor(noisy.float()), n_fft=512, win_length=512, hop_length=128, return_complex=True, normalized=True)
         mask = torch.ones(1, clean.shape[1])
         mask = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(mask)
         clean = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(clean)
@@ -47,7 +47,7 @@ def collate_custom(data):
         batch_clean.append(clean)
         batch_noisy.append(noisy)
         batch_mask.append(mask)
-    return {"clean":torch.stack(batch_clean).float(), "noisy":torch.stack(batch_noisy).float(), "mask":torch.stack(batch_mask)}
+    return {"clean":torch.stack(batch_clean), "noisy":torch.stack(batch_noisy), "mask":torch.stack(batch_mask)}
 
 
 
