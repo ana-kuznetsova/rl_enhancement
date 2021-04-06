@@ -39,21 +39,6 @@ class Actor(nn.Module):
         #-inf is caused by zero padding
         #Change inf to zeros
         x[x==float("-Inf")] = 0
-        #print(x.shape)
-        '''
-        for i in range(x.shape[0]):
-            mask = int(torch.sum(m[i]))
-            x_i = x[i].squeeze()[:, :mask]
-            x_i = self.conv2d1(x_i)
-            x = self.conv2d2(x_i)
-            x = self.conv2d3(x_i)
-            print(x.shape)
-            x = torch.transpose(x.squeeze(), 1, 2)
-            x = self.linear1(x)
-            x, _ = self.bi_lstm(x)
-            x = self.linear2(x)
-        '''
-        #print("x input:", x.shape)
         x = self.conv2d1(x)
         #print(x.shape)
         x = self.conv2d2(x)
@@ -105,13 +90,7 @@ class Critic(nn.Module):
         x = self.out(x)
         return x
 
-def predict(x, model_out, floor=False):
-    def floor_mask(model_out, treshold=0.05):
-        temp = model_out[0]
-        temp[temp < treshold] = treshold
-        return [temp, model_out[1]]
-    if floor:
-        model_out = floor_mask(model_out)
+def predict(x, model_out):
     temp = torch.complex(model_out[0], model_out[1])
     return x*temp
 
@@ -265,12 +244,12 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
 
 def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
-    device = torch.device("cuda:2")
+    device = torch.device("cuda:0")
     model = Actor()
-    model.cuda()
+    #model = nn.DataParallel(model, device_ids=[0, 1])
     model = model.to(device)
     model.apply(init_weights)
-    model = nn.DataParallel(model, device_ids=[2, 3])
+    
 
     criterion = SDRLoss()
     criterion.cuda()
@@ -309,13 +288,14 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             m = m.squeeze()
             x = x.squeeze()
             source, targets, preds = inverse(t, y, m, x)
+            print(source[0])
             loss = criterion(source, targets, preds)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
             loss = loss.detach().cpu().numpy()
-            #print("Batch loss:", loss)
+            print("Batch loss:", loss)
             epoch_loss+=loss
         
         losses.append(epoch_loss/len(loader))
