@@ -42,7 +42,6 @@ class Actor(nn.Module):
         #Change inf to zeros
         x[x==float("-Inf")] = 0
         x = self.conv2d1(x)
-        print(x[0])
         x = self.conv2d2(x)
         #print(x.shape)
         x = self.conv2d3(x)
@@ -51,6 +50,7 @@ class Actor(nn.Module):
         x = self.linear1(x)
         x, _ = self.bi_lstm(x)
         x = self.linear2(x)
+        print(x[0])
         #print("X out:", x.shape)
         
         real = x[:,:,:257]
