@@ -54,7 +54,6 @@ class Actor(nn.Module):
         
         real = x[:,:,:257]
         imag = x[:, :, 257:]
-        print(real[0], imag[0])
         
         return real, imag
         
@@ -285,6 +284,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             out_r, out_i = model(x)
             out_r = torch.transpose(out_r, 1, 2)
             out_i = torch.transpose(out_i, 1, 2)
+            print(out_r[0], out_i[0])
             y = predict(x.squeeze(1), (out_r, out_i))
             t = t.squeeze()
             m = m.squeeze()
