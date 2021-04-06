@@ -65,8 +65,8 @@ class Data(data.Dataset):
         fnames = os.listdir(self.clean_path)
         fnames = np.random.choice(fnames, size=self.sample_size, replace=True)
         
-        print("Bucketing in progress...")
-        for p in tqdm(fnames):
+        #print("Bucketing in progress...")
+        for p in fnames:
             p = os.path.join(self.noisy_path, p)
             size = os.stat(p).st_size
             lengths.append((p, size))
