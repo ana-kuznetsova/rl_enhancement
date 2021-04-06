@@ -35,6 +35,7 @@ class Actor(nn.Module):
         self.linear2 = nn.Linear(1024, 257*2)
 
     def forward(self, x):
+        print(x.abs)
         x = 10*torch.log10(x.abs())
         #-inf is caused by zero padding
         #Change inf to zeros
@@ -278,7 +279,6 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
         for batch in loader:
             x = batch["noisy"].unsqueeze(1).to(device)
-            print(x[0])
             t = batch["clean"].unsqueeze(1).to(device)
             m = batch["mask"].to(device)
             out_r, out_i = model(x)
