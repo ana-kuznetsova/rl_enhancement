@@ -37,8 +37,8 @@ class Actor(nn.Module):
     def forward(self, x):
         #x = x.abs()
         x = x.real
-        x = 10*torch.log10(x)
         print(x[0])
+        x = 10*torch.log10(x)
         
         #-inf is caused by zero padding
         #Change inf to zeros
