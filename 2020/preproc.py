@@ -9,6 +9,7 @@ import numpy as np
 import librosa
 from tqdm import tqdm
 import csv
+from scipy.io import wavfile
 
 
 def collate_custom(data):
@@ -18,7 +19,7 @@ def collate_custom(data):
     def maxlen_fn(paths):
         max_len=0
         for f in paths:
-            sig, sr = librosa.core.load(f, sr=16000)
+            sr, sig = wavfile.read(f)
             sig = torch.stft(torch.tensor(sig), n_fft=1024, 
                             win_length=512, hop_length=128, 
                             normalized=True, return_complex=True)
@@ -35,8 +36,8 @@ def collate_custom(data):
     batch_mask = []
     
     for clean, noisy in zip(clean_paths, noisy_paths):
-        clean, sr = librosa.core.load(clean, sr=16000)
-        noisy, sr = librosa.core.load(noisy, sr=16000)
+        sr, clean= wavfile.read(clean)
+        sr, noisy = wavfile.read(noisy)
         clean = torch.stft(torch.tensor(clean), n_fft=512, win_length=512, hop_length=128, return_complex=True, normalized=True)
         noisy = torch.stft(torch.tensor(noisy), n_fft=512, win_length=512, hop_length=128, return_complex=True, normalized=True)
         mask = torch.ones(1, clean.shape[1])

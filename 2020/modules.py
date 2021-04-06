@@ -12,7 +12,7 @@ import soundfile as sf
 from pystoi import stoi
 from pypesq import pesq
 from tqdm import tqdm
-import librosa
+#import librosa
 
 from preproc import Data, DataTest
 from preproc import collate_custom
