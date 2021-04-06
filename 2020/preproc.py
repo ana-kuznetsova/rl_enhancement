@@ -19,6 +19,7 @@ def collate_custom(data):
         max_len=0
         for f in paths:
             sr, sig = wavfile.read(f)
+            print(sr, sig.shape)
             sig = torch.stft(torch.tensor(sig), n_fft=1024, 
                             win_length=512, hop_length=128, 
                             normalized=True, return_complex=True)
