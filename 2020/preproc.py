@@ -39,7 +39,7 @@ def collate_custom(data):
         clean, sr = sfl.read(clean)
         noisy, sr = sfl.read(noisy)
         clean = torch.stft(torch.tensor(clean).float(), n_fft=512, win_length=512, hop_length=128, return_complex=True, normalized=True)
-        noisy = torch.stft(torch.tensor(noisy.float()), n_fft=512, win_length=512, hop_length=128, return_complex=True, normalized=True)
+        noisy = torch.stft(torch.tensor(noisy).float(), n_fft=512, win_length=512, hop_length=128, return_complex=True, normalized=True)
         mask = torch.ones(1, clean.shape[1])
         mask = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(mask)
         clean = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(clean)
