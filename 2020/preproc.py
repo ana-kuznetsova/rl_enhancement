@@ -47,7 +47,7 @@ def collate_custom(data):
         batch_clean.append(clean)
         batch_noisy.append(noisy)
         batch_mask.append(mask)
-    return {"clean":torch.stack(batch_clean), "noisy":torch.stack(batch_noisy), "mask":torch.stack(batch_mask)}
+    return {"clean":torch.stack(batch_clean).float(), "noisy":torch.stack(batch_noisy).float(), "mask":torch.stack(batch_mask)}
 
 
 
