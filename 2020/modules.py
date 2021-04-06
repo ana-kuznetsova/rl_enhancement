@@ -288,7 +288,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             m = m.squeeze()
             x = x.squeeze()
             source, targets, preds = inverse(t, y, m, x)
-            print(source[0])
+            print(source[0][-10:])
             loss = criterion(source, targets, preds)
             optimizer.zero_grad()
             loss.backward()
