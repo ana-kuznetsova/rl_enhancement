@@ -244,9 +244,9 @@ def pretrain_critic(clean_path, noisy_path, model_path, num_epochs):
 
 def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
-    device = torch.device("cuda:1")
+    device = torch.device("cuda:2")
     model = Actor()
-    model = nn.DataParallel(model, device_ids=[1,2])
+    model = nn.DataParallel(model, device_ids=[2, 3])
     model = model.to(device)
     model.apply(init_weights)
     
