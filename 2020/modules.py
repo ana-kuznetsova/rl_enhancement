@@ -104,7 +104,9 @@ def inverse(t, y , m, x):
         pad_idx = int(torch.sum(m[i]))
     
         t_i = t[i]
+        print("before:", t_i.shape)
         t_i = t_i[:, :pad_idx]
+        print("after:", t_i.shape)
         y_i = y[i]
         y_i = y_i[:, :pad_idx]
         #print("Y_inv:", y_i.shape)
@@ -288,7 +290,6 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             m = m.squeeze()
             x = x.squeeze()
             source, targets, preds = inverse(t, y, m, x)
-            print(source[0][-10:])
             loss = criterion(source, targets, preds)
             optimizer.zero_grad()
             loss.backward()
