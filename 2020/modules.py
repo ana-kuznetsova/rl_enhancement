@@ -41,6 +41,7 @@ class Actor(nn.Module):
         #-inf is caused by zero padding
         #Change inf to zeros
         x[x==float("-Inf")] = 0
+        print(x[0])
         x = self.conv2d1(x)
         x = self.conv2d2(x)
         #print(x.shape)
@@ -50,7 +51,6 @@ class Actor(nn.Module):
         x = self.linear1(x)
         x, _ = self.bi_lstm(x)
         x = self.linear2(x)
-        print(x[0])
         
         real = x[:,:,:257]
         imag = x[:, :, 257:]
