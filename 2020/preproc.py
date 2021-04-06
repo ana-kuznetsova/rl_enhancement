@@ -19,6 +19,7 @@ def collate_custom(data):
         max_len=0
         for f in paths:
             sig, sr = sfl.read(f, samplerate=16000)
+            print(sig, sr)
             sig = torch.stft(torch.tensor(sig), n_fft=1024, 
                             win_length=512, hop_length=128, 
                             normalized=True, return_complex=True)
@@ -37,7 +38,6 @@ def collate_custom(data):
     for clean, noisy in zip(clean_paths, noisy_paths):
         clean, sr = sfl.read(clean, samplerate=16000)
         noisy, sr = sfl.read(noisy, samplerate=16000)
-        print(clean.shape)
         clean = torch.stft(torch.tensor(clean), n_fft=512, win_length=512, hop_length=128, return_complex=True, normalized=True)
         noisy = torch.stft(torch.tensor(noisy), n_fft=512, win_length=512, hop_length=128, return_complex=True, normalized=True)
         mask = torch.ones(1, clean.shape[1])
