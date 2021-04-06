@@ -38,11 +38,11 @@ class Actor(nn.Module):
         #x = x.abs()
         x = x.real
         x = 10*torch.log10(x)
+        print(x[0])
         
         #-inf is caused by zero padding
         #Change inf to zeros
         x[x==float("-Inf")] = 0
-        print(x[0])
         x = self.conv2d1(x)
         x = self.conv2d2(x)
         #print(x.shape)
