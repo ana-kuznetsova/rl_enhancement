@@ -280,7 +280,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
         dataset = Data(clean_path, noisy_path, 1000)
         loader = data.DataLoader(dataset, batch_size=5, shuffle=True, collate_fn=collate_custom)
-        model.train()
+        #model.train()
 
         for batch in loader:
             x = batch["noisy"].unsqueeze(1).to(device)
@@ -317,7 +317,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             dataset = Data(clean_path, noisy_path, 1000)
             loader = data.DataLoader(dataset, batch_size=5, shuffle=True, collate_fn=collate_custom)
             
-            model.eval()
+            #model.eval()
 
             for batch in loader:
                 x = batch["noisy"].unsqueeze(1).to(device)
