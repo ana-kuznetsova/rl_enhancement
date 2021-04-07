@@ -46,7 +46,6 @@ class Actor(nn.Module):
         x = self.conv2d2(x)
         #print(x.shape)
         x = self.conv2d3(x)
-        print("Conv3:", x.shape)
         x = torch.transpose(x.squeeze(), 1, 2)
         x = self.linear1(x)
         x, _ = self.bi_lstm(x)
@@ -102,7 +101,7 @@ def inverse(t, y , m, x):
     source = []
 
     for i in range(t.shape[0]):
-        pad_idx = int(torch.sum(m[i]))
+        pad_idx = int(np.sum(m[i]))
     
         t_i = t[i]
         t_i = t_i[:, :pad_idx]
