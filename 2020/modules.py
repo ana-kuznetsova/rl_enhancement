@@ -284,7 +284,6 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             t = batch["clean"].unsqueeze(1).to(device)
             m = batch["mask"].to(device)
 
-            print(x.shape, t.shape)
             out_r, out_i = model(x)
             out_r = torch.transpose(out_r, 1, 2)
             out_i = torch.transpose(out_i, 1, 2)
@@ -301,7 +300,6 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             optimizer.step()
 
             loss = loss.detach().cpu().numpy()
-            print("Batch loss:", loss)
             epoch_loss+=loss
         
         losses.append(epoch_loss/len(loader))
@@ -325,13 +323,15 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
                 out_r, out_i = model(x)
                 out_r = torch.transpose(out_r, 1, 2)
                 out_i = torch.transpose(out_i, 1, 2)
-                y = predict(x.squeeze(1), (out_r, out_i))
-                t = t.squeeze()
-                m = m.squeeze()
-                x = x.squeeze()
+
+                y = predict(x.squeeze(1), (out_r, out_i)).detach().cpu().numpy()
+                t = t.squeeze().detach().cpu().numpy()
+                m = m.squeeze().detach().cpu().numpy()
+                x = x.squeeze().detach().cpu().numpy()
+
                 source, targets, preds = inverse(t, y, m, x)
+                loss = criterion(source, targets, preds, device)
                 
-                loss = criterion(source, targets, preds)
                 overall_val_loss+=loss.detach().cpu().numpy()
 
                 curr_val_loss = overall_val_loss/len(loader)
