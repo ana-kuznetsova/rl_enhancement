@@ -15,9 +15,9 @@ class SDRLoss(nn.Module):
     def forward(self, x, t, y, device):
         temp = []
         for i in range(len(t)):
-            t_i = torch.tensor(t[i]).to(device)
-            y_i = torch.tensor(y[i]).to(device)
-            x_i = torch.tensor(x[i]).to(device)
+            t_i = torch.tensor(t[i], requires_grad=True).to(device)
+            y_i = torch.tensor(y[i], requires_grad=True).to(device)
+            x_i = torch.tensor(x[i], requires_grad=True).to(device)
 
             frac1 = torch.norm(t_i)/torch.norm((t_i-y_i))
             frac1 = -0.5*self.clip(10*torch.log10(frac1))
