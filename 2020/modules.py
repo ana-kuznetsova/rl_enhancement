@@ -12,6 +12,7 @@ import soundfile as sf
 from pystoi import stoi
 from pypesq import pesq
 from tqdm import tqdm
+import librosa
 
 
 from preproc import Data, DataTest
@@ -108,12 +109,15 @@ def inverse(t, y , m, x):
         y_i = y[i]
         y_i = y_i[:, :pad_idx]
         #print("Y_inv:", y_i.shape)
-        t_i =torch.istft(t_i, n_fft=512, win_length=512, hop_length=128)
+        #t_i =torch.istft(t_i, n_fft=512, win_length=512, hop_length=128)
+        t_i = librosa.istft(t_i, hop_length=128, win_length=512)
         targets.append(t_i)
-        y_i = torch.istft(y_i, n_fft=512, win_length=512, hop_length=128)
+        #y_i = torch.istft(y_i, n_fft=512, win_length=512, hop_length=128)
+        y_i = librosa.istft(y_i, hop_length=128, win_length=512)
         preds.append(y_i)
         x_i = x[i][:, :pad_idx]
-        x_i = torch.istft(x_i, n_fft=512, win_length=512, hop_length=128)
+        #x_i = torch.istft(x_i, n_fft=512, win_length=512, hop_length=128)
+        x_i = librosa.istft(x_i, hop_length=128, win_length=512)
         source.append(x_i)
     return source, targets, preds
     #return targets, preds
@@ -284,9 +288,9 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             out_r = torch.transpose(out_r, 1, 2)
             out_i = torch.transpose(out_i, 1, 2)
             y = predict(x.squeeze(1), (out_r, out_i))
-            t = t.squeeze()
-            m = m.squeeze()
-            x = x.squeeze()
+            t = t.squeeze().detach().cpu().numpy()
+            m = m.squeeze().detach().cpu().numpy()
+            x = x.squeeze().detach().cpu().numpy()
             source, targets, preds = inverse(t, y, m, x)
             loss = criterion(source, targets, preds)
             optimizer.zero_grad()
