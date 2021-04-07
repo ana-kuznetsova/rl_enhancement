@@ -20,7 +20,7 @@ def collate_custom(data):
         max_len=0
         for f in paths:
             sig, sr = librosa.core.load(f)
-            sig = librosa.stft(sig, n_fft=1024, hop_length=128, win_length=512)
+            sig = librosa.stft(sig, n_fft=512, hop_length=128, win_length=512)
             if sig.shape[1] > max_len:
                 max_len = sig.shape[1]
         return int(max_len)
@@ -38,8 +38,8 @@ def collate_custom(data):
         noisy, sr = librosa.core.load(noisy, sr=16000)
         #clean = torch.stft(torch.tensor(clean).float(), n_fft=512, win_length=512, hop_length=128, return_complex=True, normalized=True)
         #noisy = torch.stft(torch.tensor(noisy).float(), n_fft=512, win_length=512, hop_length=128, return_complex=True, normalized=True)
-        clean = torch.tensor(librosa.stft(clean, n_fft=1024, hop_length=128, win_length=512))
-        noisy = torch.tensor(librosa.stft(noisy, n_fft=1024, hop_length=128, win_length=512))
+        clean = torch.tensor(librosa.stft(clean, n_fft=512, hop_length=128, win_length=512))
+        noisy = torch.tensor(librosa.stft(noisy, n_fft=512, hop_length=128, win_length=512))
         mask = torch.ones(1, clean.shape[1])
         mask = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(mask)
         clean = nn.ZeroPad2d(padding=(0, maxlen-clean.shape[1], 0, 0))(clean)
