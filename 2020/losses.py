@@ -12,14 +12,18 @@ class SDRLoss(nn.Module):
         return alpha*torch.tanh(val/alpha)
 
 
-    def forward(self, x, t, y):
+    def forward(self, x, t, y, device):
         temp = []
         for i in range(len(t)):
-            frac1 = torch.norm(t[i])/torch.norm((t[i]-y[i]))
+            t_i = torch.tensor(t[i]).to(device)
+            y_i = torch.tensor(y[i]).to(device)
+            x_i = torch.tensor(x[i]).to(device)
+
+            frac1 = torch.norm(t_i)/torch.norm((t_i-y_i))
             frac1 = -0.5*self.clip(10*torch.log10(frac1))
 
-            n = x[i]-t[i]
-            diff = n - (x[i]-y[i])
+            n = x_i-t_i
+            diff = n - (x_i-y_i)
             frac2 = torch.norm(n)/torch.norm(diff)
             frac2 = 0.5*self.clip(10*torch.log10(frac2))
             val = frac1-frac2
