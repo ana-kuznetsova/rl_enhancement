@@ -288,11 +288,12 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             out_r, out_i = model(x)
             out_r = torch.transpose(out_r, 1, 2)
             out_i = torch.transpose(out_i, 1, 2)
-            y = predict(x.squeeze(1), (out_r, out_i))
+
+            y = predict(x.squeeze(1), (out_r, out_i)).detach().cpu().numpy()
             t = t.squeeze().detach().cpu().numpy()
             m = m.squeeze().detach().cpu().numpy()
             x = x.squeeze().detach().cpu().numpy()
-            print(type(y))
+
             source, targets, preds = inverse(t, y, m, x)
             loss = criterion(source, targets, preds, device)
             optimizer.zero_grad()
