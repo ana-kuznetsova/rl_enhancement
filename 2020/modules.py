@@ -18,6 +18,9 @@ import librosa
 from preproc import Data, DataTest
 from preproc import collate_custom
 from losses import SDRLoss, CriticLoss
+import wandb
+
+wandb.init(project="rl-enhancement")
 
 class Actor(nn.Module):
     def __init__(self):
@@ -249,7 +252,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
 
     device = torch.device("cuda:2")
     model = Actor()
-    model = nn.DataParallel(model, device_ids=[2, 3])
+    #model = nn.DataParallel(model, device_ids=[2, 3])
     model = model.to(device)
     model.apply(init_weights)
     
@@ -305,6 +308,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
         losses.append(epoch_loss/len(loader))
         np.save(os.path.join(model_path, "loss_actor_pre.npy"), np.array(losses))
         print('Epoch:{:2} Training loss:{:>4f}'.format(epoch, epoch_loss/len(loader)))
+        wandb.log({'epoch': epoch, 'loss': epoch_loss/len(loader)})
 
         if epoch%5==0:
             ##Validation
@@ -338,6 +342,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
             val_losses.append(curr_val_loss)
             print('Validation loss: ', curr_val_loss)
             np.save(os.path.join(model_path, 'val_loss_actor_pre.npy'), np.array(val_losses))
+            wandb.log({'epoch': epoch, 'val_loss': curr_val_loss})
 
             if curr_val_loss < prev_val:
                 torch.save(best, os.path.join(model_path, 'actor_best.pth'))
