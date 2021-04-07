@@ -46,7 +46,7 @@ class Actor(nn.Module):
         x = self.conv2d2(x)
         #print(x.shape)
         x = self.conv2d3(x)
-        #print(x.shape)
+        print("Conv3:", x.shape)
         x = torch.transpose(x.squeeze(), 1, 2)
         x = self.linear1(x)
         x, _ = self.bi_lstm(x)
