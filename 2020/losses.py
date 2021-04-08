@@ -31,6 +31,29 @@ class SDRLoss(nn.Module):
         temp = torch.stack(temp)
         return torch.sum(temp)
 
+
+class SDRLossReduced(nn.Module):
+    def __init__(self):
+        super().__init__()
+    
+    def clip(self, val, alpha=20):
+        return alpha*torch.tanh(val/alpha)
+
+
+    def forward(self, x, t, y, device):
+        temp = []
+        for i in range(len(t)):
+            t_i = torch.tensor(t[i], requires_grad=True).to(device)
+            y_i = torch.tensor(y[i], requires_grad=True).to(device)
+            x_i = torch.tensor(x[i], requires_grad=True).to(device)
+
+            frac1 = torch.norm(t_i)/torch.norm((t_i-y_i))
+            frac1 = 0.5*self.clip(10*torch.log10(frac1))
+
+            temp.append(frac1)
+        temp = torch.stack(temp)
+        return -torch.sum(temp)
+
 class CriticLoss(nn.Module):
     def __init__(self):
         super().__init__()

@@ -17,7 +17,7 @@ import librosa
 
 from preproc import Data, DataTest
 from preproc import collate_custom
-from losses import SDRLoss, CriticLoss
+from losses import SDRLossReduced, CriticLoss
 import wandb
 
 wandb.init(project="rl-enhancement")
@@ -257,7 +257,7 @@ def pretrain_actor(clean_path, noisy_path, model_path, num_epochs):
     model.apply(init_weights)
     
 
-    criterion = SDRLoss()
+    criterion = SDRLossReduced()
     criterion.cuda()
 
     losses = []
